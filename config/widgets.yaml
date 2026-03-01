@@ -1,0 +1,67 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/info-widgets/
+
+# Disk paths must be mounted into the Homepage container to be accessible
+- resources:
+    cpu: true
+    memory: true
+    expanded: true
+    refresh: 5000
+
+# - resources:
+#     expanded: true
+#     refresh: 5000
+#     label: Disks
+#     disk:
+#       - /mnt/disk1
+#       - /mnt/disk2
+#       - /mnt/disk3
+#       - /mnt/disk4
+
+# - openweathermap:
+    # label: Calgary, AB
+    # units: metric
+    # provider: openweathermap
+    # cache: 10
+
+- openmeteo:
+    label: Perth, Aus
+    timezone: Australia/Perth
+    units: metric
+    cache: 5  # Open-Meteo has no API key but rate limits; caching prevents 429 errors
+    format:
+      maximumFractionDigits: 1
+
+- datetime:
+    text_size: sm
+    format:
+      dateStyle: short
+      timeStyle: short
+      hour12: true
+      timeZone: 'Australia/Perth'
+
+# - logo:
+    # icon: https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/I_Love_New_York.svg/1101px-I_Love_New_York.svg.png # optional
+
+# - glances:
+    # url: http://glances:61208
+    # expanded: true
+    # label: Glances
+    # version: 4
+
+
+# - stocks:
+    # provider: finnhub
+    # watchlist:
+      # - GME
+      # - AMC
+      # - NVDA
+      # - AMD
+      # - TSM
+      # - MSFT
+      # - AAPL
+      # - BRK.A
+
+# - search:
+    # provider: google
