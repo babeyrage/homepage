@@ -13,15 +13,21 @@
     - Plex:
         icon: plex.svg
         href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}/web
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_PLEX_VMID}}"
+        proxmoxType: lxc
         widget:
             type: plex
             url: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
             key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
-            fields: ["albums", "movies", "tv"]
+            fields: ["movies", "tv"]
 
     - Radarr:
         icon: radarr.svg
         href: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_RADARR_VMID}}"
+        proxmoxType: lxc
         widget:
             type: radarr
             url: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
@@ -31,6 +37,9 @@
     - Sonarr:
         icon: sonarr.svg
         href: http://{{HOMEPAGE_VAR_SONARR_URL}}:{{HOMEPAGE_VAR_SONARR_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_SONARR_VMID}}"
+        proxmoxType: lxc
         widget:
             type: sonarr
             url: http://{{HOMEPAGE_VAR_SONARR_URL}}:{{HOMEPAGE_VAR_SONARR_PORT}}
@@ -40,6 +49,9 @@
     - Seerr:
         icon: seerr.svg
         href: http://{{HOMEPAGE_VAR_SEERR_URL}}:{{HOMEPAGE_VAR_SEERR_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_SEERR_VMID}}"
+        proxmoxType: lxc
         widget:
             type: jellyseerr
             url: http://{{HOMEPAGE_VAR_SEERR_URL}}:{{HOMEPAGE_VAR_SEERR_PORT}}
@@ -48,6 +60,9 @@
     - Tautulli:
         icon: tautulli.svg
         href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_TAUTULLI_VMID}}"
+        proxmoxType: lxc
         widget:
             type: tautulli
             url: http://{{HOMEPAGE_VAR_TAUTULLI_URL}}:{{HOMEPAGE_VAR_TAUTULLI_PORT}}
@@ -59,17 +74,23 @@
 - Servers:
     - QB Proxmox Cluster:
         icon: proxmox.svg
-        href: http://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+        href: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
         widget:
             type: proxmox
-            url: http://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+            url: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
             username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
             password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
+
+    - VPS:
+        icon: sh-univention-corporate-server.svg
 
 - Downloads:
     - QBittorrent:
         icon: qbittorrent.svg
         href: http://{{HOMEPAGE_VAR_QBIT_URL}}:{{HOMEPAGE_VAR_QBIT_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_QBIT_VMID}}"
+        proxmoxType: lxc
         widget:
             type: qbittorrent
             url: http://{{HOMEPAGE_VAR_QBIT_URL}}:{{HOMEPAGE_VAR_QBIT_PORT}}
@@ -81,6 +102,9 @@
     - SABnzbd:
         icon: sabnzbd.svg
         href: http://{{HOMEPAGE_VAR_SABZNDB_URL}}:{{HOMEPAGE_VAR_SABZNDB_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_SABZNDB_VMID}}"
+        proxmoxType: lxc
         widget:
             type: sabnzbd
             url: http://{{HOMEPAGE_VAR_SABZNDB_URL}}:{{HOMEPAGE_VAR_SABZNDB_PORT}}
@@ -90,16 +114,21 @@
     - Speedtest Tracker:
         icon: speedtest-tracker.png
         href: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_SPEEDTEST_VMID}}"
+        proxmoxType: lxc
         widget:
             type: speedtest
             url: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
             version: 2
             key: "{{HOMEPAGE_VAR_SPEEDTEST_API_KEY}}"
-            bitratePrecision: 3
 
     - Traefik:
         icon: traefik.svg
         href: http://{{HOMEPAGE_VAR_TRAEFIK_URL}}:{{HOMEPAGE_VAR_TRAEFIK_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_TRAEFIK_VMID}}"
+        proxmoxType: lxc
         widget:
             type: traefik
             url: http://{{HOMEPAGE_VAR_TRAEFIK_URL}}:{{HOMEPAGE_VAR_TRAEFIK_PORT}}
@@ -109,6 +138,9 @@
     - UniFi:
         icon: unifi.svg
         href: http://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_UNIFI_VMID}}"
+        proxmoxType: lxc
         widget:
             type: unifi
             url: https://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
@@ -123,24 +155,36 @@
     - Pulse:
         icon: pulse.svg
         href: http://{{HOMEPAGE_VAR_PULSE_URL}}:{{HOMEPAGE_VAR_PULSE_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_PULSE_VMID}}"
+        proxmoxType: lxc
 
     - Patchmon:
         icon: patchmon.svg
         href: http://{{HOMEPAGE_VAR_PATCHMON_URL}}:{{HOMEPAGE_VAR_PATCHMON_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_PATCHMON_VMID}}"
+        proxmoxType: lxc
 
     - Domain Monitor:
         icon:
         href: http://{{HOMEPAGE_VAR_DOMAINS_URL}}:{{HOMEPAGE_VAR_DOMAINS_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_DOMAINS_VMID}}"
+        proxmoxType: lxc
 
 - Security:
-    - Crowdsec:
-        icon: crowdsec.svg
-        href: https://app.crowdsec.net/
-
     - OPNsense:
         icon: opnsense.svg
         href: http://{{HOMEPAGE_VAR_OPNSENSE_URL}}:{{HOMEPAGE_VAR_OPNSENSE_PORT}}
 
+    - Crowdsec:
+        icon: crowdsec.svg
+        href: https://app.crowdsec.net/
+
     - Wazuh:
         icon: wazuh.svg
         href: https://{{HOMEPAGE_VAR_WAZUH_URL}}:{{HOMEPAGE_VAR_WAZUH_PORT}}
+        proxmoxNode: qb-hq
+        proxmoxVMID: "{{HOMEPAGE_VAR_WAZUH_VMID}}"
+        proxmoxType: lxc
