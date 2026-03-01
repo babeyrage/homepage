@@ -1,5 +1,5 @@
 ---
-# pve:
-#   url: https://proxmox.host.or.ip:8006
-#   token: username@pam!Token ID
-#   secret: secret
+
+url: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+token: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
+secret: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"

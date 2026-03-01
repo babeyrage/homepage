@@ -17,6 +17,7 @@
             type: plex
             url: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
             key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
+            fields: ["albums", "movies", "tv"]
 
     - Radarr:
         icon: radarr.svg
@@ -54,6 +55,16 @@
             enableUser: true
             showEpisodeNumber: true
             expandOneStreamToTwoRows: true
+
+- Servers:
+    - QB Proxmox Cluster:
+        icon: proxmox.svg
+        href: http://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+        widget:
+            type: proxmox
+            url: http://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+            username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
+            password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
 
 - Downloads:
     - QBittorrent:
