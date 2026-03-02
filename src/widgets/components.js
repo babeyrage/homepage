@@ -32,6 +32,7 @@ const components = {
   downloadstation: dynamic(() => import("./downloadstation/component")),
   docker: dynamic(() => import("./docker/component")),
   dockhand: dynamic(() => import("./dockhand/component")),
+  dota2: dynamic(() => import("./dota2/component")),
   kubernetes: dynamic(() => import("./kubernetes/component")),
   emby: dynamic(() => import("./emby/component")),
   esphome: dynamic(() => import("./esphome/component")),

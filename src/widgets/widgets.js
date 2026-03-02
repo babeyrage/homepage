@@ -26,6 +26,7 @@ import develancacheui from "./develancacheui/widget";
 import diskstation from "./diskstation/widget";
 import dispatcharr from "./dispatcharr/widget";
 import dockhand from "./dockhand/widget";
+import dota2 from "./dota2/widget";
 import downloadstation from "./downloadstation/widget";
 import emby from "./emby/widget";
 import esphome from "./esphome/widget";
@@ -179,6 +180,7 @@ const widgets = {
   diskstation,
   dispatcharr,
   dockhand,
+  dota2,
   downloadstation,
   emby,
   esphome,
