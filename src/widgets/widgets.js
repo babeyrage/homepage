@@ -98,6 +98,7 @@ import photoprism from "./photoprism/widget";
 import pihole from "./pihole/widget";
 import plantit from "./plantit/widget";
 import plex from "./plex/widget";
+import plexrecent from "./plexrecent/widget";
 import portainer from "./portainer/widget";
 import prometheus from "./prometheus/widget";
 import prometheusmetric from "./prometheusmetric/widget";
@@ -257,6 +258,7 @@ const widgets = {
   pihole,
   plantit,
   plex,
+  plexrecent,
   portainer,
   prometheus,
   prometheusmetric,

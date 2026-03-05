@@ -104,6 +104,7 @@ const components = {
   pangolin: dynamic(() => import("./pangolin/component")),
   pfsense: dynamic(() => import("./pfsense/component")),
   photoprism: dynamic(() => import("./photoprism/component")),
+  plexrecent: dynamic(() => import("./plexrecent/component")),
   proxmoxbackupserver: dynamic(() => import("./proxmoxbackupserver/component")),
   pialert: dynamic(() => import("./netalertx/component")),
   pihole: dynamic(() => import("./pihole/component")),
