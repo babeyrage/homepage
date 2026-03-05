@@ -17,10 +17,9 @@
         proxmoxVMID: "{{HOMEPAGE_VAR_PLEX_VMID}}"
         proxmoxType: lxc
         widget:
-            type: plex
+            type: plexrecent
             url: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
             key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
-            fields: ["movies", "tv"]
 
     - Radarr:
         icon: radarr.svg
@@ -32,7 +31,6 @@
             type: radarr
             url: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
             key: "{{HOMEPAGE_VAR_RADARR_API_KEY}}"
-            enableQueue: true
 
     - Sonarr:
         icon: sonarr.svg
@@ -44,7 +42,6 @@
             type: sonarr
             url: http://{{HOMEPAGE_VAR_SONARR_URL}}:{{HOMEPAGE_VAR_SONARR_PORT}}
             key: "{{HOMEPAGE_VAR_SONARR_API_KEY}}"
-            enableQueue: true
 
     - Seerr:
         icon: seerr.svg
