@@ -21,6 +21,24 @@
             url: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
             key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
 
+    - Upcoming Releases:
+        icon: /icons/cinema.png
+        widget:
+          type: calendar
+          view: agenda # optional - possible values monthly, agenda
+          maxEvents: 10 # optional - defaults to 10
+          showTime: true
+          timezone: Australia/Perth
+          integrations: # optional
+            - type: sonarr # active widget type that is currently enabled on homepage - possible values: radarr, sonarr, lidarr, readarr, ical
+              service_group: Media # group name where widget exists
+              service_name: Sonarr # service name for that widget
+              color: teal
+            - type: radarr # active widget type that is currently enabled on homepage - possible values: radarr, sonarr, lidarr, readarr, ical
+              service_group: Media # group name where widget exists
+              service_name: Radarr # service name for that widget
+              color: amber
+              
     - Radarr:
         icon: radarr.svg
         href: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
