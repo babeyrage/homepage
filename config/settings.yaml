@@ -3,21 +3,17 @@
 # https://gethomepage.dev/configs/settings/
 
 fiveColumns: true
-
 useEqualHeights: true
-
 theme: dark
-
 # color: gray  # Must be 'gray' for custom.css Dracula theme - it targets .theme-gray selector
-
 cardBlur: xl
-
 headerStyle: clean
 
 layout:
   Media:
     style: row
     columns: 4
+    useEqualHeights: false
     
 # providers:
   # finnhub: {{HOMEPAGE_VAR_FINNHUB_TOKEN}}
