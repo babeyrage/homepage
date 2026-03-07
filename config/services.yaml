@@ -31,14 +31,15 @@
           timezone: Australia/Perth
           integrations:
             - type: sonarr
-              service_group: Media
+              service_group: ARR Stack
               service_name: Sonarr
               color: teal
             - type: radarr
-              service_group: Media
+              service_group: ARR Stack
               service_name: Radarr
               color: amber
 
+- ARR Stack:
     - Radarr:
         icon: radarr.svg
         href: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
