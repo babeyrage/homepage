@@ -10,13 +10,20 @@ cardBlur: xl
 headerStyle: clean
 
 layout:
-  Schedule:
+  Info:
+    header: false
     style: row
-    columns: 1
-  Media:
-    style: row
-    columns: 4
+    columns: 2
     useEqualHeights: false
+    
+    Media-Info: 
+      header: false
+      style: row
+      columns: 2
+    Dota 2:
+      header: false
+      style: row
+      columns: 1
     
   ARR Stack:
     style: row

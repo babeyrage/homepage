@@ -2,53 +2,43 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/services/
 
-- Schedule:
+- Info:
+    - Media-Info: 
+        - Plex:
+            icon: plex.svg
+            href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}/web
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_PLEX_VMID}}"
+            proxmoxType: lxc
+            widget:
+                type: plexrecent
+                url: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
+                key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
+
+        - Upcoming Releases:
+            icon: notion-calendar.svg
+            widget:
+                type: calendar
+                view: agenda
+                maxEvents: 10
+                showTime: true
+                timezone: Australia/Perth
+                integrations:
+                    - type: sonarr
+                      service_group: ARR Stack
+                      service_name: Sonarr
+                      color: teal
+                    - type: radarr
+                      service_group: ARR Stack
+                      service_name: Radarr
+                      color: amber
+    
     - Dota 2:
-        href: https://www.dota2.com
-        widget:
-            type: dota2
-            key: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
-
-# - Media:
-#     - Plex:
-#         icon: plex.svg
-#         href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}/web
-#         proxmoxNode: qb-hq
-#         proxmoxVMID: "{{HOMEPAGE_VAR_PLEX_VMID}}"
-#         proxmoxType: lxc
-#         widget:
-#             type: dota2
-#             key: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
-
-- Media:
-    - Plex:
-        icon: plex.svg
-        href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}/web
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_PLEX_VMID}}"
-        proxmoxType: lxc
-        widget:
-            type: plexrecent
-            url: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
-            key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
-
-    - Upcoming Releases:
-        icon: notion-calendar.svg
-        widget:
-          type: calendar
-          view: agenda
-          maxEvents: 10
-          showTime: true
-          timezone: Australia/Perth
-          integrations:
-            - type: sonarr
-              service_group: ARR Stack
-              service_name: Sonarr
-              color: teal
-            - type: radarr
-              service_group: ARR Stack
-              service_name: Radarr
-              color: amber
+        - Dota 2: 
+            href: https://www.dota2.com
+            widget:
+                type: dota2
+                key: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
 
 - ARR Stack:
     - Radarr:
@@ -192,7 +182,7 @@
         proxmoxType: lxc
 
     - Domain Monitor:
-        icon:
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/domain-monitor.png
         href: http://{{HOMEPAGE_VAR_DOMAINS_URL}}:{{HOMEPAGE_VAR_DOMAINS_PORT}}
         proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
         proxmoxVMID: "{{HOMEPAGE_VAR_DOMAINS_VMID}}"
