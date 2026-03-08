@@ -88,6 +88,17 @@
             showEpisodeNumber: true
             expandOneStreamToTwoRows: true
 
+    - Bazarr:
+        icon: bazarr.svg
+        href: http://{{HOMEPAGE_VAR_BAZARR_URL}}:{{HOMEPAGE_VAR_BAZARR_PORT}}
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_SONARR_VMID}}"
+        proxmoxType: lxc
+        widget:
+            type: bazarr
+            url: http://{{HOMEPAGE_VAR_BAZARR_URL}}:{{HOMEPAGE_VAR_BAZARR_PORT}}
+            key: "{{HOMEPAGE_VAR_BAZARR_API_KEY}}"
+
 # - Servers:
 #     - QB Proxmox Cluster:
 #         icon: proxmox.svg
