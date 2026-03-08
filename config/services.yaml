@@ -92,25 +92,49 @@
         icon: bazarr.svg
         href: http://{{HOMEPAGE_VAR_BAZARR_URL}}:{{HOMEPAGE_VAR_BAZARR_PORT}}
         proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_SONARR_VMID}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_BAZARR_VMID}}"
         proxmoxType: lxc
         widget:
             type: bazarr
             url: http://{{HOMEPAGE_VAR_BAZARR_URL}}:{{HOMEPAGE_VAR_BAZARR_PORT}}
             key: "{{HOMEPAGE_VAR_BAZARR_API_KEY}}"
 
-# - Servers:
-#     - QB Proxmox Cluster:
-#         icon: proxmox.svg
-#         href: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
-#         widget:
-#             type: proxmox
-#             url: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
-#             username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
-#             password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
+    - Dispatcharr:
+        icon: dispatcharr.svg
+        href: http://{{HOMEPAGE_VAR_DISPATCHARR_URL}}:{{HOMEPAGE_VAR_DISPATCHARR_PORT}}
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_DISPATCHARR_VMID}}"
+        proxmoxType: lxc
+        widget:
+            type: dispatcharr
+            url: http://{{HOMEPAGE_VAR_DISPATCHARR_URL}}:{{HOMEPAGE_VAR_DISPATCHARR_PORT}}
+            username: "{{HOMEPAGE_VAR_DISPATCHARR_USER}}"
+            password: "{{HOMEPAGE_VAR_DISPATCHARR_PASSWORD}}"
+            enableActiveStreams: true
 
-#     - VPS:
-#         icon: sh-univention-corporate-server.svg
+- Servers:
+    - Zues Proxmox:
+        icon: proxmox.svg
+        href: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+        widget:
+            type: proxmox
+            url: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+            username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
+            password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
+            node: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+
+    - Mars Proxmox:
+        icon: proxmox.svg
+        href: https://{{HOMEPAGE_VAR_MARS_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+        widget:
+            type: proxmox
+            url: https://{{HOMEPAGE_VAR_MARS_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+            username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
+            password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
+            node: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+
+    - VPS:
+        icon: sh-univention-corporate-server.svg
 
 - Downloads:
     - QBittorrent:
@@ -137,6 +161,17 @@
             key: "{{HOMEPAGE_VAR_SABZNDB_API_KEY}}"
 
 - Network:
+    - Pi-Hole:
+        icon: pi-hole.svg
+        href: http://{{HOMEPAGE_VAR_PIHOLE_URL}}:{{HOMEPAGE_VAR_PIHOLE_PORT}}/admin
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_PIHOLE_VMID}}"
+        proxmoxType: lxc
+        widget:
+            type: pihole
+            url: http://{{HOMEPAGE_VAR_PIHOLE_URL}}
+            version: 6
+
     - Speedtest Tracker:
         icon: speedtest-tracker.png
         href: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
@@ -178,6 +213,13 @@
 #         href: https://{{HOMEPAGE_VAR_SWITCH_URL}}:{{HOMEPAGE_VAR_SWITCH_PORT}}
 
 - Monitoring:
+    - Notifiarr:
+        icon: notifiarr.svg
+        href: http://{{HOMEPAGE_VAR_NOTIFIARR_URL}}:{{HOMEPAGE_VAR_NOTIFIARR_PORT}}
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_NOTIFIARR_VMID}}"
+        proxmoxType: lxc
+
     - Pulse:
         icon: pulse.svg
         href: http://{{HOMEPAGE_VAR_PULSE_URL}}:{{HOMEPAGE_VAR_PULSE_PORT}}
@@ -199,14 +241,14 @@
         proxmoxVMID: "{{HOMEPAGE_VAR_DOMAINS_VMID}}"
         proxmoxType: lxc
 
-# - Security:
-#     - OPNsense:
-#         icon: opnsense.svg
-#         href: http://{{HOMEPAGE_VAR_OPNSENSE_URL}}:{{HOMEPAGE_VAR_OPNSENSE_PORT}}
+- Security:
+    - OPNsense:
+        icon: opnsense.svg
+        href: http://{{HOMEPAGE_VAR_OPNSENSE_URL}}:{{HOMEPAGE_VAR_OPNSENSE_PORT}}
 
-#     - Crowdsec:
-#         icon: crowdsec.svg
-#         href: https://app.crowdsec.net/
+    - Crowdsec:
+        icon: crowdsec.svg
+        href: https://app.crowdsec.net/
 
     - Wazuh:
         icon: wazuh.svg

@@ -28,9 +28,13 @@ layout:
   ARR Stack:
     style: row
     columns: 4
+
+  Servers:
+    style: row
+    columns: 3
     
-# providers:
-  # finnhub: {{HOMEPAGE_VAR_FINNHUB_TOKEN}}
+providers:
+  finnhub: {{HOMEPAGE_VAR_FINNHUB_TOKEN}}
   # openweathermap: {{HOMEPAGE_VAR_OPENWEATHERMAP_TOKEN}}
 
 # favicon: icons/arrows.ico
