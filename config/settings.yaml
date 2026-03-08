@@ -10,6 +10,9 @@ cardBlur: xl
 headerStyle: clean
 
 layout:
+  Schedule:
+    style: row
+    columns: 1
   Media:
     style: row
     columns: 4

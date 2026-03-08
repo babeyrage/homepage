@@ -2,9 +2,20 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/services/
 
-# - Schedule:
-#     - Dota 2:
-#         href: https://www.dota2.com
+- Schedule:
+    - Dota 2:
+        href: https://www.dota2.com
+        widget:
+            type: dota2
+            key: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
+
+# - Media:
+#     - Plex:
+#         icon: plex.svg
+#         href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}/web
+#         proxmoxNode: qb-hq
+#         proxmoxVMID: "{{HOMEPAGE_VAR_PLEX_VMID}}"
+#         proxmoxType: lxc
 #         widget:
 #             type: dota2
 #             key: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
@@ -87,18 +98,18 @@
             showEpisodeNumber: true
             expandOneStreamToTwoRows: true
 
-- Servers:
-    - QB Proxmox Cluster:
-        icon: proxmox.svg
-        href: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
-        widget:
-            type: proxmox
-            url: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
-            username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
-            password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
+# - Servers:
+#     - QB Proxmox Cluster:
+#         icon: proxmox.svg
+#         href: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+#         widget:
+#             type: proxmox
+#             url: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+#             username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
+#             password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
 
-    - VPS:
-        icon: sh-univention-corporate-server.svg
+#     - VPS:
+#         icon: sh-univention-corporate-server.svg
 
 - Downloads:
     - QBittorrent:
@@ -161,9 +172,9 @@
         #     site: Site Name
         #     key: "{{HOMEPAGE_VAR_UNIFI_API_KEY}}"
 
-    - EdgeSwitch:
-        icon: ubiquiti.svg
-        href: https://{{HOMEPAGE_VAR_SWITCH_URL}}:{{HOMEPAGE_VAR_SWITCH_PORT}}
+#     - EdgeSwitch:
+#         icon: ubiquiti.svg
+#         href: https://{{HOMEPAGE_VAR_SWITCH_URL}}:{{HOMEPAGE_VAR_SWITCH_PORT}}
 
 - Monitoring:
     - Pulse:
@@ -187,14 +198,14 @@
         proxmoxVMID: "{{HOMEPAGE_VAR_DOMAINS_VMID}}"
         proxmoxType: lxc
 
-- Security:
-    - OPNsense:
-        icon: opnsense.svg
-        href: http://{{HOMEPAGE_VAR_OPNSENSE_URL}}:{{HOMEPAGE_VAR_OPNSENSE_PORT}}
+# - Security:
+#     - OPNsense:
+#         icon: opnsense.svg
+#         href: http://{{HOMEPAGE_VAR_OPNSENSE_URL}}:{{HOMEPAGE_VAR_OPNSENSE_PORT}}
 
-    - Crowdsec:
-        icon: crowdsec.svg
-        href: https://app.crowdsec.net/
+#     - Crowdsec:
+#         icon: crowdsec.svg
+#         href: https://app.crowdsec.net/
 
     - Wazuh:
         icon: wazuh.svg
