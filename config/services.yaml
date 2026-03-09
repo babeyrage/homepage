@@ -14,6 +14,7 @@
                 type: plexrecent
                 url: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
                 key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
+                enableImageProxy: true
 
         - Upcoming Releases:
             icon: notion-calendar.svg
