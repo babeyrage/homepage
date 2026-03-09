@@ -35,7 +35,7 @@ function normalizeToArray(v) {
  * - Uses attrs.thumb (movie) or attrs.grandparentThumb (episode) for cover poster
  * - Keeps raw addedAt (seconds) for reliable sorting
  */
-function formatRecentItems(items, widget) {
+function formatRecentItems(items, { group, service, index }) {
   return items
     .filter((item) => {
       const a = item?._attributes;
@@ -55,7 +55,7 @@ function formatRecentItems(items, widget) {
         : attrs.thumb;
 
       const coverPoster = thumbPath
-        ? `${widget.url}${thumbPath}?X-Plex-Token=${widget.key}`
+        ? `/api/widgets/plexrecent/image?group=${encodeURIComponent(group)}&service=${encodeURIComponent(service)}&index=${encodeURIComponent(index ?? '')}&path=${encodeURIComponent(thumbPath)}`
         : null;
 
       const addedAt = parseInt(attrs.addedAt, 10);
@@ -117,7 +117,7 @@ export default async function handler(req, res) {
 
     logger.debug('[DEBUG] widget.type=%s widget.url=%s widget.key=%s', widget.type, widget.url, widget.key ? '(set)' : '(MISSING)');
 
-    const { service, index } = req.query;
+    const { group, service, index } = req.query;
     const cachePrefix = `${service}.${index}`;
 
     // -----------------------------
@@ -226,7 +226,7 @@ export default async function handler(req, res) {
 
       logger.debug('[DEBUG] total raw items fetched: %d', items.length);
 
-      const formatted = formatRecentItems(items, widget);
+      const formatted = formatRecentItems(items, { group, service, index });
       logger.debug('[DEBUG] formatted items: %d (movies=%d, episodes=%d)', formatted.length,
         formatted.filter(i => i.type === 'movie').length,
         formatted.filter(i => i.type === 'episode').length,
