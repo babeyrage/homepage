@@ -417,6 +417,12 @@
         "dataRelayed": "Relayed",
         "transferRate": "Rate"
     },
+    "m365": {
+        "healthy": "Healthy",
+        "degraded": "Degraded",
+        "activeIssues": "Active Issues",
+        "total": "Total Services"
+    },
     "mastodon": {
         "user_count": "Users",
         "status_count": "Posts",

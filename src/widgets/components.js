@@ -75,6 +75,7 @@ const components = {
   lidarr: dynamic(() => import("./lidarr/component")),
   linkwarden: dynamic(() => import("./linkwarden/component")),
   lubelogger: dynamic(() => import("./lubelogger/component")),
+  m365: dynamic(() => import("./m365/component")),
   mailcow: dynamic(() => import("./mailcow/component")),
   mastodon: dynamic(() => import("./mastodon/component")),
   mealie: dynamic(() => import("./mealie/component")),

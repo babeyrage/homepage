@@ -66,6 +66,7 @@ import kopia from "./kopia/widget";
 import lidarr from "./lidarr/widget";
 import linkwarden from "./linkwarden/widget";
 import lubelogger from "./lubelogger/widget";
+import m365 from "./m365/widget";
 import mailcow from "./mailcow/widget";
 import mastodon from "./mastodon/widget";
 import mealie from "./mealie/widget";
@@ -224,6 +225,7 @@ const widgets = {
   lidarr,
   linkwarden,
   lubelogger,
+  m365,
   mailcow,
   mastodon,
   mealie,
