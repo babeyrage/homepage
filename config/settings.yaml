@@ -11,6 +11,7 @@ headerStyle: clean
 
 layout:
   Info:
+    tab: Homelab
     header: false
     style: row
     columns: 2
@@ -26,10 +27,17 @@ layout:
       columns: 1
     
   ARR Stack:
+    tab: Homelab
     style: row
     columns: 4
 
   Servers:
+    tab: Homelab
+    style: row
+    columns: 3
+  
+  Security:
+    tab: Work
     style: row
     columns: 3
     
