@@ -1180,5 +1180,10 @@
         "burned": "Burned",
         "remaining": "Remaining",
         "steps": "Steps"
+    },
+    "nvd": {
+        "loading": "Loading",
+        "total": "Total CVEs",
+        "severity": "Severity"
     }
 }
