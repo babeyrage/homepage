@@ -11,6 +11,7 @@ headerStyle: clean
 
 layout:
   Info:
+    tab: Home
     header: false
     style: row
     columns: 2
@@ -24,12 +25,17 @@ layout:
       header: false
       style: row
       columns: 1
-    
+  
+  Status:
+    tab: Work
+
   ARR Stack:
+    tab: Home
     style: row
     columns: 4
 
   Servers:
+    tab: Home
     style: row
     columns: 3
     

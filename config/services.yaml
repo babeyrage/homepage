@@ -2,6 +2,15 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/services/
 
+- Status:
+    - M365:
+        icon: microsoft-365.svg
+        widget:
+            type: m365
+            tenantId: "{{HOMEPAGE_VAR_TENANT_ID}}"
+            clientId: "{{HOMEPAGE_VAR_CLIENT_ID}}"
+            clientSecret: "{{HOMEPAGE_VAR_CLIENT_SECRET}}"
+            
 - Info:
     - Media-Info: 
         - Plex:
