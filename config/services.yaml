@@ -4,6 +4,7 @@
 
 - Security:
     - NVD CVEs:
+        href: https://nvd.nist.gov/vuln/search#/nvd/home?resultType=records
         widget:
             type: nvd
 
