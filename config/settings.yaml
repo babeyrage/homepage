@@ -40,6 +40,11 @@ layout:
     tab: Work
     style: row
     columns: 3
+  
+  News:
+    tab: Work
+    style: row
+    columns: 1
     
 providers:
   finnhub: {{HOMEPAGE_VAR_FINNHUB_TOKEN}}
