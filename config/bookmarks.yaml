@@ -2,17 +2,59 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/bookmarks
 
-- Developer:
+- DEVELOPER:
     - Github:
         - abbr: GH
           href: https://github.com/
 
-- Social:
-    - Reddit:
-        - abbr: RE
-          href: https://reddit.com/
-
-- Entertainment:
+- ENTERTAINMENT:
     - YouTube:
         - abbr: YT
           href: https://youtube.com/
+
+- ESN:
+    - PWS:
+        - href: https://password.internal.esngroup.com.au
+    - ProofPoint:
+        - abbr: PP
+          href: https://us4.proofpointessentials.com/app/login.php
+    - Console:
+        - icon: adobe.svg
+          href: https://adminconsole.adobe.com/r/
+    - GoTo Admin:
+        - icon: /icons/goto.png
+          href: https://admin.goto.com/
+    - OKTA:
+        - icon: si-okta
+          href: https://esngroup-com.okta.com/
+    - Swoop:
+        - icon: 
+          href: https://portal.swoop.com.au/login
+    - UniFi:
+        - icon: unifi.svg
+          href: https://account.ui.com/login
+
+- M365:
+    - Admin:
+        - icon: microsoft-365.svg
+          href: https://admin.cloud.microsoft
+
+- CONNECTWISE:
+    - ScreenConnect:
+        - icon: screenconnect.svg
+          href: https://auth.connectwise.com/Account/Login?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fresponse_type%3Dcode%26client_id%3Drmmau-ESNGroup%26redirect_uri%3Dhttps%253A%252F%252Frmmau-esngroup.screenconnect.com%252F__Authentication%252FConnectWiseAsio%252FLogin%26state%3D%252FHost%2523Support%252FAll%252520Sessions%252F%252Fe31b6c13-58ee-4145-ab08-36f9a5c1e56a%252FStart%26scope%3Dopenid%2520profile%2520email
+
+- CYBER:
+    - AnyRun:
+        - icon:
+          href: https://app.any.run/
+
+- DOMAINS/DNS:
+    - WHOIS-AU:
+        - icon: /icons/whois-au.png
+          href: https://whois.auda.org.au/
+
+- OSINT:
+    - HaveIBeenPwned:
+        - icon: si-haveibeenpwned
+          href: https://haveibeenpwned.com/
