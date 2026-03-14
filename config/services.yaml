@@ -12,14 +12,16 @@
         widget:
             type: cisa
 
+- News:
     - Security News:
         widget:
             type: iframe
-            src: http://{{HOMEPAGE_VAR_GLANCE_WIDGET_URL}}
-            classes: glance
+            src: http://{{HOMEPAGE_VAR_GLANCE_URL}}:{{HOMEPAGE_VAR_GLANCE_PORT}}
+            # classes: glance
             loadingStrategy: lazy
             referrerPolicy: same-origin
-            allowPolicy: fullscreen    
+            allowPolicy: fullscreen
+
 - Info:
     - Media-Info: 
         - Plex:
