@@ -1181,6 +1181,10 @@
         "remaining": "Remaining",
         "steps": "Steps"
     },
+    "cisa": {
+        "loading": "Loading",
+        "total": "Known Exploited"
+    },
     "nvd": {
         "loading": "Loading",
         "total": "Total CVEs",
