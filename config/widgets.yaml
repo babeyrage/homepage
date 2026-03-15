@@ -52,17 +52,17 @@
     # version: 4
 
 
-- stocks:
-    provider: finnhub
-    watchlist:
-      - GME
-      - AMC
-      - NVDA
-      - AMD
-      - TSM
-      - MSFT
-      - AAPL
-      - BRK.A
+# - stocks:
+#     provider: finnhub
+#     watchlist:
+#       - GME
+#       - AMC
+#       - NVDA
+#       - AMD
+#       - TSM
+#       - MSFT
+#       - AAPL
+#       - BRK.A
 
 # - search:
     # provider: google
