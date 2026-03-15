@@ -271,7 +271,7 @@
             proxmoxType: lxc
 
         - Domain Monitor:
-            icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/domain-monitor.png
+            icon: sh-domain-monitor.svg
             href: http://{{HOMEPAGE_VAR_DOMAINS_URL}}:{{HOMEPAGE_VAR_DOMAINS_PORT}}
             proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
             proxmoxVMID: "{{HOMEPAGE_VAR_DOMAINS_VMID}}"
