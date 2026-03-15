@@ -170,6 +170,7 @@
 
     - VPS:
         icon: sh-univention-corporate-server.svg
+        
 - HOME NETWORK:
     - DOWNLOADS:
         - QBittorrent:
