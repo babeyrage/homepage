@@ -3,27 +3,38 @@
 # https://gethomepage.dev/configs/settings/
 
 fiveColumns: true
-
 useEqualHeights: true
-
 theme: dark
-
 # color: gray  # Must be 'gray' for custom.css Dracula theme - it targets .theme-gray selector
-
 cardBlur: xl
-
 headerStyle: clean
 
 layout:
-  Schedule:
+  Info:
+    header: false
     style: row
-    columns: 1
-  Media:
+    columns: 2
+    useEqualHeights: false
+    
+    Media-Info: 
+      header: false
+      style: row
+      columns: 2
+    Dota 2:
+      header: false
+      style: row
+      columns: 1
+    
+  ARR Stack:
     style: row
     columns: 4
+
+  Servers:
+    style: row
+    columns: 3
     
-# providers:
-  # finnhub: {{HOMEPAGE_VAR_FINNHUB_TOKEN}}
+providers:
+  finnhub: {{HOMEPAGE_VAR_FINNHUB_TOKEN}}
   # openweathermap: {{HOMEPAGE_VAR_OPENWEATHERMAP_TOKEN}}
 
 # favicon: icons/arrows.ico
