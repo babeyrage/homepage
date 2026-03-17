@@ -54,32 +54,6 @@ const widget = {
       },
     },
 
-    running_tournaments: {
-      endpoint: "tournaments/running?page[size]=10&filter[tier]=s,a",
-      map: (data) => {
-        const tournaments = asJson(data);
-        if (!Array.isArray(tournaments)) return [];
-        return tournaments
-          .filter((t) => ALLOWED_TIERS.has(t.tier))
-          .slice(0, 3)
-          .map((t) => ({
-            id: t.id,
-            name: t.name ?? "",
-            leagueName: t.league?.name ?? "",
-            season: t.serie?.season ?? "",
-            beginAt: t.begin_at,
-            endAt: t.end_at,
-            tier: t.tier ?? "",
-            prizepool: t.prizepool ?? "",
-            teams: (t.teams ?? []).slice(0, 8).map((team) => ({
-              id: team.id,
-              name: team.name ?? "",
-              logo: team.image_url ?? null,
-            })),
-          }));
-      },
-    },
-
     upcoming_tournaments: {
       endpoint: "tournaments/upcoming?page[size]=10&filter[tier]=s,a&sort=begin_at",
       map: (data) => {
@@ -106,30 +80,6 @@ const widget = {
       },
     },
 
-    completed_tournaments: {
-      endpoint: "tournaments/past?filter[tier]=s,a&page[size]=10&sort=-end_at",
-      map: (data) => {
-        const tournaments = asJson(data);
-        if (!Array.isArray(tournaments)) return [];
-        return tournaments
-          .filter((t) => ALLOWED_TIERS.has(t.tier))
-          .slice(0, 5)
-          .map((t) => ({
-            id: t.id,
-            name: t.name ?? "Unknown Tournament",
-            leagueName: t.league?.name ?? "",
-            season: t.serie?.season ?? "",
-            tier: t.tier ?? "",
-            prizepool: t.prizepool ?? "",
-            endAt: t.end_at ?? null,
-            teams: (t.teams ?? []).slice(0, 16).map((team) => ({
-              id: team.id,
-              name: team.name ?? "Unknown",
-              logo: team.image_url ?? null,
-            })),
-          }));
-      },
-    },
   },
 };
 
