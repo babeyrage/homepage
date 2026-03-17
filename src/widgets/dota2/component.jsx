@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { useTranslation } from "next-i18next";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import useSWR from "swr";
 
 import Container from "components/services/widget/container";
@@ -258,12 +259,163 @@ function SeriesRow({ series }) {
   );
 }
 
-// ── DatDota tournament row (current & past) ───────────────────────────────────
-// Expansion lazily fetches OpenDota matches + teams via mode=tournament.
+// ── Tournament modal (portal — renders outside widget container) ──────────────
 
 const PAGE_SIZE = 10;
 
-function TournamentRow({ tournament, isExpanded, onToggle, data, isLoading }) {
+function TournamentModal({ tournament, onClose }) {
+  const { leagueId, isCurrent, name, tierId, first, last } = tournament;
+
+  const begin = first ? DateTime.fromISO(first) : null;
+  const end = last ? DateTime.fromISO(last) : null;
+  const dateLabel =
+    begin && end ? `${begin.toFormat("d MMM")} – ${end.toFormat("d MMM yyyy")}` : "";
+
+  const url = `/api/widgets/dota2?mode=tournament&leagueId=${leagueId}&isCurrent=${isCurrent}`;
+  const { data, isLoading } = useSWR(url, { revalidateOnFocus: false });
+
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const teams = data?.teams ?? [];
+  const series = data?.series ?? [];
+  const visibleSeries = series.slice(0, visibleCount);
+  const hasMore = series.length > visibleCount;
+  const remaining = series.length - visibleCount;
+
+  // Close on Escape
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  // Lock body scroll
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  return createPortal(
+    // Backdrop — click outside to close
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      {/* Modal panel */}
+      <div
+        className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* ── Header ── */}
+        <div className="flex items-start justify-between gap-3 px-4 py-3 border-b border-zinc-200 dark:border-zinc-700 shrink-0">
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">{name}</span>
+              {tierId === 1 && (
+                <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wide bg-amber-500/15 px-1.5 py-0.5 rounded">
+                  Premium
+                </span>
+              )}
+              {tierId === 2 && (
+                <span className="text-[9px] font-bold text-sky-500 uppercase tracking-wide bg-sky-500/15 px-1.5 py-0.5 rounded">
+                  Professional
+                </span>
+              )}
+            </div>
+            {dateLabel && (
+              <span className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5">{dateLabel}</span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="shrink-0 text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-200 transition-colors leading-none text-base mt-0.5"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* ── Scrollable body ── */}
+        <div className="flex-1 overflow-y-auto px-4 py-3">
+          {isLoading ? (
+            <div className="flex flex-col gap-1.5">
+              <PulseRow />
+              <PulseRow />
+              <PulseRow />
+              <PulseRow />
+              <PulseRow />
+            </div>
+          ) : (
+            <>
+              {/* Participants */}
+              {teams.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                    Participants
+                  </p>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {teams.map((team) => (
+                      <div
+                        key={team.teamId}
+                        className="flex items-center gap-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-1.5 min-w-0"
+                      >
+                        <LogoBox src={team.logo} size="md" />
+                        <span className="text-[9px] font-medium text-zinc-700 dark:text-zinc-200 truncate leading-tight">
+                          {team.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Series results */}
+              {series.length > 0 ? (
+                <div className={teams.length > 0 ? "border-t border-zinc-200 dark:border-zinc-700 pt-3" : ""}>
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                    Results — {series.length} series
+                  </p>
+                  {visibleSeries.map((s) => (
+                    <SeriesRow key={s.seriesId} series={s} />
+                  ))}
+                  {hasMore && (
+                    <button
+                      type="button"
+                      onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                      className="w-full mt-1 py-1.5 text-[10px] text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors text-center rounded-md bg-zinc-100 dark:bg-zinc-800"
+                    >
+                      Show {Math.min(remaining, PAGE_SIZE)} more · {remaining} remaining
+                    </button>
+                  )}
+                  {visibleCount > PAGE_SIZE && (
+                    <button
+                      type="button"
+                      onClick={() => setVisibleCount(PAGE_SIZE)}
+                      className="w-full mt-0.5 py-1 text-[10px] text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors text-center"
+                    >
+                      Show less
+                    </button>
+                  )}
+                </div>
+              ) : (
+                !isLoading && (
+                  <div className="text-[11px] text-zinc-400 dark:text-zinc-500 py-4 text-center">
+                    No match data available
+                  </div>
+                )
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+// ── DatDota tournament row ─────────────────────────────────────────────────────
+
+function TournamentRow({ tournament, onClick }) {
   const begin = tournament.first ? DateTime.fromISO(tournament.first) : null;
   const end = tournament.last ? DateTime.fromISO(tournament.last) : null;
 
@@ -275,104 +427,25 @@ function TournamentRow({ tournament, isExpanded, onToggle, data, isLoading }) {
       ? end.toRelative()
       : "";
 
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-
-  // Reset pagination whenever this tournament collapses or new data arrives
-  useEffect(() => {
-    if (!isExpanded) setVisibleCount(PAGE_SIZE);
-  }, [isExpanded]);
-
-  const teams = data?.teams ?? [];
-  const series = data?.series ?? [];
-  const visibleSeries = series.slice(0, visibleCount);
-  const hasMore = series.length > visibleCount;
-  const remaining = series.length - visibleCount;
-
   return (
-    <div className="mb-0.5">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full flex items-center justify-between rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-0.5 gap-1 text-left hover:bg-theme-200/80 dark:hover:bg-theme-900/40 transition-colors"
-      >
-        <div className="flex flex-col min-w-0 flex-1">
-          <span className="text-xs text-theme-700 dark:text-theme-200 truncate">{tournament.name}</span>
-          {dateLabel && (
-            <span className="text-[10px] text-theme-400 dark:text-theme-500">{dateLabel}</span>
-          )}
-        </div>
-        <div className="flex shrink-0 items-center gap-1.5">
-          {tournament.tierId === 1 && (
-            <span className="text-[9px] font-semibold text-amber-500 uppercase tracking-wide">Prem</span>
-          )}
-          <span className="text-[10px] text-theme-400 dark:text-theme-500 select-none">
-            {isExpanded ? "▾" : "▸"}
-          </span>
-        </div>
-      </button>
-
-      {isExpanded && (
-        <div className="mt-px ml-1.5 border-l border-theme-300/40 dark:border-theme-700/40 pl-1.5 pt-0.5">
-          {isLoading ? (
-            <>
-              <PulseRow />
-              <PulseRow />
-              <PulseRow />
-            </>
-          ) : (
-            <>
-              {/* Invited / participating teams — 3-column horizontal cards */}
-              {teams.length > 0 && (
-                <div className="grid grid-cols-3 gap-1 mb-2">
-                  {teams.map((team) => (
-                    <div
-                      key={team.teamId}
-                      className="flex items-center gap-1 rounded-sm bg-theme-100/50 dark:bg-theme-800/30 px-1 py-1 min-w-0"
-                    >
-                      <LogoBox src={team.logo} size="md" />
-                      <span className="text-[9px] font-medium text-theme-700 dark:text-theme-200 truncate leading-tight">
-                        {team.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Series results */}
-              {series.length > 0 ? (
-                <div className={teams.length > 0 ? "border-t border-theme-300/20 dark:border-theme-700/20 pt-1" : ""}>
-                  {visibleSeries.map((s) => (
-                    <SeriesRow key={s.seriesId} series={s} />
-                  ))}
-                  {hasMore && (
-                    <button
-                      type="button"
-                      onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-                      className="w-full mt-0.5 py-0.5 text-[10px] text-theme-500 dark:text-theme-400 hover:text-theme-700 dark:hover:text-theme-200 transition-colors text-center"
-                    >
-                      Show {Math.min(remaining, PAGE_SIZE)} more of {remaining} remaining
-                    </button>
-                  )}
-                  {visibleCount > PAGE_SIZE && (
-                    <button
-                      type="button"
-                      onClick={() => setVisibleCount(PAGE_SIZE)}
-                      className="w-full py-0.5 text-[10px] text-theme-500 dark:text-theme-400 hover:text-theme-700 dark:hover:text-theme-200 transition-colors text-center"
-                    >
-                      Show less
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="text-[10px] text-theme-500 dark:text-theme-400 py-0.5 text-center">
-                  No match data available
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full flex items-center justify-between rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-0.5 mb-0.5 gap-1 text-left hover:bg-theme-200/80 dark:hover:bg-theme-900/40 transition-colors"
+    >
+      <div className="flex flex-col min-w-0 flex-1">
+        <span className="text-xs text-theme-700 dark:text-theme-200 truncate">{tournament.name}</span>
+        {dateLabel && (
+          <span className="text-[10px] text-theme-400 dark:text-theme-500">{dateLabel}</span>
+        )}
+      </div>
+      <div className="flex shrink-0 items-center gap-1.5">
+        {tournament.tierId === 1 && (
+          <span className="text-[9px] font-semibold text-amber-500 uppercase tracking-wide">Prem</span>
+        )}
+        <span className="text-[10px] text-theme-400 dark:text-theme-500 select-none">▸</span>
+      </div>
+    </button>
   );
 }
 
@@ -412,9 +485,7 @@ export default function Component({ service }) {
   const { t } = useTranslation();
   const { widget } = service;
 
-  // One tournament can be expanded at a time (across current + past sections)
-  const [expandedLeagueId, setExpandedLeagueId] = useState(null);
-  const [expandedIsCurrent, setExpandedIsCurrent] = useState(false);
+  const [modalTournament, setModalTournament] = useState(null);
 
   // ── PandaScore: live + upcoming matches, upcoming tournaments ─────────────
   const { data: liveData, error: liveError } = useWidgetAPI(widget, "live_matches");
@@ -429,14 +500,6 @@ export default function Component({ service }) {
     revalidateOnFocus: false,
   });
 
-  // ── OpenDota: lazy tournament detail on expand ────────────────────────────
-  const tournamentUrl = expandedLeagueId
-    ? `/api/widgets/dota2?mode=tournament&leagueId=${expandedLeagueId}&isCurrent=${expandedIsCurrent}`
-    : null;
-  const { data: tournamentData, isLoading: tournamentLoading } = useSWR(tournamentUrl, {
-    revalidateOnFocus: false,
-  });
-
   // ── Derived state ─────────────────────────────────────────────────────────
   const liveMatches = Array.isArray(liveData) ? liveData : [];
   const upcomingMatches = Array.isArray(upcomingData) ? upcomingData : [];
@@ -446,15 +509,6 @@ export default function Component({ service }) {
 
   const matchesLoading = !liveData && !liveError && !upcomingData && !upcomingError;
   const tournamentsLoading = !leaguesData && !leaguesError && !upcomingTournamentsData && !upcomingTournamentsError;
-
-  const handleToggle = (leagueId, isCurrent) => {
-    if (expandedLeagueId === leagueId) {
-      setExpandedLeagueId(null);
-    } else {
-      setExpandedLeagueId(leagueId);
-      setExpandedIsCurrent(isCurrent);
-    }
-  };
 
   if (liveError && upcomingError && !liveData && !upcomingData) {
     return <Container service={service} error={liveError} />;
@@ -526,11 +580,8 @@ export default function Component({ service }) {
                   {currentTournaments.map((tournament) => (
                     <TournamentRow
                       key={tournament.leagueId}
-                      tournament={tournament}
-                      isExpanded={expandedLeagueId === tournament.leagueId}
-                      onToggle={() => handleToggle(tournament.leagueId, true)}
-                      data={expandedLeagueId === tournament.leagueId ? tournamentData : null}
-                      isLoading={expandedLeagueId === tournament.leagueId && tournamentLoading}
+                      tournament={{ ...tournament, isCurrent: true }}
+                      onClick={() => setModalTournament({ ...tournament, isCurrent: true })}
                     />
                   ))}
                 </>
@@ -543,11 +594,8 @@ export default function Component({ service }) {
                   {pastTournaments.map((tournament) => (
                     <TournamentRow
                       key={tournament.leagueId}
-                      tournament={tournament}
-                      isExpanded={expandedLeagueId === tournament.leagueId}
-                      onToggle={() => handleToggle(tournament.leagueId, false)}
-                      data={expandedLeagueId === tournament.leagueId ? tournamentData : null}
-                      isLoading={expandedLeagueId === tournament.leagueId && tournamentLoading}
+                      tournament={{ ...tournament, isCurrent: false }}
+                      onClick={() => setModalTournament({ ...tournament, isCurrent: false })}
                     />
                   ))}
                 </>
@@ -566,6 +614,14 @@ export default function Component({ service }) {
           )}
         </div>
       </div>
+
+      {/* ── Tournament modal ─────────────────────────────────────────────── */}
+      {modalTournament && (
+        <TournamentModal
+          tournament={modalTournament}
+          onClose={() => setModalTournament(null)}
+        />
+      )}
     </Container>
   );
 }
