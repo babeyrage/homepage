@@ -1,12 +1,12 @@
 import { DateTime } from "luxon";
 import { useTranslation } from "next-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 
-const TIER_LABELS = { s: "Tier 1", a: "Tier 2", b: "Tier 3" };
+// ── Shared UI primitives ──────────────────────────────────────────────────────
 
 function SectionLabel({ children }) {
   return (
@@ -20,78 +20,82 @@ function PulseRow() {
   return <div className="h-7 w-full rounded-sm bg-theme-200/50 dark:bg-theme-900/20 mb-0.5 animate-pulse" />;
 }
 
-function TeamLogo({ src, alt }) {
-  if (!src) return null;
-  return <img src={src} alt={alt} className="h-3.5 w-3.5 object-contain shrink-0" />;
-}
+// Static size map — all strings are literals so Tailwind JIT picks them up
+const LOGO_SIZES = {
+  xs: { box: "h-4 w-4", img: "h-3 w-3" },   // per-game rows inside a series
+  sm: { box: "h-5 w-5", img: "h-4 w-4" },   // PandaScore match rows
+  md: { box: "h-6 w-6", img: "h-5 w-5" },   // series header
+  lg: { box: "h-7 w-7", img: "h-6 w-6" },   // teams grid
+};
 
-function MatchRow({ match, live }) {
-  const beginAt = match.beginAt ? DateTime.fromISO(match.beginAt) : null;
-
+// Fixed-size container that normalises every logo to the same visual footprint.
+// overflow-hidden clips wide/tall logos; the neutral background fills transparent areas.
+function LogoBox({ src, alt = "", size = "md" }) {
+  const { box, img } = LOGO_SIZES[size];
   return (
-    <div className="flex flex-col rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-0.5 mb-0.5">
-      <div className="flex items-center justify-between gap-1">
-        <span className="flex items-center gap-0.5 text-xs text-theme-700 dark:text-theme-200 min-w-0 truncate">
-          <TeamLogo src={match.team1Logo} alt={match.team1} />
-          <span className="truncate">{match.team1}</span>
-          <span className="mx-0.5 text-theme-400 dark:text-theme-500 shrink-0">vs</span>
-          <TeamLogo src={match.team2Logo} alt={match.team2} />
-          <span className="truncate">{match.team2}</span>
-        </span>
-        {live ? (
-          <span className="shrink-0 text-[9px] font-bold text-red-500">● LIVE</span>
-        ) : (
-          <span className="shrink-0 text-[10px] text-theme-400 dark:text-theme-500">
-            {beginAt ? beginAt.toRelative() : ""}
-          </span>
-        )}
-      </div>
-      {match.leagueName && (
-        <span className="text-[10px] text-theme-500 dark:text-theme-400 truncate">{match.leagueName}</span>
+    <div
+      className={`${box} shrink-0 rounded-sm bg-white/40 dark:bg-black/25 flex items-center justify-center overflow-hidden`}
+    >
+      {src ? (
+        <img src={src} alt={alt} className={`${img} object-contain`} />
+      ) : (
+        <div className={`${img} opacity-0`} />
       )}
     </div>
   );
 }
 
-// Match row for schedule display inside a running tournament
-function ScheduledMatchRow({ match, live }) {
+// ── PandaScore live / upcoming match row ──────────────────────────────────────
+
+function MatchRow({ match, live }) {
   const beginAt = match.beginAt ? DateTime.fromISO(match.beginAt) : null;
 
   return (
-    <div className="flex items-center gap-1.5 rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-0.5 mb-0.5 text-[10px]">
-      <div className="flex items-center gap-0.5 flex-1 min-w-0">
-        {match.team1Logo && (
-          <img src={match.team1Logo} alt={match.team1Name} className="h-3 w-3 object-contain shrink-0" />
-        )}
-        <span className="text-theme-600 dark:text-theme-300 truncate">{match.team1Name}</span>
-        <span className="text-theme-400 dark:text-theme-500 mx-0.5 shrink-0">vs</span>
-        {match.team2Logo && (
-          <img src={match.team2Logo} alt={match.team2Name} className="h-3 w-3 object-contain shrink-0" />
-        )}
-        <span className="text-theme-600 dark:text-theme-300 truncate">{match.team2Name}</span>
+    <div className="flex flex-col rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-1 mb-0.5 gap-0.5">
+      {/* Team row */}
+      <div className="flex items-center gap-1">
+        {/* Team 1 */}
+        <div className="flex items-center gap-1 flex-1 min-w-0">
+          <LogoBox src={match.team1Logo} size="sm" />
+          <span className="text-[10px] font-medium text-theme-700 dark:text-theme-200 truncate">{match.team1}</span>
+        </div>
+
+        <span className="shrink-0 text-[9px] text-theme-400 dark:text-theme-500 px-0.5">vs</span>
+
+        {/* Team 2 */}
+        <div className="flex items-center gap-1 flex-1 min-w-0 justify-end">
+          <span className="text-[10px] font-medium text-theme-700 dark:text-theme-200 truncate text-right">
+            {match.team2}
+          </span>
+          <LogoBox src={match.team2Logo} size="sm" />
+        </div>
+
+        {/* Status */}
+        <div className="shrink-0 pl-1">
+          {live ? (
+            <span className="text-[9px] font-bold text-red-500">● LIVE</span>
+          ) : (
+            <span className="text-[10px] text-theme-400 dark:text-theme-500 tabular-nums">
+              {beginAt ? beginAt.toRelative() : ""}
+            </span>
+          )}
+        </div>
       </div>
-      <div className="shrink-0 flex items-center gap-1">
-        {match.numberOfGames && (
-          <span className="text-theme-400 dark:text-theme-500">Bo{match.numberOfGames}</span>
-        )}
-        {live ? (
-          <span className="font-bold text-red-500">● LIVE</span>
-        ) : (
-          beginAt && <span className="text-theme-400 dark:text-theme-500">{beginAt.toRelative()}</span>
-        )}
-      </div>
+
+      {/* League name */}
+      {match.leagueName && (
+        <span className="text-[9px] text-theme-500 dark:text-theme-400 truncate">{match.leagueName}</span>
+      )}
     </div>
   );
 }
 
-// winsNeeded: Bo1→1, Bo2→2, Bo3→2, Bo5→3 (Math.floor(n/2)+1)
+// ── Series row (OpenDota reconstructed series) ────────────────────────────────
+
 function winsNeeded(numberOfGames) {
   return Math.floor((numberOfGames ?? 3) / 2) + 1;
 }
 
-// Collapsible series row: STRATZ-inspired layout.
-// Collapsed: team logo+name on each side, vertical pips + score + BoN label in centre.
-// Expanded: per-game rows showing kills | duration | kills with winner highlighting.
 function SeriesRow({ series }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -104,6 +108,13 @@ function SeriesRow({ series }) {
   const team1Won = winnerId !== null && winnerId === team1Id;
   const team2Won = winnerId !== null && winnerId === team2Id;
 
+  // Completion time = end of the last game (games are sorted by startTime)
+  const lastGame = games.length > 0 ? games[games.length - 1] : null;
+  const finishedAt =
+    lastGame?.startTime && lastGame?.length
+      ? DateTime.fromSeconds(lastGame.startTime + lastGame.length)
+      : null;
+
   const nameClass = (won) =>
     won
       ? "text-[10px] font-semibold text-theme-700 dark:text-theme-200 truncate"
@@ -111,73 +122,73 @@ function SeriesRow({ series }) {
 
   return (
     <div className="mb-1 rounded-md overflow-hidden bg-theme-200/30 dark:bg-theme-900/15">
-      {/* Collapsed header */}
+      {/* ── Collapsed header ── */}
       <button
         type="button"
         onClick={() => setExpanded((e) => !e)}
-        className="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-theme-200/50 dark:hover:bg-theme-900/30 transition-colors"
+        className="w-full flex items-center gap-1.5 px-2 py-1.5 hover:bg-theme-200/50 dark:hover:bg-theme-900/30 transition-colors"
       >
-        {/* Team 1: logo + name */}
-        <div className="flex items-center gap-1 flex-1 min-w-0">
-          {team1Logo ? (
-            <img src={team1Logo} alt={team1Name} className="h-5 w-5 object-contain shrink-0" />
-          ) : (
-            <div className="h-5 w-5 shrink-0" />
-          )}
-          <span className={nameClass(team1Won)}>{team1Name}</span>
-        </div>
-
-        {/* Centre: pips + score + BoN */}
-        <div className="flex flex-col items-center gap-0.5 shrink-0">
-          <div className="flex items-start gap-1.5">
-            {/* Team 1 pips */}
-            <div className="flex flex-col gap-0.75">
-              {Array.from({ length: pipCount }, (_, i) => (
-                <span
-                  key={i}
-                  className={`block w-2 h-2 rounded-full ${i < team1Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
-                />
-              ))}
-            </div>
-            {/* Score */}
-            <span className="text-xs font-bold tabular-nums text-theme-700 dark:text-theme-200 leading-none self-center">
-              {team1Wins}–{team2Wins}
-            </span>
-            {/* Team 2 pips */}
-            <div className="flex flex-col gap-0.75">
-              {Array.from({ length: pipCount }, (_, i) => (
-                <span
-                  key={i}
-                  className={`block w-2 h-2 rounded-full ${i < team2Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
-                />
-              ))}
-            </div>
-          </div>
-          {numberOfGames && (
-            <span className="text-[8px] text-theme-400 dark:text-theme-500 leading-none">
-              Bo{numberOfGames}
+        {/* FINISHED label + date + time */}
+        <div className="flex flex-col shrink-0 items-start">
+          <span className="text-[8px] font-bold uppercase tracking-wide text-theme-500 dark:text-theme-400 leading-none">
+            Finished
+          </span>
+          {finishedAt && (
+            <span className="text-[8px] text-theme-400 dark:text-theme-500 leading-none tabular-nums mt-px whitespace-nowrap">
+              {finishedAt.toFormat("d MMM, HH:mm")}
             </span>
           )}
         </div>
 
-        {/* Team 2: name + logo */}
+        {/* Team 1: name + logo */}
         <div className="flex items-center gap-1 flex-1 min-w-0 justify-end">
-          <span className={`${nameClass(team2Won)} text-right`}>{team2Name}</span>
-          {team2Logo ? (
-            <img src={team2Logo} alt={team2Name} className="h-5 w-5 object-contain shrink-0" />
-          ) : (
-            <div className="h-5 w-5 shrink-0" />
-          )}
+          <span className={`${nameClass(team1Won)} text-right`}>{team1Name}</span>
+          <LogoBox src={team1Logo} size="md" />
         </div>
 
-        <span className="shrink-0 text-[9px] text-theme-400 dark:text-theme-500 select-none">
-          {expanded ? "▾" : "▸"}
+        {/* Centre: team1 pips | vs | team2 pips */}
+        <div className="flex items-center gap-1 shrink-0">
+          <div className="flex flex-col gap-0.5">
+            {Array.from({ length: pipCount }, (_, i) => (
+              <span
+                key={i}
+                className={`block w-1.5 h-1.5 rounded-full ${i < team1Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
+              />
+            ))}
+          </div>
+          <span className="text-[9px] text-theme-400 dark:text-theme-500 leading-none">vs</span>
+          <div className="flex flex-col gap-0.5">
+            {Array.from({ length: pipCount }, (_, i) => (
+              <span
+                key={i}
+                className={`block w-1.5 h-1.5 rounded-full ${i < team2Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Team 2: logo + name */}
+        <div className="flex items-center gap-1 flex-1 min-w-0">
+          <LogoBox src={team2Logo} size="md" />
+          <span className={nameClass(team2Won)}>{team2Name}</span>
+        </div>
+
+        {/* Series type */}
+        {numberOfGames && (
+          <span className="shrink-0 text-[8px] text-theme-400 dark:text-theme-500 tabular-nums leading-none">
+            Bo{numberOfGames}
+          </span>
+        )}
+
+        {/* Expand toggle */}
+        <span className="shrink-0 text-xs font-bold text-theme-400 dark:text-theme-500 select-none w-3 text-center leading-none">
+          {expanded ? "−" : "+"}
         </span>
       </button>
 
-      {/* Expanded: individual game rows */}
+      {/* ── Expanded per-game rows ── */}
       {expanded && (
-        <div className="border-t border-theme-300/20 dark:border-theme-700/20 px-2 py-1 flex flex-col gap-px">
+        <div className="border-t border-theme-300/20 dark:border-theme-700/20 px-2 py-1 flex flex-col gap-0.5">
           {games.map((game, idx) => {
             const t1Won = game.winnerId === team1Id;
             const duration = game.length
@@ -185,17 +196,18 @@ function SeriesRow({ series }) {
               : null;
 
             return (
-              <div key={game.id} className="flex items-center gap-1 py-0.5 text-[9px] leading-none">
+              <div
+                key={game.id}
+                className={`flex items-center gap-1 px-1 py-0.5 rounded-sm text-[9px] leading-none ${t1Won ? "bg-emerald-500/5" : "bg-theme-200/20 dark:bg-theme-900/20"}`}
+              >
                 {/* Game label */}
-                <span className="shrink-0 w-4 text-theme-300 dark:text-theme-600 font-medium">
+                <span className="shrink-0 w-4 text-theme-400 dark:text-theme-500 font-medium tabular-nums">
                   G{idx + 1}
                 </span>
 
                 {/* Team 1 side */}
                 <div className="flex items-center gap-1 flex-1 min-w-0">
-                  <span
-                    className={`h-1.5 w-1.5 rounded-full shrink-0 ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/40 dark:bg-theme-700/40"}`}
-                  />
+                  <LogoBox src={team1Logo} size="xs" />
                   <span
                     className={`truncate ${t1Won ? "text-theme-600 dark:text-theme-300 font-semibold" : "text-theme-400 dark:text-theme-500"}`}
                   >
@@ -212,7 +224,7 @@ function SeriesRow({ series }) {
 
                 {/* Duration */}
                 {duration && (
-                  <span className="shrink-0 tabular-nums text-theme-400 dark:text-theme-500 px-1.5 text-[8px]">
+                  <span className="shrink-0 tabular-nums text-theme-400 dark:text-theme-500 px-1 text-[8px]">
                     {duration}
                   </span>
                 )}
@@ -231,9 +243,7 @@ function SeriesRow({ series }) {
                   >
                     {team2Name}
                   </span>
-                  <span
-                    className={`h-1.5 w-1.5 rounded-full shrink-0 ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/40 dark:bg-theme-700/40"}`}
-                  />
+                  <LogoBox src={team2Logo} size="xs" />
                 </div>
               </div>
             );
@@ -244,16 +254,35 @@ function SeriesRow({ series }) {
   );
 }
 
-function RunningTournamentRow({ tournament, isExpanded, onToggle, schedule, scheduleLoading }) {
-  const begin = tournament.beginAt ? DateTime.fromISO(tournament.beginAt) : null;
-  const end = tournament.endAt ? DateTime.fromISO(tournament.endAt) : null;
-  const dateRange =
-    begin && end ? `${begin.toFormat("d MMM")} – ${end.toFormat("d MMM")}` : (begin?.toFormat("d MMM yyyy") ?? "");
+// ── DatDota tournament row (current & past) ───────────────────────────────────
+// Expansion lazily fetches OpenDota matches + teams via mode=tournament.
 
-  const seasonLabel = tournament.season ? `Season ${tournament.season}` : "";
-  const title = [tournament.leagueName, seasonLabel].filter(Boolean).join(" - ");
-  const subtitle = tournament.name ?? "";
-  const teams = tournament.teams ?? [];
+const PAGE_SIZE = 10;
+
+function TournamentRow({ tournament, isExpanded, onToggle, data, isLoading }) {
+  const begin = tournament.first ? DateTime.fromISO(tournament.first) : null;
+  const end = tournament.last ? DateTime.fromISO(tournament.last) : null;
+
+  const dateLabel = tournament.isCurrent
+    ? begin && end
+      ? `${begin.toFormat("d MMM")} – ${end.toFormat("d MMM")}`
+      : ""
+    : end
+      ? end.toRelative()
+      : "";
+
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  // Reset pagination whenever this tournament collapses or new data arrives
+  useEffect(() => {
+    if (!isExpanded) setVisibleCount(PAGE_SIZE);
+  }, [isExpanded]);
+
+  const teams = data?.teams ?? [];
+  const series = data?.series ?? [];
+  const visibleSeries = series.slice(0, visibleCount);
+  const hasMore = series.length > visibleCount;
+  const remaining = series.length - visibleCount;
 
   return (
     <div className="mb-0.5">
@@ -263,80 +292,74 @@ function RunningTournamentRow({ tournament, isExpanded, onToggle, schedule, sche
         className="w-full flex items-center justify-between rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-0.5 gap-1 text-left hover:bg-theme-200/80 dark:hover:bg-theme-900/40 transition-colors"
       >
         <div className="flex flex-col min-w-0 flex-1">
-          <span className="text-xs text-theme-700 dark:text-theme-200 truncate">{title}</span>
-          {subtitle && <span className="text-[10px] text-theme-500 dark:text-theme-400 truncate">{subtitle}</span>}
+          <span className="text-xs text-theme-700 dark:text-theme-200 truncate">{tournament.name}</span>
+          {dateLabel && (
+            <span className="text-[10px] text-theme-400 dark:text-theme-500">{dateLabel}</span>
+          )}
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
-          <div className="flex flex-col items-end">
-            {tournament.tier && (
-              <span className="text-[10px] text-theme-500 dark:text-theme-400">
-                {TIER_LABELS[tournament.tier] ?? tournament.tier.toUpperCase()}
-              </span>
-            )}
-            {dateRange && <span className="text-[10px] text-theme-400 dark:text-theme-500">{dateRange}</span>}
-          </div>
-          <span className="text-[10px] text-theme-400 dark:text-theme-500 select-none">{isExpanded ? "▾" : "▸"}</span>
+          {tournament.tierId === 1 && (
+            <span className="text-[9px] font-semibold text-amber-500 uppercase tracking-wide">Prem</span>
+          )}
+          <span className="text-[10px] text-theme-400 dark:text-theme-500 select-none">
+            {isExpanded ? "▾" : "▸"}
+          </span>
         </div>
       </button>
 
       {isExpanded && (
         <div className="mt-px ml-1.5 border-l border-theme-300/40 dark:border-theme-700/40 pl-1.5 pt-0.5">
-          {scheduleLoading ? (
+          {isLoading ? (
             <>
+              <PulseRow />
               <PulseRow />
               <PulseRow />
             </>
           ) : (
             <>
-              {/* Participating teams */}
+              {/* Invited / participating teams — 3-column horizontal cards */}
               {teams.length > 0 && (
-                <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 mb-1.5">
+                <div className="grid grid-cols-3 gap-1 mb-2">
                   {teams.map((team) => (
-                    <div key={team.id} className="flex items-center gap-0.5 min-w-0">
-                      {team.logo ? (
-                        <img src={team.logo} alt={team.name} className="h-3 w-3 object-contain shrink-0" />
-                      ) : (
-                        <div className="h-3 w-3 shrink-0" />
-                      )}
-                      <span className="text-[9px] text-theme-600 dark:text-theme-300 truncate">{team.name}</span>
+                    <div
+                      key={team.teamId}
+                      className="flex items-center gap-1 rounded-sm bg-theme-100/50 dark:bg-theme-800/30 px-1 py-1 min-w-0"
+                    >
+                      <LogoBox src={team.logo} size="md" />
+                      <span className="text-[9px] font-medium text-theme-700 dark:text-theme-200 truncate leading-tight">
+                        {team.name}
+                      </span>
                     </div>
                   ))}
                 </div>
               )}
 
-              {/* Live now */}
-              {schedule.live.length > 0 && (
-                <>
-                  <SectionLabel>Live</SectionLabel>
-                  {schedule.live.map((m) => (
-                    <ScheduledMatchRow key={m.id} match={m} live />
+              {/* Series results */}
+              {series.length > 0 ? (
+                <div className={teams.length > 0 ? "border-t border-theme-300/20 dark:border-theme-700/20 pt-1" : ""}>
+                  {visibleSeries.map((s) => (
+                    <SeriesRow key={s.seriesId} series={s} />
                   ))}
-                </>
-              )}
-
-              {/* Upcoming matches */}
-              {schedule.upcoming.length > 0 && (
-                <>
-                  <SectionLabel>Upcoming</SectionLabel>
-                  {schedule.upcoming.map((m) => (
-                    <ScheduledMatchRow key={m.id} match={m} />
-                  ))}
-                </>
-              )}
-
-              {/* Past results */}
-              {schedule.past.length > 0 && (
-                <>
-                  <SectionLabel>Results</SectionLabel>
-                  {[...schedule.past]
-                    .sort((a, b) => (b.beginAt ?? "").localeCompare(a.beginAt ?? ""))
-                    .map((s) => (
-                      <SeriesRow key={s.id} series={s} />
-                    ))}
-                </>
-              )}
-
-              {!schedule.live.length && !schedule.upcoming.length && !schedule.past.length && (
+                  {hasMore && (
+                    <button
+                      type="button"
+                      onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                      className="w-full mt-0.5 py-0.5 text-[10px] text-theme-500 dark:text-theme-400 hover:text-theme-700 dark:hover:text-theme-200 transition-colors text-center"
+                    >
+                      Show {Math.min(remaining, PAGE_SIZE)} more of {remaining} remaining
+                    </button>
+                  )}
+                  {visibleCount > PAGE_SIZE && (
+                    <button
+                      type="button"
+                      onClick={() => setVisibleCount(PAGE_SIZE)}
+                      className="w-full py-0.5 text-[10px] text-theme-500 dark:text-theme-400 hover:text-theme-700 dark:hover:text-theme-200 transition-colors text-center"
+                    >
+                      Show less
+                    </button>
+                  )}
+                </div>
+              ) : (
                 <div className="text-[10px] text-theme-500 dark:text-theme-400 py-0.5 text-center">
                   No match data available
                 </div>
@@ -349,80 +372,29 @@ function RunningTournamentRow({ tournament, isExpanded, onToggle, schedule, sche
   );
 }
 
-function CompletedTournamentRow({ tournament, isExpanded, onToggle, series, seriesLoading }) {
-  const endedAt = tournament.endAt ? DateTime.fromISO(tournament.endAt).toRelative() : null;
-  const teams = tournament.teams ?? [];
+// ── PandaScore upcoming tournament row (no expansion) ─────────────────────────
 
-  const seasonLabel = tournament.season ? `Season ${tournament.season}` : "";
-  const title = [tournament.leagueName, seasonLabel].filter(Boolean).join(" - ");
-  const subtitle = tournament.name ?? "";
+function UpcomingTournamentRow({ tournament }) {
+  const beginAt = tournament.beginAt ? DateTime.fromISO(tournament.beginAt) : null;
+  const title = [tournament.leagueName, tournament.season ? `Season ${tournament.season}` : ""]
+    .filter(Boolean)
+    .join(" - ");
 
   return (
-    <div className="mb-0.5">
-      {/* Clickable header */}
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full flex items-center justify-between rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-0.5 gap-1 text-left hover:bg-theme-200/80 dark:hover:bg-theme-900/40 transition-colors"
-      >
-        <div className="flex flex-col min-w-0 flex-1">
-          <span className="text-xs text-theme-700 dark:text-theme-200 truncate">{title}</span>
-          {subtitle && <span className="text-[10px] text-theme-500 dark:text-theme-400 truncate">{subtitle}</span>}
-        </div>
-        <div className="flex shrink-0 items-center gap-1.5">
-          <div className="flex flex-col items-end">
-            {tournament.tier && (
-              <span className="text-[10px] text-theme-500 dark:text-theme-400">
-                {TIER_LABELS[tournament.tier] ?? tournament.tier.toUpperCase()}
-              </span>
-            )}
-            {endedAt && <span className="text-[10px] text-theme-400 dark:text-theme-500">{endedAt}</span>}
-          </div>
-          <span className="text-[10px] text-theme-400 dark:text-theme-500 select-none">{isExpanded ? "▾" : "▸"}</span>
-        </div>
-      </button>
-
-      {/* Expanded content */}
-      {isExpanded && (
-        <div className="mt-px ml-1.5 border-l border-theme-300/40 dark:border-theme-700/40 pl-1.5 pt-0.5">
-          {seriesLoading ? (
-            <>
-              <PulseRow />
-              <PulseRow />
-            </>
-          ) : (
-            <>
-              {/* Participating teams — 2-column grid */}
-              {teams.length > 0 && (
-                <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 mb-1.5">
-                  {teams.map((team) => (
-                    <div key={team.id} className="flex items-center gap-0.5 min-w-0">
-                      {team.logo ? (
-                        <img src={team.logo} alt={team.name} className="h-3 w-3 object-contain shrink-0" />
-                      ) : (
-                        <div className="h-3 w-3 shrink-0" />
-                      )}
-                      <span className="text-[9px] text-theme-600 dark:text-theme-300 truncate">{team.name}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Series results */}
-              {series.length > 0 ? (
-                <div className={teams.length > 0 ? "border-t border-theme-300/20 dark:border-theme-700/20 pt-1" : ""}>
-                  {[...series]
-                    .sort((a, b) => (b.beginAt ?? "").localeCompare(a.beginAt ?? ""))
-                    .map((s) => (
-                      <SeriesRow key={s.id} series={s} />
-                    ))}
-                </div>
-              ) : (
-                <div className="text-[10px] text-theme-500 dark:text-theme-400 py-0.5 text-center">
-                  No data available
-                </div>
-              )}
-            </>
+    <div className="flex flex-col rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-0.5 mb-0.5">
+      <div className="flex items-center justify-between gap-1">
+        <span className="text-xs text-theme-700 dark:text-theme-200 truncate">{title}</span>
+        {tournament.prizepool && (
+          <span className="shrink-0 text-[10px] text-theme-500 dark:text-theme-400">{tournament.prizepool}</span>
+        )}
+      </div>
+      {tournament.name && (
+        <div className="flex items-center justify-between gap-1">
+          <span className="text-[10px] text-theme-500 dark:text-theme-400 truncate">{tournament.name}</span>
+          {beginAt && (
+            <span className="shrink-0 text-[10px] text-theme-400 dark:text-theme-500">
+              {beginAt.toFormat("d MMM")}
+            </span>
           )}
         </div>
       )}
@@ -430,54 +402,65 @@ function CompletedTournamentRow({ tournament, isExpanded, onToggle, series, seri
   );
 }
 
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function Component({ service }) {
   const { t } = useTranslation();
   const { widget } = service;
 
-  const [expandedRunningId, setExpandedRunningId] = useState(null);
-  const [expandedCompletedId, setExpandedCompletedId] = useState(null);
+  // One tournament can be expanded at a time (across current + past sections)
+  const [expandedLeagueId, setExpandedLeagueId] = useState(null);
+  const [expandedIsCurrent, setExpandedIsCurrent] = useState(false);
 
+  // ── PandaScore: live + upcoming matches, upcoming tournaments ─────────────
   const { data: liveData, error: liveError } = useWidgetAPI(widget, "live_matches");
   const { data: upcomingData, error: upcomingError } = useWidgetAPI(widget, "upcoming_matches");
-  const { data: runningTournamentsData, error: runningTournamentsError } = useWidgetAPI(widget, "running_tournaments");
   const { data: upcomingTournamentsData, error: upcomingTournamentsError } = useWidgetAPI(
     widget,
     "upcoming_tournaments",
   );
-  const { data: completedTournamentsData } = useWidgetAPI(widget, "completed_tournaments");
 
-  // Schedule for the expanded running tournament (live + upcoming + past)
-  const { data: scheduleData, isLoading: scheduleLoading } = useSWR(
-    expandedRunningId ? `/api/widgets/dota2?tournamentId=${expandedRunningId}&mode=schedule` : null,
-    { revalidateOnFocus: false },
-  );
+  // ── DatDota: current + past tournament listing ────────────────────────────
+  const { data: leaguesData, error: leaguesError } = useSWR("/api/widgets/dota2?mode=leagues", {
+    revalidateOnFocus: false,
+  });
 
-  // Past series for the expanded completed tournament
-  const { data: expandedSeriesData, isLoading: expandedSeriesLoading } = useSWR(
-    expandedCompletedId ? `/api/widgets/dota2?tournamentId=${expandedCompletedId}` : null,
-    { revalidateOnFocus: false },
-  );
+  // ── OpenDota: lazy tournament detail on expand ────────────────────────────
+  const tournamentUrl = expandedLeagueId
+    ? `/api/widgets/dota2?mode=tournament&leagueId=${expandedLeagueId}&isCurrent=${expandedIsCurrent}`
+    : null;
+  const { data: tournamentData, isLoading: tournamentLoading } = useSWR(tournamentUrl, {
+    revalidateOnFocus: false,
+  });
+
+  // ── Derived state ─────────────────────────────────────────────────────────
+  const liveMatches = Array.isArray(liveData) ? liveData : [];
+  const upcomingMatches = Array.isArray(upcomingData) ? upcomingData : [];
+  const upcomingTournaments = Array.isArray(upcomingTournamentsData) ? upcomingTournamentsData : [];
+  const currentTournaments = Array.isArray(leaguesData?.current) ? leaguesData.current : [];
+  const pastTournaments = Array.isArray(leaguesData?.past) ? leaguesData.past : [];
+
+  const matchesLoading = !liveData && !liveError && !upcomingData && !upcomingError;
+  const tournamentsLoading = !leaguesData && !leaguesError && !upcomingTournamentsData && !upcomingTournamentsError;
+
+  const handleToggle = (leagueId, isCurrent) => {
+    if (expandedLeagueId === leagueId) {
+      setExpandedLeagueId(null);
+    } else {
+      setExpandedLeagueId(leagueId);
+      setExpandedIsCurrent(isCurrent);
+    }
+  };
 
   if (liveError && upcomingError && !liveData && !upcomingData) {
     return <Container service={service} error={liveError} />;
   }
 
-  const liveMatches = Array.isArray(liveData) ? liveData : [];
-  const upcomingMatches = Array.isArray(upcomingData) ? upcomingData : [];
-  const runningTournaments = Array.isArray(runningTournamentsData) ? runningTournamentsData : [];
-  const upcomingTournaments = Array.isArray(upcomingTournamentsData) ? upcomingTournamentsData : [];
-  const completedTournaments = Array.isArray(completedTournamentsData) ? completedTournamentsData : [];
-
-  const matchesLoading = !liveData && !liveError && !upcomingData && !upcomingError;
-  const tournamentsLoading =
-    !runningTournamentsData && !runningTournamentsError && !upcomingTournamentsData && !upcomingTournamentsError;
-
-  const emptySchedule = { live: [], upcoming: [], past: [] };
-
   return (
     <Container service={service}>
       <div className="flex flex-row w-full gap-3">
-        {/* Left panel — Matches */}
+
+        {/* ── Left panel: Matches ─────────────────────────────────────────── */}
         <div className="flex flex-col flex-1 min-w-0">
           {matchesLoading ? (
             <>
@@ -510,94 +493,67 @@ export default function Component({ service }) {
           )}
         </div>
 
-        {/* Right panel — Tournaments */}
+        {/* ── Right panel: Tournaments ────────────────────────────────────── */}
         <div className="flex flex-col flex-1 min-w-0">
           {tournamentsLoading ? (
             <>
-              <SectionLabel>{t("dota2.ongoing", "Ongoing")}</SectionLabel>
-              <PulseRow />
               <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
+              <PulseRow />
+              <SectionLabel>{t("dota2.ongoing", "Ongoing")}</SectionLabel>
               <PulseRow />
               <PulseRow />
             </>
           ) : (
             <>
-              {runningTournaments.length > 0 && (
-                <>
-                  <SectionLabel>{t("dota2.ongoing", "Ongoing")}</SectionLabel>
-                  {runningTournaments.map((tournament) => (
-                    <RunningTournamentRow
-                      key={tournament.id}
-                      tournament={tournament}
-                      isExpanded={expandedRunningId === tournament.id}
-                      onToggle={() => setExpandedRunningId((prev) => (prev === tournament.id ? null : tournament.id))}
-                      schedule={expandedRunningId === tournament.id ? (scheduleData ?? emptySchedule) : emptySchedule}
-                      scheduleLoading={expandedRunningId === tournament.id && scheduleLoading}
-                    />
-                  ))}
-                </>
-              )}
-
+              {/* PandaScore upcoming tournaments */}
               {upcomingTournaments.length > 0 && (
                 <>
                   <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
                   {upcomingTournaments.map((tournament) => (
-                    <div
-                      key={tournament.id}
-                      className="flex flex-col rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-0.5 mb-0.5"
-                    >
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="text-xs text-theme-700 dark:text-theme-200 truncate">
-                          {[tournament.leagueName, tournament.season ? `Season ${tournament.season}` : ""]
-                            .filter(Boolean)
-                            .join(" - ")}
-                        </span>
-                        {tournament.prizepool && (
-                          <span className="shrink-0 text-[10px] text-theme-500 dark:text-theme-400">
-                            {tournament.prizepool}
-                          </span>
-                        )}
-                      </div>
-                      {tournament.name && (
-                        <div className="flex items-center justify-between gap-1">
-                          <span className="text-[10px] text-theme-500 dark:text-theme-400 truncate">
-                            {tournament.name}
-                          </span>
-                          {tournament.beginAt && (
-                            <span className="shrink-0 text-[10px] text-theme-400 dark:text-theme-500">
-                              {DateTime.fromISO(tournament.beginAt).toFormat("d MMM")}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                    <UpcomingTournamentRow key={tournament.id} tournament={tournament} />
                   ))}
                 </>
               )}
 
-              {completedTournaments.length > 0 && (
+              {/* DatDota current (ongoing) tournaments */}
+              {currentTournaments.length > 0 && (
                 <>
-                  <SectionLabel>{t("dota2.completed", "Completed")}</SectionLabel>
-                  {completedTournaments.map((tournament) => (
-                    <CompletedTournamentRow
-                      key={tournament.id}
+                  <SectionLabel>{t("dota2.ongoing", "Ongoing")}</SectionLabel>
+                  {currentTournaments.map((tournament) => (
+                    <TournamentRow
+                      key={tournament.leagueId}
                       tournament={tournament}
-                      isExpanded={expandedCompletedId === tournament.id}
-                      onToggle={() =>
-                        setExpandedCompletedId((prev) => (prev === tournament.id ? null : tournament.id))
-                      }
-                      series={expandedCompletedId === tournament.id ? (expandedSeriesData?.series ?? []) : []}
-                      seriesLoading={expandedCompletedId === tournament.id && expandedSeriesLoading}
+                      isExpanded={expandedLeagueId === tournament.leagueId}
+                      onToggle={() => handleToggle(tournament.leagueId, true)}
+                      data={expandedLeagueId === tournament.leagueId ? tournamentData : null}
+                      isLoading={expandedLeagueId === tournament.leagueId && tournamentLoading}
                     />
                   ))}
                 </>
               )}
 
-              {!runningTournamentsError &&
+              {/* DatDota past tournaments */}
+              {pastTournaments.length > 0 && (
+                <>
+                  <SectionLabel>{t("dota2.completed", "Completed")}</SectionLabel>
+                  {pastTournaments.map((tournament) => (
+                    <TournamentRow
+                      key={tournament.leagueId}
+                      tournament={tournament}
+                      isExpanded={expandedLeagueId === tournament.leagueId}
+                      onToggle={() => handleToggle(tournament.leagueId, false)}
+                      data={expandedLeagueId === tournament.leagueId ? tournamentData : null}
+                      isLoading={expandedLeagueId === tournament.leagueId && tournamentLoading}
+                    />
+                  ))}
+                </>
+              )}
+
+              {!leaguesError &&
                 !upcomingTournamentsError &&
-                runningTournaments.length === 0 &&
                 upcomingTournaments.length === 0 &&
-                completedTournaments.length === 0 && (
+                currentTournaments.length === 0 &&
+                pastTournaments.length === 0 && (
                   <div className="text-[10px] text-theme-500 dark:text-theme-400 text-center py-1">
                     {t("dota2.noTournaments", "No tournaments")}
                   </div>
