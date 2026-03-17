@@ -128,7 +128,7 @@ function SeriesRow({ series }) {
         onClick={() => setExpanded((e) => !e)}
         className="w-full flex items-center gap-1.5 px-2 py-1.5 hover:bg-theme-200/50 dark:hover:bg-theme-900/30 transition-colors"
       >
-        {/* FINISHED label + date + time */}
+        {/* FINISHED label + date, time */}
         <div className="flex flex-col shrink-0 items-start">
           <span className="text-[8px] font-bold uppercase tracking-wide text-theme-500 dark:text-theme-400 leading-none">
             Finished
@@ -141,34 +141,38 @@ function SeriesRow({ series }) {
         </div>
 
         {/* Team 1: name + logo */}
-        <div className="flex items-center gap-1 flex-1 min-w-0 justify-end">
+        <div className="flex items-center gap-1.5 flex-1 min-w-0 justify-end">
           <span className={`${nameClass(team1Won)} text-right`}>{team1Name}</span>
           <LogoBox src={team1Logo} size="md" />
         </div>
 
-        {/* Centre: team1 pips | vs | team2 pips */}
-        <div className="flex items-center gap-1 shrink-0">
-          <div className="flex flex-col gap-0.5">
-            {Array.from({ length: pipCount }, (_, i) => (
-              <span
-                key={i}
-                className={`block w-1.5 h-1.5 rounded-full ${i < team1Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
-              />
-            ))}
-          </div>
-          <span className="text-[9px] text-theme-400 dark:text-theme-500 leading-none">vs</span>
-          <div className="flex flex-col gap-0.5">
-            {Array.from({ length: pipCount }, (_, i) => (
-              <span
-                key={i}
-                className={`block w-1.5 h-1.5 rounded-full ${i < team2Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
-              />
-            ))}
+        {/* Centre: pips + vs stacked */}
+        <div className="flex flex-col items-center gap-0.5 shrink-0 px-1">
+          <div className="flex items-center gap-1.5">
+            {/* Team 1 pips */}
+            <div className="flex flex-col gap-0.5">
+              {Array.from({ length: pipCount }, (_, i) => (
+                <span
+                  key={i}
+                  className={`block w-1.5 h-1.5 rounded-full ${i < team1Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
+                />
+              ))}
+            </div>
+            <span className="text-[9px] font-medium text-theme-500 dark:text-theme-400 leading-none">vs</span>
+            {/* Team 2 pips */}
+            <div className="flex flex-col gap-0.5">
+              {Array.from({ length: pipCount }, (_, i) => (
+                <span
+                  key={i}
+                  className={`block w-1.5 h-1.5 rounded-full ${i < team2Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Team 2: logo + name */}
-        <div className="flex items-center gap-1 flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 flex-1 min-w-0">
           <LogoBox src={team2Logo} size="md" />
           <span className={nameClass(team2Won)}>{team2Name}</span>
         </div>
@@ -181,7 +185,7 @@ function SeriesRow({ series }) {
         )}
 
         {/* Expand toggle */}
-        <span className="shrink-0 text-xs font-bold text-theme-400 dark:text-theme-500 select-none w-3 text-center leading-none">
+        <span className="shrink-0 text-sm font-bold text-theme-400 dark:text-theme-500 select-none w-4 text-center leading-none">
           {expanded ? "−" : "+"}
         </span>
       </button>
