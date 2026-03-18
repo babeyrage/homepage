@@ -12,7 +12,7 @@
         widget:
             type: cisa
 
-    - CALENDAR:
+    - Calendar:
         widget:
             type: calendar
             firstDayInWeek: monday
@@ -27,7 +27,7 @@
                   color: amber
 
 - NEWS:
-    - SECURITY NEWS:
+    - Security News:
         widget:
             type: iframe
             src: http://{{HOMEPAGE_VAR_GLANCE_URL}}:{{HOMEPAGE_VAR_GLANCE_PORT}}
@@ -38,7 +38,7 @@
 
 - INFO:
     - MEDIA-INFO: 
-        - PLEX:
+        - Plex:
             icon: plex.svg
             href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}/web
             proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
@@ -50,7 +50,7 @@
                 key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
                 enableImageProxy: true
 
-        - UPCOMING RELEASES:
+        - Upcoming Releases:
             icon: notion-calendar.svg
             widget:
                 type: calendar
@@ -69,7 +69,7 @@
                       color: amber
     
     - DOTA 2:
-        - DOTA 2: 
+        - Dota 2: 
             href: https://www.dota2.com
             widget:
                 type: dota2
