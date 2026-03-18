@@ -8,3 +8,427 @@ iframe {
   height: 905px;
   margin: 0 0 -40px;
 }
+
+/* ============================================================
+   OPTION A: CYAN/BLUE TECH — DARK GLASSMORPHISM
+   ============================================================ */
+
+/* ─── Custom Properties ─── */
+:root {
+  --accent:      6 182 212;     /* cyan-500 */
+  --card-bg:     255 255 255 / 4%;
+  --card-border: 255 255 255 / 7%;
+  --ease:        200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Subtle Page Background Gradient ─── */
+#__next::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgb(var(--accent) / 6%) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 80% 90%, rgb(59 130 246 / 5%) 0%, transparent 50%);
+}
+
+/* ─── Service Cards ─── */
+.service-card {
+  background: rgb(var(--card-bg)) !important;
+  border: 1px solid rgb(var(--card-border)) !important;
+  border-radius: 12px !important;
+  transition: border-color var(--ease), box-shadow var(--ease) !important;
+}
+
+.service-card:hover {
+  background: rgb(var(--card-bg)) !important;
+  border-color: rgb(var(--accent) / 40%) !important;
+  box-shadow:
+    0 0 0 1px rgb(var(--accent) / 10%),
+    0 0 16px rgb(var(--accent) / 12%) !important;
+  transform: none !important;
+}
+
+/* ─── Service Description — slightly softer ─── */
+.service-description {
+  opacity: 0.55;
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+}
+
+/* ─── Group / Section Headers ─── */
+.service-group-name,
+.bookmark-group-name {
+  font-size: 0.62rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: rgb(var(--accent) / 65%) !important;
+}
+
+/* ─── Status / Ping Tags ─── */
+.service-tag {
+  border-radius: 6px !important;
+  font-size: 0.62rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+}
+
+/* ─── Tab Bar ─── */
+#myTab button {
+  font-size: 0.68rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  border-radius: 6px !important;
+  position: relative;
+  transition: color var(--ease), background var(--ease) !important;
+}
+
+#myTab button[aria-selected="true"] {
+  color: rgb(var(--accent)) !important;
+}
+
+#myTab button[aria-selected="true"]::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: rgb(var(--accent));
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgb(var(--accent) / 70%);
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 4px !important;
+  height: 4px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--accent) / 25%) !important;
+  border-radius: 99px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--accent) / 55%) !important;
+}
+
+/* ─── Text Selection ─── */
+::selection {
+  background: rgb(var(--accent) / 25%);
+  color: rgb(var(--accent));
+}
+
+/* ─── Focus Rings ─── */
+:focus-visible {
+  outline: 2px solid rgb(var(--accent) / 70%) !important;
+  outline-offset: 2px !important;
+  border-radius: 6px;
+}
+
+/* ─── Bookmark Links ─── */
+.bookmark a {
+  background: rgb(var(--card-bg)) !important;
+  border: 1px solid rgb(var(--card-border)) !important;
+  border-radius: 10px !important;
+  transition: border-color var(--ease), box-shadow var(--ease) !important;
+  overflow: hidden;
+}
+
+.bookmark a:hover {
+  background: rgb(var(--card-bg)) !important;
+  border-color: rgb(var(--accent) / 30%) !important;
+  box-shadow: inset 3px 0 0 rgb(var(--accent) / 70%) !important;
+}
+
+.bookmark-name {
+  font-size: 0.72rem !important;
+  font-weight: 500 !important;
+  transition: color var(--ease);
+}
+
+.bookmark a:hover .bookmark-name {
+  color: rgb(var(--accent)) !important;
+}
+
+.bookmark-description {
+  font-size: 0.65rem !important;
+  opacity: 0.45 !important;
+}
+
+.bookmark-icon {
+  background: rgb(var(--accent) / 8%) !important;
+  border-right: 1px solid rgb(var(--card-border)) !important;
+}
+
+/* ─── Info Widgets (weather, clock, resources) ─── */
+[class*="information-widget"] {
+  background: rgb(var(--card-bg)) !important;
+  border: 1px solid rgb(var(--card-border)) !important;
+  border-radius: 10px !important;
+  padding: 0.35rem 0.75rem !important;
+}
+
+/* ─── Stats / Metrics — monospace numbers ─── */
+.service-container,
+.service-container * {
+  font-variant-numeric: tabular-nums;
+}
+
+.service-container [class*="text-"] {
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", monospace !important;
+  font-size: 0.7rem !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* ─── Ping Dot — pulse animation ─── */
+@keyframes ping-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+  50%       { opacity: 0.8; box-shadow: 0 0 0 4px transparent; }
+}
+
+.ping-status .rounded-full {
+  animation: ping-pulse 2.5s ease-in-out infinite;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* ─── Footer ─── */
+#footer {
+  opacity: 0.25;
+  transition: opacity var(--ease);
+}
+
+#footer:hover {
+  opacity: 0.6;
+}
+
+/* ─── Search Bar ─── */
+.information-widget-search input,
+.information-widget-search [role="combobox"] {
+  border-radius: 99px !important;
+  border-color: rgb(var(--card-border)) !important;
+  background: rgb(var(--card-bg)) !important;
+  transition: border-color var(--ease), box-shadow var(--ease) !important;
+}
+
+.information-widget-search input:focus,
+.information-widget-search [role="combobox"]:focus {
+  border-color: rgb(var(--accent) / 60%) !important;
+  box-shadow: 0 0 0 3px rgb(var(--accent) / 15%), 0 0 12px rgb(var(--accent) / 10%) !important;
+  outline: none !important;
+}
+
+/* ─── Background Dot Grid ─── */
+#__next::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgb(255 255 255 / 4%) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, black 20%, transparent 80%);
+}
+
+/* ─── Resource Usage Bars ─── */
+.resource-usage {
+  background: rgb(255 255 255 / 8%) !important;
+  height: 3px !important;
+  border-radius: 99px !important;
+}
+
+.resource-usage > div {
+  background: linear-gradient(90deg, rgb(var(--accent) / 70%), rgb(var(--accent))) !important;
+  height: 3px !important;
+  border-radius: 99px !important;
+  box-shadow: 0 0 6px rgb(var(--accent) / 40%);
+}
+
+/* ─── Service Icon Area ─── */
+.service-icon {
+  background: rgb(var(--accent) / 6%) !important;
+  border-right: 1px solid rgb(var(--card-border)) !important;
+  border-radius: 10px 0 0 10px !important;
+}
+
+/* ─── Page Load Fade-in ─── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.services-group {
+  animation: fade-up 0.35s var(--ease) both;
+}
+
+.services-group:nth-child(1)  { animation-delay: 0ms; }
+.services-group:nth-child(2)  { animation-delay: 50ms; }
+.services-group:nth-child(3)  { animation-delay: 100ms; }
+.services-group:nth-child(4)  { animation-delay: 150ms; }
+.services-group:nth-child(5)  { animation-delay: 200ms; }
+.services-group:nth-child(6)  { animation-delay: 250ms; }
+.services-group:nth-child(7)  { animation-delay: 300ms; }
+.services-group:nth-child(8)  { animation-delay: 350ms; }
+.services-group:nth-child(9)  { animation-delay: 400ms; }
+.services-group:nth-child(10) { animation-delay: 450ms; }
+
+.bookmark-group {
+  animation: fade-up 0.35s var(--ease) both;
+  animation-delay: 200ms;
+}
+
+/* ─── Inactive Tab Hover ─── */
+#myTab button:not([aria-selected="true"]):hover {
+  background: rgb(255 255 255 / 5%) !important;
+  color: rgb(255 255 255 / 75%) !important;
+}
+
+/* ─── Status Tag — Coloured Backgrounds ─── */
+/* UP (emerald) */
+.ping-status:has([class*="emerald"]) {
+  background: rgb(16 185 129 / 12%) !important;
+  border: 1px solid rgb(16 185 129 / 25%) !important;
+  border-radius: 6px !important;
+}
+
+/* DOWN (rose) */
+.ping-status:has([class*="rose"]) {
+  background: rgb(244 63 94 / 12%) !important;
+  border: 1px solid rgb(244 63 94 / 25%) !important;
+  border-radius: 6px !important;
+}
+
+/* Unknown / loading */
+.ping-status:has([class*="opacity-20"]) {
+  background: rgb(255 255 255 / 4%) !important;
+  border: 1px solid rgb(255 255 255 / 8%) !important;
+  border-radius: 6px !important;
+}
+
+/* ─── Service Icon — desaturate at rest, pop on hover ─── */
+.service-icon img,
+.service-icon svg {
+  filter: saturate(0.55) brightness(0.8);
+  transition: filter var(--ease);
+}
+
+.service-card:hover .service-icon img,
+.service-card:hover .service-icon svg {
+  filter: saturate(1) brightness(1);
+}
+
+/* ─── Subgroup Containers ─── */
+
+.services-group.subgroup .service-group-name {
+  color: rgb(var(--accent) / 65%) !important;
+  font-size: 0.58rem !important;
+  letter-spacing: 0.1em !important;
+}
+
+/* ─── Service Stats Panel ─── */
+.service-stats {
+  border-top: 1px solid rgb(var(--card-border)) !important;
+  background: rgb(0 0 0 / 15%) !important;
+  border-radius: 0 0 10px 10px !important;
+  padding: 0.4rem 0.6rem !important;
+}
+
+/* ─── Tab Content Fade ─── */
+#services,
+#bookmarks,
+#layout-groups {
+  animation: fade-up 0.25s var(--ease) both;
+}
+
+/* ─── Datetime Widget — monospace digits ─── */
+.information-widget-datetime span {
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", monospace !important;
+  letter-spacing: -0.02em !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── color-scheme ─── */
+:root {
+  color-scheme: dark;
+}
+
+/* ─── Info Widget Hover Glow ─── */
+[class*="information-widget"] {
+  transition: border-color var(--ease), box-shadow var(--ease) !important;
+}
+
+[class*="information-widget"]:hover {
+  border-color: rgb(var(--accent) / 40%) !important;
+  box-shadow:
+    0 0 0 1px rgb(var(--accent) / 10%),
+    0 0 16px rgb(var(--accent) / 12%) !important;
+}
+
+/* ─── Bookmark Icon Desaturation ─── */
+.bookmark-icon img,
+.bookmark-icon svg {
+  filter: saturate(0.55) brightness(0.8);
+  transition: filter var(--ease);
+}
+
+.bookmark a:hover .bookmark-icon img,
+.bookmark a:hover .bookmark-icon svg {
+  filter: saturate(1) brightness(1);
+}
+
+/* ─── Active / Press States ─── */
+.service-card:active {
+  opacity: 0.75 !important;
+  transition: opacity 60ms ease !important;
+}
+
+.bookmark a:active {
+  opacity: 0.75 !important;
+  transition: opacity 60ms ease !important;
+}
+
+#myTab button:active {
+  opacity: 0.65 !important;
+  transition: opacity 60ms ease !important;
+}
+
+/* ─── Site Monitor Status — Coloured Backgrounds ─── */
+/* UP (emerald) */
+.site-monitor-status:has([class*="emerald"]) {
+  background: rgb(16 185 129 / 12%) !important;
+  border: 1px solid rgb(16 185 129 / 25%) !important;
+  border-radius: 6px !important;
+}
+
+/* DOWN / error (rose) */
+.site-monitor-status:has([class*="rose"]) {
+  background: rgb(244 63 94 / 12%) !important;
+  border: 1px solid rgb(244 63 94 / 25%) !important;
+  border-radius: 6px !important;
+}
+
+/* Unknown / loading */
+.site-monitor-status:has([class*="opacity-20"]) {
+  background: rgb(255 255 255 / 4%) !important;
+  border: 1px solid rgb(255 255 255 / 8%) !important;
+  border-radius: 6px !important;
+}
+
+/* ─── Reduced Motion — accessibility ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
