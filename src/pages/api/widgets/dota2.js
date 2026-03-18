@@ -84,6 +84,7 @@ function reconstructSeries(matches) {
       team1Score: t1IsRadiant ? m.radiant_score : m.dire_score,
       team2Score: t1IsRadiant ? m.dire_score : m.radiant_score,
       winnerId: t1Won ? s.team1Id : s.team2Id,
+      team1IsRadiant: t1IsRadiant,
     });
   }
 
@@ -98,7 +99,7 @@ function reconstructSeries(matches) {
 }
 
 export default async function handler(req, res) {
-  const { mode, leagueId, isCurrent } = req.query;
+  const { mode, leagueId, isCurrent, matchId } = req.query;
 
   // ── mode=leagues ─────────────────────────────────────────────────────────────
   // Fetches DatDota league list, filters to PREMIUM/PROFESSIONAL within the last
@@ -168,6 +169,64 @@ export default async function handler(req, res) {
     } catch (e) {
       logger.error("OpenDota tournament fetch failed (leagueId=%s): %s", leagueId, e);
       return res.status(500).json({ error: "Failed to fetch tournament data" });
+    }
+  }
+
+  // ── mode=match ────────────────────────────────────────────────────────────────
+  // Fetches full match detail + heroes list, returns hero picks per side and
+  // first-pick team. Heroes list is cached for 24 h; match data for 60 min
+  // (completed matches never change but long TTL avoids redundant requests).
+  if (mode === "match") {
+    if (!matchId || !/^\d+$/.test(matchId)) {
+      return res.status(400).json({ error: "Missing or invalid matchId" });
+    }
+
+    try {
+      const [matchRaw, heroesRaw] = await Promise.all([
+        cachedRequest(`${OPENDOTA_BASE}/matches/${matchId}`, 60),
+        cachedRequest(`${OPENDOTA_BASE}/heroes`, 1440),
+      ]);
+
+      // Build hero lookup: id → { id, name, img }
+      const heroMap = new Map();
+      if (Array.isArray(heroesRaw)) {
+        for (const h of heroesRaw) {
+          const shortName = h.name?.replace("npc_dota_hero_", "") ?? "";
+          heroMap.set(h.id, {
+            id: h.id,
+            name: h.localized_name ?? shortName,
+            img: shortName
+              ? `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${shortName}.png`
+              : null,
+          });
+        }
+      }
+
+      // picks_bans filtered to picks only, sorted by draft order
+      const picks = Array.isArray(matchRaw.picks_bans)
+        ? matchRaw.picks_bans.filter((p) => p.is_pick).sort((a, b) => a.order - b.order)
+        : [];
+
+      const toHero = (p) => heroMap.get(p.hero_id) ?? { id: p.hero_id, name: "", img: null };
+      const radiantPicks = picks.filter((p) => p.team === 0).map(toHero);
+      const direPicks = picks.filter((p) => p.team === 1).map(toHero);
+
+      // First pick = team of the lowest-order pick entry (null if no draft data)
+      const firstPickIsRadiant = picks.length > 0 ? picks[0].team === 0 : null;
+
+      return res.json({
+        matchId: matchRaw.match_id,
+        duration: matchRaw.duration,
+        radiantScore: matchRaw.radiant_score,
+        direScore: matchRaw.dire_score,
+        radiantWin: matchRaw.radiant_win,
+        firstPickIsRadiant,
+        radiantPicks,
+        direPicks,
+      });
+    } catch (e) {
+      logger.error("OpenDota match fetch failed (matchId=%s): %s", matchId, e);
+      return res.status(500).json({ error: "Failed to fetch match data" });
     }
   }
 
