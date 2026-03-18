@@ -1,0 +1,10 @@
+iframe {
+  width: 100%;
+  border: 0;
+  background-color: transparent;
+}
+
+.glance {
+  height: 905px;
+  margin: 0 0 -40px;
+}

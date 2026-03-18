@@ -17,6 +17,7 @@ import calibreweb from "./calibreweb/widget";
 import changedetectionio from "./changedetectionio/widget";
 import channelsdvrserver from "./channelsdvrserver/widget";
 import checkmk from "./checkmk/widget";
+import cisa from "./cisa/widget";
 import cloudflared from "./cloudflared/widget";
 import coinmarketcap from "./coinmarketcap/widget";
 import crowdsec from "./crowdsec/widget";
@@ -83,6 +84,7 @@ import netdata from "./netdata/widget";
 import nextcloud from "./nextcloud/widget";
 import nextdns from "./nextdns/widget";
 import npm from "./npm/widget";
+import nvd from "./nvd/widget";
 import nzbget from "./nzbget/widget";
 import octoprint from "./octoprint/widget";
 import omada from "./omada/widget";
@@ -172,6 +174,7 @@ const widgets = {
   changedetectionio,
   channelsdvrserver,
   checkmk,
+  cisa,
   cloudflared,
   coinmarketcap,
   crowdsec,
@@ -241,6 +244,7 @@ const widgets = {
   nextcloud,
   nextdns,
   npm,
+  nvd,
   nzbget,
   octoprint,
   omada,

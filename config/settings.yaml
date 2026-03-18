@@ -2,37 +2,94 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/settings/
 
+###### GLOBAL SETTINGS ######
 fiveColumns: true
 useEqualHeights: true
 theme: dark
-# color: gray  # Must be 'gray' for custom.css Dracula theme - it targets .theme-gray selector
 cardBlur: xl
 headerStyle: clean
+hideVersion: true
 
+###### LAYOUT SETTINGS ######
 layout:
-  Info:
+  INFO:
+    tab: HOMELAB
     header: false
     style: row
     columns: 2
     useEqualHeights: false
     
-    Media-Info: 
+    MEDIA-INFO: 
       header: false
       style: row
       columns: 2
-    Dota 2:
+    DOTA 2:
       header: false
       style: row
       columns: 1
     
-  ARR Stack:
+  ARR STACK:
+    header: false
+    tab: HOMELAB
     style: row
     columns: 4
 
-  Servers:
+  SERVERS:
+    tab: HOMELAB
     style: row
     columns: 3
-    
+
+  HOME NETWORK:
+    header: false
+    tab: HOMELAB
+    style: row
+    columns: 4
+
+    DOWNLOADS:
+      tab: HOMELAB
+      style: column
+
+    NETWORK:
+      tab: HOMELAB
+      style: column
+
+    MONITORING:
+      tab: HOMELAB
+      style: column
+
+  SECURITY INFO:
+    tab: WORK
+    header: false
+    style: row
+    columns: 3
+  
+  NEWS:
+    tab: WORK
+    header: false
+    style: row
+    columns: 1
+
+###### BOOKMARKS ######
+### HOMELAB ###
+  DEVELOPER:
+    tab: HOMELAB
+  ENTERTAINMENT:
+    tab: HOMELAB
+
+### WORK ###
+  ESN:
+    tab: WORK
+  M365:
+    tab: WORK
+  CONNECTWISE:
+    tab: WORK
+  CYBER:
+    tab: WORK
+  DOMAINS/DNS:
+    tab: WORK
+  OSINT:
+    tab: WORK
+
 providers:
   finnhub: {{HOMEPAGE_VAR_FINNHUB_TOKEN}}
   # openweathermap: {{HOMEPAGE_VAR_OPENWEATHERMAP_TOKEN}}

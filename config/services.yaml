@@ -2,9 +2,43 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/services/
 
-- Info:
-    - Media-Info: 
-        - Plex:
+- SECURITY INFO:
+    - NVD CVEs:
+        href: https://nvd.nist.gov/vuln/search#/nvd/home?resultType=records
+        widget:
+            type: nvd
+    
+    - CISA KEV:
+        widget:
+            type: cisa
+
+    - CALENDAR:
+        widget:
+            type: calendar
+            firstDayInWeek: monday
+            view: monthly
+            maxEvents: 10
+            showTime: true
+            timezone: Australia/Perth
+            integrations:
+                - type: ical 
+                  url: https://outlook.office365.com/owa/calendar/cf79f7b88baf4c8987bba3da31c59a8b@esngroup.com.au/983fb84d0b7046cbacbf7c71e801779b2518182617876278773/calendar.ics
+                  name: Work
+                  color: amber
+
+- NEWS:
+    - SECURITY NEWS:
+        widget:
+            type: iframe
+            src: http://{{HOMEPAGE_VAR_GLANCE_URL}}:{{HOMEPAGE_VAR_GLANCE_PORT}}
+            classes: glance
+            loadingStrategy: lazy
+            referrerPolicy: same-origin
+            allowPolicy: fullscreen
+
+- INFO:
+    - MEDIA-INFO: 
+        - PLEX:
             icon: plex.svg
             href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}/web
             proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
@@ -16,7 +50,7 @@
                 key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
                 enableImageProxy: true
 
-        - Upcoming Releases:
+        - UPCOMING RELEASES:
             icon: notion-calendar.svg
             widget:
                 type: calendar
@@ -26,22 +60,22 @@
                 timezone: Australia/Perth
                 integrations:
                     - type: sonarr
-                      service_group: ARR Stack
+                      service_group: ARR STACK
                       service_name: Sonarr
                       color: teal
                     - type: radarr
-                      service_group: ARR Stack
+                      service_group: ARR STACK
                       service_name: Radarr
                       color: amber
     
-    - Dota 2:
-        - Dota 2: 
+    - DOTA 2:
+        - DOTA 2: 
             href: https://www.dota2.com
             widget:
                 type: dota2
                 key: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
 
-- ARR Stack:
+- ARR STACK:
     - Radarr:
         icon: radarr.svg
         href: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
@@ -113,7 +147,7 @@
             password: "{{HOMEPAGE_VAR_DISPATCHARR_PASSWORD}}"
             enableActiveStreams: true
 
-- Servers:
+- SERVERS:
     - Zues Proxmox:
         icon: proxmox.svg
         href: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
@@ -136,124 +170,125 @@
 
     - VPS:
         icon: sh-univention-corporate-server.svg
+        
+- HOME NETWORK:
+    - DOWNLOADS:
+        - QBittorrent:
+            icon: qbittorrent.svg
+            href: http://{{HOMEPAGE_VAR_QBIT_URL}}:{{HOMEPAGE_VAR_QBIT_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_QBIT_VMID}}"
+            proxmoxType: lxc
+            widget:
+                type: qbittorrent
+                url: http://{{HOMEPAGE_VAR_QBIT_URL}}:{{HOMEPAGE_VAR_QBIT_PORT}}
+                username: "{{HOMEPAGE_VAR_QBIT_USER}}"
+                password: "{{HOMEPAGE_VAR_QBIT_PASSWORD}}"
 
-- Downloads:
-    - QBittorrent:
-        icon: qbittorrent.svg
-        href: http://{{HOMEPAGE_VAR_QBIT_URL}}:{{HOMEPAGE_VAR_QBIT_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_QBIT_VMID}}"
-        proxmoxType: lxc
-        widget:
-            type: qbittorrent
-            url: http://{{HOMEPAGE_VAR_QBIT_URL}}:{{HOMEPAGE_VAR_QBIT_PORT}}
-            username: "{{HOMEPAGE_VAR_QBIT_USER}}"
-            password: "{{HOMEPAGE_VAR_QBIT_PASSWORD}}"
+        - SABnzbd:
+            icon: sabnzbd.svg
+            href: http://{{HOMEPAGE_VAR_SABZNDB_URL}}:{{HOMEPAGE_VAR_SABZNDB_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_SABZNDB_VMID}}"
+            proxmoxType: lxc
+            widget:
+                type: sabnzbd
+                url: http://{{HOMEPAGE_VAR_SABZNDB_URL}}:{{HOMEPAGE_VAR_SABZNDB_PORT}}
+                key: "{{HOMEPAGE_VAR_SABZNDB_API_KEY}}"
 
-    - SABnzbd:
-        icon: sabnzbd.svg
-        href: http://{{HOMEPAGE_VAR_SABZNDB_URL}}:{{HOMEPAGE_VAR_SABZNDB_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_SABZNDB_VMID}}"
-        proxmoxType: lxc
-        widget:
-            type: sabnzbd
-            url: http://{{HOMEPAGE_VAR_SABZNDB_URL}}:{{HOMEPAGE_VAR_SABZNDB_PORT}}
-            key: "{{HOMEPAGE_VAR_SABZNDB_API_KEY}}"
+    - NETWORK:
+        - Pi-Hole:
+            icon: pi-hole.svg
+            href: http://{{HOMEPAGE_VAR_PIHOLE_URL}}:{{HOMEPAGE_VAR_PIHOLE_PORT}}/admin
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_PIHOLE_VMID}}"
+            proxmoxType: lxc
+            widget:
+                type: pihole
+                url: http://{{HOMEPAGE_VAR_PIHOLE_URL}}
+                version: 6
 
-- Network:
-    - Pi-Hole:
-        icon: pi-hole.svg
-        href: http://{{HOMEPAGE_VAR_PIHOLE_URL}}:{{HOMEPAGE_VAR_PIHOLE_PORT}}/admin
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_PIHOLE_VMID}}"
-        proxmoxType: lxc
-        widget:
-            type: pihole
-            url: http://{{HOMEPAGE_VAR_PIHOLE_URL}}
-            version: 6
+        - Speedtest Tracker:
+            icon: speedtest-tracker.png
+            href: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_SPEEDTEST_VMID}}"
+            proxmoxType: lxc
+            widget:
+                type: speedtest
+                url: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
+                version: 2
+                key: "{{HOMEPAGE_VAR_SPEEDTEST_API_KEY}}"
 
-    - Speedtest Tracker:
-        icon: speedtest-tracker.png
-        href: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_SPEEDTEST_VMID}}"
-        proxmoxType: lxc
-        widget:
-            type: speedtest
-            url: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
-            version: 2
-            key: "{{HOMEPAGE_VAR_SPEEDTEST_API_KEY}}"
+        - Traefik:
+            icon: traefik.svg
+            href: http://{{HOMEPAGE_VAR_TRAEFIK_URL}}:{{HOMEPAGE_VAR_TRAEFIK_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_TRAEFIK_VMID}}"
+            proxmoxType: lxc
+            # widget:
+            #     type: traefik
+            #     url: http://{{HOMEPAGE_VAR_TRAEFIK_URL}}:{{HOMEPAGE_VAR_TRAEFIK_PORT}}
+            #     username: "{{HOMEPAGE_VAR_TRAEFIK_USER}}"
+            #     password: "{{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}"
 
-    - Traefik:
-        icon: traefik.svg
-        href: http://{{HOMEPAGE_VAR_TRAEFIK_URL}}:{{HOMEPAGE_VAR_TRAEFIK_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_TRAEFIK_VMID}}"
-        proxmoxType: lxc
-        # widget:
-        #     type: traefik
-        #     url: http://{{HOMEPAGE_VAR_TRAEFIK_URL}}:{{HOMEPAGE_VAR_TRAEFIK_PORT}}
-        #     username: "{{HOMEPAGE_VAR_TRAEFIK_USER}}"
-        #     password: "{{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}"
+        - Unifi:
+            icon: unifi.svg
+            href: http://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_UNIFI_VMID}}"
+            proxmoxType: lxc
+            # widget:
+            #     type: unifi
+            #     url: https://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
+            #     site: Site Name
+            #     key: "{{HOMEPAGE_VAR_UNIFI_API_KEY}}"
 
-    - UniFi:
-        icon: unifi.svg
-        href: http://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_UNIFI_VMID}}"
-        proxmoxType: lxc
-        # widget:
-        #     type: unifi
-        #     url: https://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
-        #     site: Site Name
-        #     key: "{{HOMEPAGE_VAR_UNIFI_API_KEY}}"
+    #     - EdgeSwitch:
+    #         icon: ubiquiti.svg
+    #         href: https://{{HOMEPAGE_VAR_SWITCH_URL}}:{{HOMEPAGE_VAR_SWITCH_PORT}}
 
-#     - EdgeSwitch:
-#         icon: ubiquiti.svg
-#         href: https://{{HOMEPAGE_VAR_SWITCH_URL}}:{{HOMEPAGE_VAR_SWITCH_PORT}}
+    - MONITORING:
+        - Notifiarr:
+            icon: notifiarr.svg
+            href: http://{{HOMEPAGE_VAR_NOTIFIARR_URL}}:{{HOMEPAGE_VAR_NOTIFIARR_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_NOTIFIARR_VMID}}"
+            proxmoxType: lxc
 
-- Monitoring:
-    - Notifiarr:
-        icon: notifiarr.svg
-        href: http://{{HOMEPAGE_VAR_NOTIFIARR_URL}}:{{HOMEPAGE_VAR_NOTIFIARR_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_NOTIFIARR_VMID}}"
-        proxmoxType: lxc
+        - Pulse:
+            icon: pulse.svg
+            href: http://{{HOMEPAGE_VAR_PULSE_URL}}:{{HOMEPAGE_VAR_PULSE_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_PULSE_VMID}}"
+            proxmoxType: lxc
 
-    - Pulse:
-        icon: pulse.svg
-        href: http://{{HOMEPAGE_VAR_PULSE_URL}}:{{HOMEPAGE_VAR_PULSE_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_PULSE_VMID}}"
-        proxmoxType: lxc
+        - Patchmon:
+            icon: patchmon.svg
+            href: http://{{HOMEPAGE_VAR_PATCHMON_URL}}:{{HOMEPAGE_VAR_PATCHMON_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_PATCHMON_VMID}}"
+            proxmoxType: lxc
 
-    - Patchmon:
-        icon: patchmon.svg
-        href: http://{{HOMEPAGE_VAR_PATCHMON_URL}}:{{HOMEPAGE_VAR_PATCHMON_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_PATCHMON_VMID}}"
-        proxmoxType: lxc
+        - Domain Monitor:
+            icon: sh-domain-monitor.svg
+            href: http://{{HOMEPAGE_VAR_DOMAINS_URL}}:{{HOMEPAGE_VAR_DOMAINS_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_DOMAINS_VMID}}"
+            proxmoxType: lxc
 
-    - Domain Monitor:
-        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/domain-monitor.png
-        href: http://{{HOMEPAGE_VAR_DOMAINS_URL}}:{{HOMEPAGE_VAR_DOMAINS_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_DOMAINS_VMID}}"
-        proxmoxType: lxc
+    - SECURITY:
+        - OPNsense:
+            icon: opnsense.svg
+            href: http://{{HOMEPAGE_VAR_OPNSENSE_URL}}:{{HOMEPAGE_VAR_OPNSENSE_PORT}}
 
-- Security:
-    - OPNsense:
-        icon: opnsense.svg
-        href: http://{{HOMEPAGE_VAR_OPNSENSE_URL}}:{{HOMEPAGE_VAR_OPNSENSE_PORT}}
+        - Crowdsec:
+            icon: crowdsec.svg
+            href: https://app.crowdsec.net/
 
-    - Crowdsec:
-        icon: crowdsec.svg
-        href: https://app.crowdsec.net/
-
-    - Wazuh:
-        icon: wazuh.svg
-        href: https://{{HOMEPAGE_VAR_WAZUH_URL}}:{{HOMEPAGE_VAR_WAZUH_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_WAZUH_VMID}}"
-        proxmoxType: lxc
+        - Wazuh:
+            icon: wazuh.svg
+            href: https://{{HOMEPAGE_VAR_WAZUH_URL}}:{{HOMEPAGE_VAR_WAZUH_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_WAZUH_VMID}}"
+            proxmoxType: lxc
