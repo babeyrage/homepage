@@ -17,8 +17,8 @@ layout:
     header: false
     style: row
     columns: 2
-    useEqualHeights: false
-    
+    useEqualHeights: true
+
     MEDIA-INFO: 
       header: false
       style: row
@@ -44,7 +44,8 @@ layout:
     tab: HOMELAB
     style: row
     columns: 4
-
+    useEqualHeights: true
+    
     DOWNLOADS:
       tab: HOMELAB
       style: column
