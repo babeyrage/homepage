@@ -91,6 +91,137 @@ function MatchRow({ match, live }) {
   );
 }
 
+// ── Hero portrait icon ────────────────────────────────────────────────────────
+
+function HeroIcon({ hero }) {
+  return (
+    <div className="h-7 w-6 shrink-0 rounded-sm overflow-hidden bg-black/30 dark:bg-black/50 ring-1 ring-white/10">
+      {hero?.img && (
+        <img src={hero.img} alt={hero.name ?? ""} className="h-full w-full object-cover object-top" title={hero.name} />
+      )}
+    </div>
+  );
+}
+
+// Hero group wrapper — subtle tinted ring indicates faction (Radiant=emerald, Dire=red)
+function HeroGroup({ isRadiant, children }) {
+  return (
+    <div
+      className={`flex items-center gap-1 p-px rounded-sm ${
+        isRadiant
+          ? "ring-1 ring-emerald-500/35 bg-emerald-500/5"
+          : "ring-1 ring-red-500/35 bg-red-500/5"
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
+
+// First-pick badge — shown only for the team that received the first pick
+function FirstPickBadge() {
+  return (
+    <span className="shrink-0 text-[7px] font-bold text-amber-400 uppercase tracking-wide bg-amber-400/10 ring-1 ring-amber-400/30 px-1 py-px rounded-sm leading-none whitespace-nowrap">
+      FP
+    </span>
+  );
+}
+
+// ── Shared grid column template ───────────────────────────────────────────────
+// Used by BOTH the series header button and the game-rows container so that
+// columns 3 & 5 (the pip columns) sit at the exact same horizontal position.
+//  col 1: label         4.5rem  — "Finished\n17 Mar, 14:32" or "G#"
+//  col 2: left team     1fr     — team name+logo / badges+heroes
+//  col 3: left pip      6px     — win pip dot
+//  col 4: separator     3rem    — "vs" text / kill score
+//  col 5: right pip     6px     — win pip dot
+//  col 6: right team    1fr     — team logo+name / heroes+badges
+//  col 7: meta          3.5rem  — "Bo3 +/-" / duration
+const SERIES_GRID = "4.5rem 1fr 6px 3rem 6px 1fr 3.5rem";
+
+// ── Individual game row — returns 7 Fragment cells for the shared grid ─────────
+
+function GameRow({ game, idx, team1Id }) {
+  const { data, isLoading } = useSWR(
+    `/api/widgets/dota2?mode=match&matchId=${game.id}`,
+    { revalidateOnFocus: false },
+  );
+
+  const t1Won = game.winnerId === team1Id;
+  const duration = game.length
+    ? `${Math.floor(game.length / 60)}:${String(game.length % 60).padStart(2, "0")}`
+    : null;
+
+  if (isLoading || !data) {
+    // Single full-span cell while loading
+    return (
+      <div
+        style={{ gridColumn: "1 / -1" }}
+        className="h-8 rounded-sm bg-theme-200/30 dark:bg-theme-900/15 animate-pulse my-px"
+      />
+    );
+  }
+
+  const { radiantPicks, direPicks, firstPickIsRadiant } = data;
+  const t1IsRadiant = game.team1IsRadiant ?? true;
+
+  const leftPicks  = t1IsRadiant ? radiantPicks : direPicks;
+  const rightPicks = t1IsRadiant ? direPicks    : radiantPicks;
+
+  const showFirstPick = firstPickIsRadiant !== null && firstPickIsRadiant !== undefined;
+  const leftHasFirstPick  = showFirstPick && (t1IsRadiant === firstPickIsRadiant);
+  const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
+
+  return (
+    <>
+      {/* Col 1: game label */}
+      <span className="text-[9px] text-theme-400 dark:text-theme-500 font-medium tabular-nums leading-none self-center">
+        G{idx + 1}
+      </span>
+
+      {/* Col 2: left team — FP badge + faction-tinted hero group, right-aligned toward pip */}
+      <div className="flex items-center gap-1.5 justify-end py-1 min-w-0">
+        {leftHasFirstPick && <FirstPickBadge />}
+        <HeroGroup isRadiant={t1IsRadiant}>
+          {leftPicks.length > 0
+            ? leftPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)
+            : <span className="w-16 text-[8px] text-theme-400/50 dark:text-theme-500/50 text-center leading-none">—</span>}
+        </HeroGroup>
+      </div>
+
+      {/* Col 3: left win pip — centred via flex to match series pip column */}
+      <div className="flex items-center justify-center">
+        <span className={`block w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
+      </div>
+
+      {/* Col 4: kill score */}
+      <span className="text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1 leading-none self-center">
+        {game.team1Score}–{game.team2Score}
+      </span>
+
+      {/* Col 5: right win pip — centred via flex */}
+      <div className="flex items-center justify-center">
+        <span className={`block w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
+      </div>
+
+      {/* Col 6: right team — faction-tinted hero group + FP badge, left-aligned from pip */}
+      <div className="flex items-center gap-1.5 py-1 min-w-0">
+        <HeroGroup isRadiant={!t1IsRadiant}>
+          {rightPicks.length > 0
+            ? rightPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)
+            : <span className="w-16 text-[8px] text-theme-400/50 dark:text-theme-500/50 text-center leading-none">—</span>}
+        </HeroGroup>
+        {rightHasFirstPick && <FirstPickBadge />}
+      </div>
+
+      {/* Col 7: duration */}
+      <span className="text-[8px] tabular-nums text-theme-400 dark:text-theme-500 py-1 leading-none self-center text-right">
+        {duration ?? ""}
+      </span>
+    </>
+  );
+}
+
 // ── Series row (OpenDota reconstructed series) ────────────────────────────────
 
 function winsNeeded(numberOfGames) {
@@ -109,7 +240,6 @@ function SeriesRow({ series }) {
   const team1Won = winnerId !== null && winnerId === team1Id;
   const team2Won = winnerId !== null && winnerId === team2Id;
 
-  // Completion time = end of the last game (games are sorted by startTime)
   const lastGame = games.length > 0 ? games[games.length - 1] : null;
   const finishedAt =
     lastGame?.startTime && lastGame?.length
@@ -123,14 +253,15 @@ function SeriesRow({ series }) {
 
   return (
     <div className="mb-1 rounded-md overflow-hidden bg-theme-200/30 dark:bg-theme-900/15">
-      {/* ── Collapsed header ── */}
+      {/* ── Header — same SERIES_GRID template as game rows container ── */}
       <button
         type="button"
         onClick={() => setExpanded((e) => !e)}
-        className="w-full flex items-center gap-1.5 px-2 py-1.5 hover:bg-theme-200/50 dark:hover:bg-theme-900/30 transition-colors"
+        className="w-full grid items-center gap-x-2 px-2 py-1.5 hover:bg-theme-200/50 dark:hover:bg-theme-900/30 transition-colors"
+        style={{ gridTemplateColumns: SERIES_GRID }}
       >
-        {/* FINISHED label + date, time */}
-        <div className="flex flex-col shrink-0 items-start">
+        {/* Col 1: FINISHED + date */}
+        <div className="flex flex-col items-start min-w-0">
           <span className="text-[8px] font-bold uppercase tracking-wide text-theme-500 dark:text-theme-400 leading-none">
             Finished
           </span>
@@ -141,118 +272,70 @@ function SeriesRow({ series }) {
           )}
         </div>
 
-        {/* Team 1: name + logo */}
-        <div className="flex items-center gap-1.5 flex-1 min-w-0 justify-end">
+        {/* Col 2: team1 name + logo */}
+        <div className="flex items-center gap-1.5 justify-end min-w-0">
           <span className={`${nameClass(team1Won)} text-right`}>{team1Name}</span>
           <LogoBox src={team1Logo} size="md" />
         </div>
 
-        {/* Centre: pips + vs stacked */}
-        <div className="flex flex-col items-center gap-0.5 shrink-0 px-1">
-          <div className="flex items-center gap-1.5">
-            {/* Team 1 pips */}
-            <div className="flex flex-col gap-0.5">
-              {Array.from({ length: pipCount }, (_, i) => (
-                <span
-                  key={i}
-                  className={`block w-1.5 h-1.5 rounded-full ${i < team1Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
-                />
-              ))}
-            </div>
-            <span className="text-[9px] font-medium text-theme-500 dark:text-theme-400 leading-none">vs</span>
-            {/* Team 2 pips */}
-            <div className="flex flex-col gap-0.5">
-              {Array.from({ length: pipCount }, (_, i) => (
-                <span
-                  key={i}
-                  className={`block w-1.5 h-1.5 rounded-full ${i < team2Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
-                />
-              ))}
-            </div>
-          </div>
+        {/* Col 3: team1 win pips — stacked vertically */}
+        <div className="flex flex-col items-center gap-0.5">
+          {Array.from({ length: pipCount }, (_, i) => (
+            <span
+              key={i}
+              className={`block w-1.5 h-1.5 rounded-full ${i < team1Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
+            />
+          ))}
         </div>
 
-        {/* Team 2: logo + name */}
-        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+        {/* Col 4: vs */}
+        <span className="text-[9px] font-medium text-theme-500 dark:text-theme-400 leading-none text-center">
+          vs
+        </span>
+
+        {/* Col 5: team2 win pips — stacked vertically */}
+        <div className="flex flex-col items-center gap-0.5">
+          {Array.from({ length: pipCount }, (_, i) => (
+            <span
+              key={i}
+              className={`block w-1.5 h-1.5 rounded-full ${i < team2Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
+            />
+          ))}
+        </div>
+
+        {/* Col 6: team2 logo + name */}
+        <div className="flex items-center gap-1.5 min-w-0">
           <LogoBox src={team2Logo} size="md" />
           <span className={nameClass(team2Won)}>{team2Name}</span>
         </div>
 
-        {/* Series type */}
-        {numberOfGames && (
-          <span className="shrink-0 text-[8px] text-theme-400 dark:text-theme-500 tabular-nums leading-none">
-            Bo{numberOfGames}
+        {/* Col 7: Bo3/5 + toggle */}
+        <div className="flex items-center justify-between gap-1">
+          {numberOfGames && (
+            <span className="text-[8px] text-theme-400 dark:text-theme-500 tabular-nums leading-none">
+              Bo{numberOfGames}
+            </span>
+          )}
+          <span className="text-sm font-bold text-theme-400 dark:text-theme-500 select-none leading-none">
+            {expanded ? "−" : "+"}
           </span>
-        )}
-
-        {/* Expand toggle */}
-        <span className="shrink-0 text-sm font-bold text-theme-400 dark:text-theme-500 select-none w-4 text-center leading-none">
-          {expanded ? "−" : "+"}
-        </span>
+        </div>
       </button>
 
-      {/* ── Expanded per-game rows ── */}
+      {/* ── Expanded game rows — same SERIES_GRID so pip columns align ── */}
       {expanded && (
-        <div className="border-t border-theme-300/20 dark:border-theme-700/20 px-2 py-1 flex flex-col gap-0.5">
-          {games.map((game, idx) => {
-            const t1Won = game.winnerId === team1Id;
-            const duration = game.length
-              ? `${Math.floor(game.length / 60)}:${String(game.length % 60).padStart(2, "0")}`
-              : null;
-
-            return (
-              <div
-                key={game.id}
-                className={`flex items-center gap-1 px-1 py-0.5 rounded-sm text-[9px] leading-none ${t1Won ? "bg-emerald-500/5" : "bg-theme-200/20 dark:bg-theme-900/20"}`}
-              >
-                {/* Game label */}
-                <span className="shrink-0 w-4 text-theme-400 dark:text-theme-500 font-medium tabular-nums">
-                  G{idx + 1}
-                </span>
-
-                {/* Team 1 side */}
-                <div className="flex items-center gap-1 flex-1 min-w-0">
-                  <LogoBox src={team1Logo} size="xs" />
-                  <span
-                    className={`truncate ${t1Won ? "text-theme-600 dark:text-theme-300 font-semibold" : "text-theme-400 dark:text-theme-500"}`}
-                  >
-                    {team1Name}
-                  </span>
-                  {game.team1Score !== null && (
-                    <span
-                      className={`shrink-0 tabular-nums font-bold ml-auto ${t1Won ? "text-emerald-500 dark:text-emerald-400" : "text-theme-400 dark:text-theme-500"}`}
-                    >
-                      {game.team1Score}
-                    </span>
-                  )}
-                </div>
-
-                {/* Duration */}
-                {duration && (
-                  <span className="shrink-0 tabular-nums text-theme-400 dark:text-theme-500 px-1 text-[8px]">
-                    {duration}
-                  </span>
-                )}
-
-                {/* Team 2 side */}
-                <div className="flex items-center gap-1 flex-1 min-w-0 justify-end">
-                  {game.team2Score !== null && (
-                    <span
-                      className={`shrink-0 tabular-nums font-bold mr-auto ${!t1Won ? "text-emerald-500 dark:text-emerald-400" : "text-theme-400 dark:text-theme-500"}`}
-                    >
-                      {game.team2Score}
-                    </span>
-                  )}
-                  <span
-                    className={`truncate text-right ${!t1Won ? "text-theme-600 dark:text-theme-300 font-semibold" : "text-theme-400 dark:text-theme-500"}`}
-                  >
-                    {team2Name}
-                  </span>
-                  <LogoBox src={team2Logo} size="xs" />
-                </div>
-              </div>
-            );
-          })}
+        <div
+          className="border-t border-theme-300/20 dark:border-theme-700/20 grid items-center gap-x-2 px-2 py-1"
+          style={{ gridTemplateColumns: SERIES_GRID }}
+        >
+          {games.map((game, idx) => (
+            <GameRow
+              key={game.id}
+              game={game}
+              idx={idx}
+              team1Id={team1Id}
+            />
+          ))}
         </div>
       )}
     </div>
