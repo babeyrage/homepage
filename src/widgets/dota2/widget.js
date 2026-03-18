@@ -54,6 +54,28 @@ const widget = {
       },
     },
 
+    // Fetch scheduled matches for a specific tournament by ID.
+    // Caller passes { "filter[tournament_id]": id, "page[size]": 50, sort: "begin_at" }
+    // via useWidgetAPI(widget, "tournament_matches", queryParams).
+    tournament_matches: {
+      endpoint: "matches/upcoming",
+      optionalParams: ["filter[tournament_id]", "page[size]", "sort"],
+      map: (data) => {
+        const matches = asJson(data);
+        if (!Array.isArray(matches)) return [];
+        return matches.map((match) => ({
+          id: match.id,
+          team1: match.opponents?.[0]?.opponent?.name ?? "TBD",
+          team2: match.opponents?.[1]?.opponent?.name ?? "TBD",
+          team1Logo: match.opponents?.[0]?.opponent?.image_url ?? null,
+          team2Logo: match.opponents?.[1]?.opponent?.image_url ?? null,
+          status: match.status,
+          beginAt: match.begin_at,
+          numberOfGames: match.number_of_games ?? 3,
+        }));
+      },
+    },
+
     upcoming_tournaments: {
       endpoint: "tournaments/upcoming?page[size]=10&filter[tier]=s,a&sort=begin_at",
       map: (data) => {
