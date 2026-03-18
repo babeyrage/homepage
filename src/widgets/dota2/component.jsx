@@ -95,7 +95,7 @@ function MatchRow({ match, live }) {
 
 function HeroIcon({ hero }) {
   return (
-    <div className="h-7 w-5.5 shrink-0 rounded-sm overflow-hidden bg-black/30 dark:bg-black/50 ring-1 ring-white/10">
+    <div className="h-7 w-6 shrink-0 rounded-sm overflow-hidden bg-black/30 dark:bg-black/50 ring-1 ring-white/10">
       {hero?.img && (
         <img src={hero.img} alt={hero.name ?? ""} className="h-full w-full object-cover object-top" title={hero.name} />
       )}
@@ -103,17 +103,26 @@ function HeroIcon({ hero }) {
   );
 }
 
-// Radiant (R) / Dire (D) faction badge
-function SideBadge({ isRadiant }) {
+// Hero group wrapper — subtle tinted ring indicates faction (Radiant=emerald, Dire=red)
+function HeroGroup({ isRadiant, children }) {
   return (
-    <span
-      className={`shrink-0 text-[7px] font-bold leading-none px-0.5 py-px rounded ${
+    <div
+      className={`flex items-center gap-1 p-px rounded-sm ${
         isRadiant
-          ? "text-emerald-400 bg-emerald-400/15 ring-1 ring-emerald-400/30"
-          : "text-red-400 bg-red-400/15 ring-1 ring-red-400/30"
+          ? "ring-1 ring-emerald-500/35 bg-emerald-500/5"
+          : "ring-1 ring-red-500/35 bg-red-500/5"
       }`}
     >
-      {isRadiant ? "R" : "D"}
+      {children}
+    </div>
+  );
+}
+
+// First-pick badge — shown only for the team that received the first pick
+function FirstPickBadge() {
+  return (
+    <span className="shrink-0 text-[7px] font-bold text-amber-400 uppercase tracking-wide bg-amber-400/10 ring-1 ring-amber-400/30 px-1 py-px rounded-sm leading-none whitespace-nowrap">
+      FP
     </span>
   );
 }
@@ -163,54 +172,50 @@ function GameRow({ game, idx, team1Id }) {
   const leftHasFirstPick  = showFirstPick && (t1IsRadiant === firstPickIsRadiant);
   const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
 
-  const FirstPickBadge = () => (
-    <span className="shrink-0 text-[7px] font-bold text-sky-400 uppercase tracking-wide bg-sky-400/10 ring-1 ring-sky-400/30 px-1 py-px rounded leading-none">
-      1st
-    </span>
-  );
-
   return (
     <>
       {/* Col 1: game label */}
-      <span className="text-[9px] text-theme-400 dark:text-theme-500 font-medium tabular-nums leading-none py-1.5">
+      <span className="text-[9px] text-theme-400 dark:text-theme-500 font-medium tabular-nums leading-none self-center">
         G{idx + 1}
       </span>
 
-      {/* Col 2: left team — badges right-aligned, heroes flush against pip */}
-      <div className="flex items-center gap-1 justify-end py-1.5 min-w-0">
+      {/* Col 2: left team — FP badge + faction-tinted hero group, right-aligned toward pip */}
+      <div className="flex items-center gap-1.5 justify-end py-1 min-w-0">
         {leftHasFirstPick && <FirstPickBadge />}
-        <SideBadge isRadiant={t1IsRadiant} />
-        <div className="flex items-center gap-px">
-          {leftPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)}
-        </div>
+        <HeroGroup isRadiant={t1IsRadiant}>
+          {leftPicks.length > 0
+            ? leftPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)
+            : <span className="w-16 text-[8px] text-theme-400/50 dark:text-theme-500/50 text-center leading-none">—</span>}
+        </HeroGroup>
       </div>
 
-      {/* Col 3: left win pip — vertically centred in cell */}
-      <span
-        className={`block w-1.5 h-1.5 rounded-full mx-auto ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
-      />
+      {/* Col 3: left win pip — centred via flex to match series pip column */}
+      <div className="flex items-center justify-center">
+        <span className={`block w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
+      </div>
 
       {/* Col 4: kill score */}
-      <span className="text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1.5 leading-none">
+      <span className="text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1 leading-none self-center">
         {game.team1Score}–{game.team2Score}
       </span>
 
-      {/* Col 5: right win pip */}
-      <span
-        className={`block w-1.5 h-1.5 rounded-full mx-auto ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
-      />
+      {/* Col 5: right win pip — centred via flex */}
+      <div className="flex items-center justify-center">
+        <span className={`block w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
+      </div>
 
-      {/* Col 6: right team — heroes flush against pip, badges left-aligned */}
-      <div className="flex items-center gap-1 py-1.5 min-w-0">
-        <div className="flex items-center gap-px">
-          {rightPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)}
-        </div>
-        <SideBadge isRadiant={!t1IsRadiant} />
+      {/* Col 6: right team — faction-tinted hero group + FP badge, left-aligned from pip */}
+      <div className="flex items-center gap-1.5 py-1 min-w-0">
+        <HeroGroup isRadiant={!t1IsRadiant}>
+          {rightPicks.length > 0
+            ? rightPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)
+            : <span className="w-16 text-[8px] text-theme-400/50 dark:text-theme-500/50 text-center leading-none">—</span>}
+        </HeroGroup>
         {rightHasFirstPick && <FirstPickBadge />}
       </div>
 
       {/* Col 7: duration */}
-      <span className="text-[8px] tabular-nums text-theme-400 dark:text-theme-500 py-1.5 leading-none">
+      <span className="text-[8px] tabular-nums text-theme-400 dark:text-theme-500 py-1 leading-none self-center text-right">
         {duration ?? ""}
       </span>
     </>
@@ -329,7 +334,6 @@ function SeriesRow({ series }) {
               game={game}
               idx={idx}
               team1Id={team1Id}
-              team2Id={team2Id}
             />
           ))}
         </div>
