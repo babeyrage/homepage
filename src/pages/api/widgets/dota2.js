@@ -14,10 +14,16 @@ function filterAndCategoriseLeagues(raw) {
   const now = Date.now();
   const fourWeeksAgo = now - 60 * 24 * 60 * 60 * 1000;
 
+  // Today at midnight (start of day) for date-only comparisons
+  const todayStart = new Date(now);
+  todayStart.setHours(0, 0, 0, 0);
+
   return list
     .filter((l) => {
       if (!ALLOWED_TIER_IDS.has(l.tier?.id)) return false;
-      return new Date(l.first).getTime() >= fourWeeksAgo;
+      const lastTime = new Date(l.last).getTime();
+      // Keep leagues that are still ongoing OR ended within the last 4 weeks
+      return lastTime >= fourWeeksAgo;
     })
     .map((l) => ({
       leagueId: l.leagueId,
@@ -27,7 +33,9 @@ function filterAndCategoriseLeagues(raw) {
       first: l.first,
       last: l.last,
       count: l.count ?? 0,
-      isCurrent: new Date(l.last).getTime() >= now,
+      // l.last is the timestamp of the most recently completed match.
+      // A tournament is ongoing if its last recorded game was today or later.
+      isCurrent: new Date(l.last).setHours(0, 0, 0, 0) >= todayStart.getTime(),
       tags: l.tags ?? [],
     }))
     .sort((a, b) => {

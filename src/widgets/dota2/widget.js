@@ -74,13 +74,12 @@ const widget = {
     },
 
     upcoming_matches: {
-      endpoint: "matches/upcoming?page[size]=10&sort=begin_at",
+      endpoint: "matches/upcoming?page[size]=50&sort=begin_at",
       map: (data) => {
         const matches = asJson(data);
         if (!Array.isArray(matches)) return [];
         return matches
           .filter((match) => ALLOWED_TIERS.has(match.tournament?.tier))
-          .slice(0, 5)
           .map((match) => ({
             id: match.id,
             team1: match.opponents?.[0]?.opponent?.name ?? "TBD",

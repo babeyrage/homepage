@@ -48,18 +48,11 @@ function LogoBox({ src, alt = "", size = "md" }) {
 
 // ── PandaScore live / upcoming match row ──────────────────────────────────────
 
-function MatchRow({ match, live }) {
+function MatchRow({ match, live, showAbsolute }) {
   const beginAt = match.beginAt ? DateTime.fromISO(match.beginAt) : null;
-  const [showAbsolute, setShowAbsolute] = useState(false);
 
   return (
     <div className="flex flex-col rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-1 mb-0.5 gap-0.5">
-      {/* Date */}
-      {beginAt && !live && (
-        <span className="text-[9px] text-theme-400 dark:text-theme-500">
-          {beginAt.toFormat("cccc, d MMM yyyy")}
-        </span>
-      )}
       {/* Team row */}
       <div className="flex items-center gap-1">
         {/* Team 1 */}
@@ -83,10 +76,7 @@ function MatchRow({ match, live }) {
           {live ? (
             <span className="text-[9px] font-bold text-red-500">● LIVE</span>
           ) : (
-            <span
-              className="text-[10px] text-theme-400 dark:text-theme-500 tabular-nums cursor-pointer select-none"
-              onClick={() => setShowAbsolute((v) => !v)}
-            >
+            <span className="text-[10px] text-theme-400 dark:text-theme-500 tabular-nums">
               {beginAt
                 ? showAbsolute
                   ? beginAt.toFormat("HH:mm")
@@ -113,6 +103,51 @@ function MatchRow({ match, live }) {
             ▶ Watch
           </a>
         )}
+      </div>
+    </div>
+  );
+}
+
+// ── Expanded match row for use inside modals ──────────────────────────────────
+
+function ModalMatchRow({ match, showAbsolute }) {
+  const beginAt = match.beginAt ? DateTime.fromISO(match.beginAt) : null;
+
+  return (
+    <div className="flex items-center gap-3 rounded-lg bg-zinc-100 dark:bg-zinc-800 px-3 py-2.5 mb-1.5">
+      {/* Team 1 */}
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        <LogoBox src={match.team1Logo} size="md" />
+        <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate">{match.team1}</span>
+      </div>
+
+      {/* Centre: time */}
+      <div className="shrink-0 flex flex-col items-center gap-0.5 min-w-[52px]">
+        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">vs</span>
+        <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-300 tabular-nums">
+          {beginAt
+            ? showAbsolute
+              ? beginAt.toFormat("HH:mm")
+              : beginAt.toRelative()
+            : ""}
+        </span>
+        {match.streamUrl && (
+          <a
+            href={match.streamUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[9px] font-semibold text-purple-500 hover:text-purple-400 transition-colors mt-0.5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            ▶ Watch
+          </a>
+        )}
+      </div>
+
+      {/* Team 2 */}
+      <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
+        <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate text-right">{match.team2}</span>
+        <LogoBox src={match.team2Logo} size="md" />
       </div>
     </div>
   );
@@ -417,34 +452,50 @@ function TournamentModal({ tournament, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Banner ── */}
-        <div className="relative h-24 w-full shrink-0 bg-zinc-800 overflow-hidden">
+        <div className="relative h-36 w-full shrink-0 bg-zinc-800 overflow-hidden">
           <img
             src={`https://cdn.datdota.com/images/leagues/${leagueId}_big.png`}
             alt={name}
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
+          {/* Stronger gradient — ensures text is readable over any image */}
+          <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-black/10" />
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors leading-none text-base bg-black/30 rounded-full w-6 h-6 flex items-center justify-center"
+            className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors leading-none text-base bg-black/40 rounded-full w-6 h-6 flex items-center justify-center"
           >
             ✕
           </button>
-          <div className="absolute bottom-2 left-3 right-10 flex items-end gap-2 flex-wrap">
-            <span className="text-sm font-semibold text-white drop-shadow">{name}</span>
-            {tierId === 1 && (
-              <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wide bg-black/40 px-1.5 py-0.5 rounded">
-                Premium
-              </span>
-            )}
-            {tierId === 2 && (
-              <span className="text-[9px] font-bold text-sky-400 uppercase tracking-wide bg-black/40 px-1.5 py-0.5 rounded">
-                Professional
-              </span>
-            )}
+          <div className="absolute bottom-3 left-3 right-10 flex flex-col gap-1">
+            {/* Tier badge */}
+            <div className="flex items-center gap-1.5">
+              {tierId === 1 && (
+                <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wide bg-black/50 px-1.5 py-0.5 rounded">
+                  Premium
+                </span>
+              )}
+              {tierId === 2 && (
+                <span className="text-[9px] font-bold text-sky-400 uppercase tracking-wide bg-black/50 px-1.5 py-0.5 rounded">
+                  Professional
+                </span>
+              )}
+            </div>
+            {/* Tournament name */}
+            <span
+              className="text-base font-bold text-white leading-tight"
+              style={{ textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}
+            >
+              {name}
+            </span>
+            {/* Date range */}
             {dateLabel && (
-              <span className="w-full text-[11px] text-white/60 -mt-0.5">{dateLabel}</span>
+              <span
+                className="text-[11px] font-medium text-white/80"
+                style={{ textShadow: "0 1px 3px rgba(0,0,0,0.8)" }}
+              >
+                {dateLabel}
+              </span>
             )}
           </div>
         </div>
@@ -805,6 +856,148 @@ function UpcomingTournamentRow({ tournament, onClick }) {
   );
 }
 
+// ── Upcoming matches modal ────────────────────────────────────────────────────
+
+function CompletedTournamentsModal({ tournaments, onSelect, onClose }) {
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-md max-h-[85vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-700 shrink-0">
+          <span className="text-sm font-semibold text-theme-700 dark:text-theme-200">
+            {t("dota2.completed", "Completed")}
+          </span>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-theme-400 hover:text-theme-600 dark:text-theme-500 dark:hover:text-theme-300 transition-colors leading-none text-base"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Scrollable list */}
+        <div className="overflow-y-auto px-3 py-2">
+          {tournaments.map((tournament) => (
+            <TournamentRow
+              key={tournament.leagueId}
+              tournament={{ ...tournament, isCurrent: false }}
+              onClick={() => onSelect(tournament)}
+            />
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+function UpcomingMatchesModal({ matches, showAbsolute, onToggleTime, onClose }) {
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  const today = DateTime.now().startOf("day");
+  const formatDayLabel = (isoDate) => {
+    const dt = DateTime.fromISO(isoDate).startOf("day");
+    const diff = Math.round(dt.diff(today, "days").days);
+    if (diff === 0) return "Today";
+    if (diff === 1) return "Tomorrow";
+    return dt.toFormat("cccc, d MMM");
+  };
+
+  const grouped = matches.reduce((acc, match) => {
+    const day = match.beginAt ? DateTime.fromISO(match.beginAt).toISODate() : "unknown";
+    if (!acc[day]) acc[day] = [];
+    acc[day].push(match);
+    return acc;
+  }, {});
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-lg max-h-[85vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-700 shrink-0">
+          <span className="text-base font-bold text-zinc-800 dark:text-zinc-100">
+            {t("dota2.upcoming", "Upcoming Matches")}
+          </span>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onToggleTime}
+              className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors select-none bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-md"
+            >
+              {showAbsolute ? "⏱ Countdown" : "⏱ Time"}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors leading-none text-lg"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Scrollable match list */}
+        <div className="overflow-y-auto px-4 py-3">
+          {Object.keys(grouped).sort().map((day) => (
+            <div key={day} className="mb-1">
+              {/* Day heading with rule */}
+              <div className="flex items-center gap-2 mb-2 mt-3 first:mt-0">
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 shrink-0">
+                  {formatDayLabel(day)}
+                </span>
+                <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-700" />
+              </div>
+              {grouped[day].map((match) => (
+                <ModalMatchRow key={match.id} match={match} showAbsolute={showAbsolute} />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function Component({ service }) {
@@ -813,6 +1006,9 @@ export default function Component({ service }) {
 
   const [modalTournament, setModalTournament] = useState(null);
   const [modalUpcomingTournament, setModalUpcomingTournament] = useState(null);
+  const [showAbsoluteTime, setShowAbsoluteTime] = useState(true);
+  const [showUpcomingModal, setShowUpcomingModal] = useState(false);
+  const [showCompletedModal, setShowCompletedModal] = useState(false);
 
   // ── PandaScore: live + upcoming matches, upcoming tournaments ─────────────
   const { data: liveData, error: liveError } = useWidgetAPI(widget, "live_matches");
@@ -861,19 +1057,79 @@ export default function Component({ service }) {
                 <>
                   <SectionLabel>{t("dota2.live", "Live")}</SectionLabel>
                   {liveMatches.map((match) => (
-                    <MatchRow key={match.id} match={match} live />
+                    <MatchRow key={match.id} match={match} live showAbsolute={false} />
                   ))}
                 </>
               )}
 
-              <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
+              {/* Upcoming header with countdown/time toggle */}
+              <div className="flex items-center justify-between mb-0.5 mt-1.5 first:mt-0">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-theme-500 dark:text-theme-400">
+                  {t("dota2.upcoming", "Upcoming")}
+                </span>
+                {upcomingMatches.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAbsoluteTime((v) => !v)}
+                    className="text-[9px] text-theme-400 dark:text-theme-500 hover:text-theme-600 dark:hover:text-theme-300 transition-colors select-none"
+                  >
+                    {showAbsoluteTime ? "⏱ Countdown" : "⏱ Time"}
+                  </button>
+                )}
+              </div>
               {upcomingMatches.length === 0 ? (
                 <div className="text-[10px] text-theme-500 dark:text-theme-400 text-center py-1">
                   {t("dota2.noMatches", "No matches scheduled")}
                 </div>
-              ) : (
-                upcomingMatches.map((match) => <MatchRow key={match.id} match={match} live={false} />)
-              )}
+              ) : (() => {
+                const PREVIEW_COUNT = 6;
+                const preview = upcomingMatches.slice(0, PREVIEW_COUNT);
+                const hasMore = upcomingMatches.length > PREVIEW_COUNT;
+
+                const today = DateTime.now().startOf("day");
+                const formatDayLabel = (isoDate) => {
+                  const dt = DateTime.fromISO(isoDate).startOf("day");
+                  const diff = Math.round(dt.diff(today, "days").days);
+                  if (diff === 0) return "Today";
+                  if (diff === 1) return "Tomorrow";
+                  return dt.toFormat("cccc, d MMM");
+                };
+
+                // Group a list of matches by calendar day, preserving sort order
+                const groupByDay = (matches) =>
+                  matches.reduce((acc, match) => {
+                    const day = match.beginAt ? DateTime.fromISO(match.beginAt).toISODate() : "unknown";
+                    if (!acc[day]) acc[day] = [];
+                    acc[day].push(match);
+                    return acc;
+                  }, {});
+
+                const grouped = groupByDay(preview);
+
+                return (
+                  <>
+                    {Object.keys(grouped).sort().map((day) => (
+                      <div key={day}>
+                        <div className="text-[9px] font-semibold uppercase tracking-wide text-theme-400 dark:text-theme-500 mt-1 mb-0.5">
+                          {formatDayLabel(day)}
+                        </div>
+                        {grouped[day].map((match) => (
+                          <MatchRow key={match.id} match={match} live={false} showAbsolute={showAbsoluteTime} />
+                        ))}
+                      </div>
+                    ))}
+                    {hasMore && (
+                      <button
+                        type="button"
+                        onClick={() => setShowUpcomingModal(true)}
+                        className="w-full text-[9px] text-theme-400 dark:text-theme-500 hover:text-theme-600 dark:hover:text-theme-300 transition-colors text-center py-0.5 mt-0.5"
+                      >
+                        Show more ▾
+                      </button>
+                    )}
+                  </>
+                );
+              })()}
             </>
           )}
         </div>
@@ -882,28 +1138,14 @@ export default function Component({ service }) {
         <div className="flex flex-col flex-1 min-w-0">
           {tournamentsLoading ? (
             <>
-              <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
-              <PulseRow />
               <SectionLabel>{t("dota2.ongoing", "Ongoing")}</SectionLabel>
               <PulseRow />
+              <PulseRow />
+              <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
               <PulseRow />
             </>
           ) : (
             <>
-              {/* PandaScore upcoming tournaments */}
-              {upcomingTournaments.length > 0 && (
-                <>
-                  <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
-                  {upcomingTournaments.map((tournament) => (
-                    <UpcomingTournamentRow
-                      key={tournament.id}
-                      tournament={tournament}
-                      onClick={() => setModalUpcomingTournament(tournament)}
-                    />
-                  ))}
-                </>
-              )}
-
               {/* DatDota current (ongoing) tournaments */}
               {currentTournaments.length > 0 && (
                 <>
@@ -918,17 +1160,40 @@ export default function Component({ service }) {
                 </>
               )}
 
+              {/* PandaScore upcoming tournaments */}
+              {upcomingTournaments.length > 0 && (
+                <>
+                  <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
+                  {upcomingTournaments.map((tournament) => (
+                    <UpcomingTournamentRow
+                      key={tournament.id}
+                      tournament={tournament}
+                      onClick={() => setModalUpcomingTournament(tournament)}
+                    />
+                  ))}
+                </>
+              )}
+
               {/* DatDota past tournaments */}
               {pastTournaments.length > 0 && (
                 <>
                   <SectionLabel>{t("dota2.completed", "Completed")}</SectionLabel>
-                  {pastTournaments.map((tournament) => (
+                  {pastTournaments.slice(0, 8).map((tournament) => (
                     <TournamentRow
                       key={tournament.leagueId}
                       tournament={{ ...tournament, isCurrent: false }}
                       onClick={() => setModalTournament({ ...tournament, isCurrent: false })}
                     />
                   ))}
+                  {pastTournaments.length > 8 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowCompletedModal(true)}
+                      className="w-full text-[9px] text-theme-400 dark:text-theme-500 hover:text-theme-600 dark:hover:text-theme-300 transition-colors text-center py-0.5 mt-0.5"
+                    >
+                      Show more ▾
+                    </button>
+                  )}
                 </>
               )}
 
@@ -945,6 +1210,25 @@ export default function Component({ service }) {
           )}
         </div>
       </div>
+
+      {/* ── Completed tournaments modal ───────────────────────────────────── */}
+      {showCompletedModal && (
+        <CompletedTournamentsModal
+          tournaments={pastTournaments}
+          onSelect={(t) => { setShowCompletedModal(false); setModalTournament({ ...t, isCurrent: false }); }}
+          onClose={() => setShowCompletedModal(false)}
+        />
+      )}
+
+      {/* ── Upcoming matches modal ────────────────────────────────────────── */}
+      {showUpcomingModal && (
+        <UpcomingMatchesModal
+          matches={upcomingMatches}
+          showAbsolute={showAbsoluteTime}
+          onToggleTime={() => setShowAbsoluteTime((v) => !v)}
+          onClose={() => setShowUpcomingModal(false)}
+        />
+      )}
 
       {/* ── DatDota tournament modal ──────────────────────────────────────── */}
       {modalTournament && (
