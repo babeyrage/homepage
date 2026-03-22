@@ -50,9 +50,16 @@ function LogoBox({ src, alt = "", size = "md" }) {
 
 function MatchRow({ match, live }) {
   const beginAt = match.beginAt ? DateTime.fromISO(match.beginAt) : null;
+  const [showAbsolute, setShowAbsolute] = useState(false);
 
   return (
     <div className="flex flex-col rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-1 mb-0.5 gap-0.5">
+      {/* Date */}
+      {beginAt && !live && (
+        <span className="text-[9px] text-theme-400 dark:text-theme-500">
+          {beginAt.toFormat("cccc, d MMM yyyy")}
+        </span>
+      )}
       {/* Team row */}
       <div className="flex items-center gap-1">
         {/* Team 1 */}
@@ -76,17 +83,37 @@ function MatchRow({ match, live }) {
           {live ? (
             <span className="text-[9px] font-bold text-red-500">● LIVE</span>
           ) : (
-            <span className="text-[10px] text-theme-400 dark:text-theme-500 tabular-nums">
-              {beginAt ? beginAt.toRelative() : ""}
+            <span
+              className="text-[10px] text-theme-400 dark:text-theme-500 tabular-nums cursor-pointer select-none"
+              onClick={() => setShowAbsolute((v) => !v)}
+            >
+              {beginAt
+                ? showAbsolute
+                  ? beginAt.toFormat("HH:mm")
+                  : beginAt.toRelative()
+                : ""}
             </span>
           )}
         </div>
       </div>
 
-      {/* League name */}
-      {match.leagueName && (
-        <span className="text-[9px] text-theme-500 dark:text-theme-400 truncate">{match.leagueName}</span>
-      )}
+      {/* League name + stream link */}
+      <div className="flex items-center justify-between gap-1 min-w-0">
+        {match.leagueName && (
+          <span className="text-[9px] text-theme-500 dark:text-theme-400 truncate">{match.leagueName}</span>
+        )}
+        {match.streamUrl && (
+          <a
+            href={match.streamUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 text-[9px] font-semibold text-purple-500 hover:text-purple-400 transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            ▶ Watch
+          </a>
+        )}
+      </div>
     </div>
   );
 }
@@ -389,33 +416,37 @@ function TournamentModal({ tournament, onClose }) {
         className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ── Header ── */}
-        <div className="flex items-start justify-between gap-3 px-4 py-3 border-b border-zinc-200 dark:border-zinc-700 shrink-0">
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">{name}</span>
-              {tierId === 1 && (
-                <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wide bg-amber-500/15 px-1.5 py-0.5 rounded">
-                  Premium
-                </span>
-              )}
-              {tierId === 2 && (
-                <span className="text-[9px] font-bold text-sky-500 uppercase tracking-wide bg-sky-500/15 px-1.5 py-0.5 rounded">
-                  Professional
-                </span>
-              )}
-            </div>
-            {dateLabel && (
-              <span className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5">{dateLabel}</span>
-            )}
-          </div>
+        {/* ── Banner ── */}
+        <div className="relative h-24 w-full shrink-0 bg-zinc-800 overflow-hidden">
+          <img
+            src={`https://cdn.datdota.com/images/leagues/${leagueId}_big.png`}
+            alt={name}
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
           <button
             type="button"
             onClick={onClose}
-            className="shrink-0 text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-200 transition-colors leading-none text-base mt-0.5"
+            className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors leading-none text-base bg-black/30 rounded-full w-6 h-6 flex items-center justify-center"
           >
             ✕
           </button>
+          <div className="absolute bottom-2 left-3 right-10 flex items-end gap-2 flex-wrap">
+            <span className="text-sm font-semibold text-white drop-shadow">{name}</span>
+            {tierId === 1 && (
+              <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wide bg-black/40 px-1.5 py-0.5 rounded">
+                Premium
+              </span>
+            )}
+            {tierId === 2 && (
+              <span className="text-[9px] font-bold text-sky-400 uppercase tracking-wide bg-black/40 px-1.5 py-0.5 rounded">
+                Professional
+              </span>
+            )}
+            {dateLabel && (
+              <span className="w-full text-[11px] text-white/60 -mt-0.5">{dateLabel}</span>
+            )}
+          </div>
         </div>
 
         {/* ── Scrollable body ── */}
@@ -556,10 +587,23 @@ function ScheduledMatchRow({ match }) {
         <span className="text-[10px] font-medium text-zinc-700 dark:text-zinc-200 truncate">{match.team2}</span>
       </div>
 
-      {/* Date/time */}
-      <span className="shrink-0 text-[10px] text-zinc-400 dark:text-zinc-500 tabular-nums whitespace-nowrap">
-        {beginAt ? beginAt.toFormat("d MMM, HH:mm") : "TBD"}
-      </span>
+      {/* Time + stream link */}
+      <div className="shrink-0 flex items-center gap-1.5">
+        <span className="text-[10px] text-zinc-400 dark:text-zinc-500 tabular-nums whitespace-nowrap">
+          {beginAt ? beginAt.toFormat("HH:mm") : "TBD"}
+        </span>
+        {match.streamUrl && (
+          <a
+            href={match.streamUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[9px] font-semibold text-purple-500 hover:text-purple-400 transition-colors whitespace-nowrap"
+            onClick={(e) => e.stopPropagation()}
+          >
+            ▶ Watch
+          </a>
+        )}
+      </div>
     </div>
   );
 }
@@ -583,6 +627,22 @@ function UpcomingTournamentModal({ tournament, widget, onClose }) {
   });
 
   const matches = Array.isArray(matchesRaw) ? matchesRaw : [];
+
+  const [visibleDays, setVisibleDays] = useState(2);
+
+  // Group matches by local date
+  const matchesByDate = matches.reduce((groups, match) => {
+    const dateKey = match.beginAt
+      ? DateTime.fromISO(match.beginAt).toFormat("cccc, d MMM yyyy")
+      : "TBD";
+    if (!groups[dateKey]) groups[dateKey] = [];
+    groups[dateKey].push(match);
+    return groups;
+  }, {});
+
+  const dateEntries = Object.entries(matchesByDate);
+  const visibleEntries = dateEntries.slice(0, visibleDays);
+  const hiddenDays = dateEntries.length - visibleDays;
 
   // Close on Escape
   useEffect(() => {
@@ -626,7 +686,7 @@ function UpcomingTournamentModal({ tournament, widget, onClose }) {
               )}
               {tournament.prizepool && (
                 <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                  {tournament.prizepool}
+                  Prize Pool: {tournament.prizepool}
                 </span>
               )}
             </div>
@@ -677,9 +737,25 @@ function UpcomingTournamentModal({ tournament, widget, onClose }) {
               <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
                 Schedule — {matches.length} match{matches.length !== 1 ? "es" : ""}
               </p>
-              {matches.map((match) => (
-                <ScheduledMatchRow key={match.id} match={match} />
+              {visibleEntries.map(([dateKey, dayMatches]) => (
+                <div key={dateKey} className="mb-3 last:mb-0">
+                  <p className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 mb-1 px-1">
+                    {dateKey}
+                  </p>
+                  {dayMatches.map((match) => (
+                    <ScheduledMatchRow key={match.id} match={match} />
+                  ))}
+                </div>
               ))}
+              {hiddenDays > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setVisibleDays((d) => d + 2)}
+                  className="w-full mt-1 py-1.5 text-[10px] text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors text-center rounded-md bg-zinc-100 dark:bg-zinc-800"
+                >
+                  Show more · {hiddenDays} day{hiddenDays !== 1 ? "s" : ""} remaining
+                </button>
+              )}
             </div>
           ) : (
             !isLoading && (
@@ -712,9 +788,6 @@ function UpcomingTournamentRow({ tournament, onClick }) {
       <div className="flex items-center justify-between gap-1">
         <span className="text-xs text-theme-700 dark:text-theme-200 truncate">{title}</span>
         <div className="flex shrink-0 items-center gap-1.5">
-          {tournament.prizepool && (
-            <span className="text-[10px] text-theme-500 dark:text-theme-400">{tournament.prizepool}</span>
-          )}
           <span className="text-[10px] text-theme-400 dark:text-theme-500 select-none">▸</span>
         </div>
       </div>
