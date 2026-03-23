@@ -48,6 +48,14 @@ function LogoBox({ src, alt = "", size = "md" }) {
 
 // ── PandaScore live / upcoming match row ──────────────────────────────────────
 
+function shortRelative(dt) {
+  const diff = dt.diffNow("minutes").minutes;
+  const abs = Math.abs(diff);
+  if (abs < 60) return `in ${Math.round(abs)}m`;
+  if (abs < 24 * 60) return `in ${Math.round(abs / 60)}h`;
+  return `in ${Math.round(abs / (60 * 24))}d`;
+}
+
 function MatchRow({ match, live, showAbsolute }) {
   const beginAt = match.beginAt ? DateTime.fromISO(match.beginAt) : null;
 
@@ -80,7 +88,7 @@ function MatchRow({ match, live, showAbsolute }) {
               {beginAt
                 ? showAbsolute
                   ? beginAt.toFormat("HH:mm")
-                  : beginAt.toRelative()
+                  : shortRelative(beginAt)
                 : ""}
             </span>
           )}
@@ -215,11 +223,10 @@ function GameRow({ game, idx, team1Id }) {
     : null;
 
   if (isLoading || !data) {
-    // Single full-span cell while loading
     return (
       <div
         style={{ gridColumn: "1 / -1" }}
-        className="h-8 rounded-sm bg-theme-200/30 dark:bg-theme-900/15 animate-pulse my-px"
+        className="max-sm:hidden h-8 rounded-sm bg-theme-200/30 dark:bg-theme-900/15 animate-pulse my-px"
       />
     );
   }
@@ -237,12 +244,12 @@ function GameRow({ game, idx, team1Id }) {
   return (
     <>
       {/* Col 1: game label */}
-      <span className="text-[9px] text-theme-400 dark:text-theme-500 font-medium tabular-nums leading-none self-center">
+      <span className="max-sm:hidden text-[9px] text-theme-400 dark:text-theme-500 font-medium tabular-nums leading-none self-center">
         G{idx + 1}
       </span>
 
       {/* Col 2: left team — FP badge + faction-tinted hero group, right-aligned toward pip */}
-      <div className="flex items-center gap-1.5 justify-end py-1 min-w-0">
+      <div className="max-sm:hidden flex items-center gap-1.5 justify-end py-1 min-w-0">
         {leftHasFirstPick && <FirstPickBadge />}
         <HeroGroup isRadiant={t1IsRadiant}>
           {leftPicks.length > 0
@@ -252,22 +259,22 @@ function GameRow({ game, idx, team1Id }) {
       </div>
 
       {/* Col 3: left win pip — centred via flex to match series pip column */}
-      <div className="flex items-center justify-center">
+      <div className="max-sm:hidden flex items-center justify-center">
         <span className={`block w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
 
       {/* Col 4: kill score */}
-      <span className="text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1 leading-none self-center">
+      <span className="max-sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1 leading-none self-center">
         {game.team1Score}–{game.team2Score}
       </span>
 
       {/* Col 5: right win pip — centred via flex */}
-      <div className="flex items-center justify-center">
+      <div className="max-sm:hidden flex items-center justify-center">
         <span className={`block w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
 
       {/* Col 6: right team — faction-tinted hero group + FP badge, left-aligned from pip */}
-      <div className="flex items-center gap-1.5 py-1 min-w-0">
+      <div className="max-sm:hidden flex items-center gap-1.5 py-1 min-w-0">
         <HeroGroup isRadiant={!t1IsRadiant}>
           {rightPicks.length > 0
             ? rightPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)
@@ -277,10 +284,74 @@ function GameRow({ game, idx, team1Id }) {
       </div>
 
       {/* Col 7: duration */}
-      <span className="text-[8px] tabular-nums text-theme-400 dark:text-theme-500 py-1 leading-none self-center text-right">
+      <span className="max-sm:hidden text-[8px] tabular-nums text-theme-400 dark:text-theme-500 py-1 leading-none self-center text-right">
         {duration ?? ""}
       </span>
     </>
+  );
+}
+
+// ── Mobile game row — two-row layout for small screens ───────────────────────
+
+function MobileGameRow({ game, idx, team1Id }) {
+  const { data, isLoading } = useSWR(
+    `/api/widgets/dota2?mode=match&matchId=${game.id}`,
+    { revalidateOnFocus: false },
+  );
+
+  const t1Won = game.winnerId === team1Id;
+  const duration = game.length
+    ? `${Math.floor(game.length / 60)}:${String(game.length % 60).padStart(2, "0")}`
+    : null;
+
+  if (isLoading || !data) {
+    return (
+      <div className="h-12 rounded-sm bg-theme-200/30 dark:bg-theme-900/15 animate-pulse my-px" />
+    );
+  }
+
+  const { radiantPicks, direPicks, firstPickIsRadiant } = data;
+  const t1IsRadiant = game.team1IsRadiant ?? true;
+  const leftPicks  = t1IsRadiant ? radiantPicks : direPicks;
+  const rightPicks = t1IsRadiant ? direPicks    : radiantPicks;
+  const showFirstPick = firstPickIsRadiant !== null && firstPickIsRadiant !== undefined;
+  const leftHasFirstPick  = showFirstPick && (t1IsRadiant === firstPickIsRadiant);
+  const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
+
+  return (
+    <div className="mb-1 rounded-sm bg-theme-200/20 dark:bg-theme-900/10 px-2 py-1">
+      {/* Row 1: game number · score · duration */}
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[9px] font-bold text-theme-500 dark:text-theme-400 uppercase tracking-wide">G{idx + 1}</span>
+        <div className="flex items-center gap-1">
+          <span className={`w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
+          <span className="text-[10px] font-bold tabular-nums text-theme-700 dark:text-theme-200">
+            {game.team1Score}–{game.team2Score}
+          </span>
+          <span className={`w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
+        </div>
+        <span className="text-[9px] tabular-nums text-theme-400 dark:text-theme-500">{duration ?? ""}</span>
+      </div>
+      {/* Row 2: FP + heroes left · heroes right + FP */}
+      <div className="flex items-center justify-between gap-1">
+        <div className="flex items-center gap-1">
+          {leftHasFirstPick && <FirstPickBadge />}
+          <HeroGroup isRadiant={t1IsRadiant}>
+            {leftPicks.length > 0
+              ? leftPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)
+              : <span className="w-10 text-[8px] text-theme-400/50 dark:text-theme-500/50 text-center leading-none">—</span>}
+          </HeroGroup>
+        </div>
+        <div className="flex items-center gap-1 justify-end">
+          <HeroGroup isRadiant={!t1IsRadiant}>
+            {rightPicks.length > 0
+              ? rightPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)
+              : <span className="w-10 text-[8px] text-theme-400/50 dark:text-theme-500/50 text-center leading-none">—</span>}
+          </HeroGroup>
+          {rightHasFirstPick && <FirstPickBadge />}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -293,7 +364,7 @@ function winsNeeded(numberOfGames) {
 function SeriesRow({ series }) {
   const [expanded, setExpanded] = useState(false);
 
-  const { team1Id, team1Name, team1Logo, team2Id, team2Name, team2Logo, winnerId, games, numberOfGames } = series;
+  const { team1Id, team1Name, team1Tag, team1Logo, team2Id, team2Name, team2Tag, team2Logo, winnerId, games, numberOfGames } = series;
 
   const team1Wins = games.filter((g) => g.winnerId === team1Id).length;
   const team2Wins = games.filter((g) => g.winnerId === team2Id).length;
@@ -314,13 +385,16 @@ function SeriesRow({ series }) {
       : "text-[10px] text-theme-400 dark:text-theme-500 truncate";
 
   return (
-    <div className="mb-1 rounded-md overflow-hidden bg-theme-200/30 dark:bg-theme-900/15">
-      {/* ── Header — same SERIES_GRID template as game rows container ── */}
+    <div
+      className="mb-1 rounded-md overflow-hidden bg-theme-200/30 dark:bg-theme-900/15 grid items-center gap-x-2 px-2"
+      style={{ gridTemplateColumns: SERIES_GRID }}
+    >
+      {/* ── Header — subgrid so cells inherit parent columns exactly ── */}
       <button
         type="button"
         onClick={() => setExpanded((e) => !e)}
-        className="w-full grid items-center gap-x-2 px-2 py-1.5 hover:bg-theme-200/50 dark:hover:bg-theme-900/30 transition-colors"
-        style={{ gridTemplateColumns: SERIES_GRID }}
+        className="grid items-center py-1.5 hover:bg-theme-200/50 dark:hover:bg-theme-900/30 transition-colors"
+        style={{ gridColumn: "1 / -1", gridTemplateColumns: "subgrid" }}
       >
         {/* Col 1: FINISHED + date */}
         <div className="flex flex-col items-start min-w-0">
@@ -336,7 +410,8 @@ function SeriesRow({ series }) {
 
         {/* Col 2: team1 name + logo */}
         <div className="flex items-center gap-1.5 justify-end min-w-0">
-          <span className={`${nameClass(team1Won)} text-right`}>{team1Name}</span>
+          <span className={`${nameClass(team1Won)} text-right sm:hidden`}>{team1Tag || team1Name}</span>
+          <span className={`${nameClass(team1Won)} text-right max-sm:hidden`}>{team1Name}</span>
           <LogoBox src={team1Logo} size="md" />
         </div>
 
@@ -368,7 +443,8 @@ function SeriesRow({ series }) {
         {/* Col 6: team2 logo + name */}
         <div className="flex items-center gap-1.5 min-w-0">
           <LogoBox src={team2Logo} size="md" />
-          <span className={nameClass(team2Won)}>{team2Name}</span>
+          <span className={`${nameClass(team2Won)} sm:hidden`}>{team2Tag || team2Name}</span>
+          <span className={`${nameClass(team2Won)} max-sm:hidden`}>{team2Name}</span>
         </div>
 
         {/* Col 7: Bo3/5 + toggle */}
@@ -384,19 +460,21 @@ function SeriesRow({ series }) {
         </div>
       </button>
 
-      {/* ── Expanded game rows — same SERIES_GRID so pip columns align ── */}
+      {/* ── Expanded game rows — subgrid inherits parent columns for perfect pip alignment ── */}
       {expanded && (
         <div
-          className="border-t border-theme-300/20 dark:border-theme-700/20 grid items-center gap-x-2 px-2 py-1"
-          style={{ gridTemplateColumns: SERIES_GRID }}
+          className="grid items-center border-t border-theme-300/20 dark:border-theme-700/20 py-1"
+          style={{ gridColumn: "1 / -1", gridTemplateColumns: "subgrid" }}
         >
+          {/* Mobile: two-row card per game (spans all columns) */}
           {games.map((game, idx) => (
-            <GameRow
-              key={game.id}
-              game={game}
-              idx={idx}
-              team1Id={team1Id}
-            />
+            <div key={`m-${game.id}`} className="sm:hidden py-0.5" style={{ gridColumn: "1 / -1" }}>
+              <MobileGameRow game={game} idx={idx} team1Id={team1Id} />
+            </div>
+          ))}
+          {/* Desktop: 7-cell fragments — cells carry max-sm:hidden */}
+          {games.map((game, idx) => (
+            <GameRow key={game.id} game={game} idx={idx} team1Id={team1Id} />
           ))}
         </div>
       )}
@@ -443,12 +521,12 @@ function TournamentModal({ tournament, onClose }) {
   return createPortal(
     // Backdrop — click outside to close
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
       onClick={onClose}
     >
       {/* Modal panel */}
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden"
+        className="relative w-full max-w-2xl max-h-[95vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Banner ── */}
@@ -518,7 +596,7 @@ function TournamentModal({ tournament, onClose }) {
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
                     Participants
                   </p>
-                  <div className="grid grid-cols-3 gap-1.5">
+                  <div className="grid grid-cols-2 gap-1.5">
                     {teams.map((team) => (
                       <div
                         key={team.teamId}
@@ -711,11 +789,11 @@ function UpcomingTournamentModal({ tournament, widget, onClose }) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden"
+        className="relative w-full max-w-2xl max-h-[95vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Header ── */}
@@ -875,11 +953,11 @@ function CompletedTournamentsModal({ tournaments, onSelect, onClose }) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md max-h-[85vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden"
+        className="relative w-full max-w-md max-h-[95vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -945,11 +1023,11 @@ function UpcomingMatchesModal({ matches, showAbsolute, onToggleTime, onClose }) 
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg max-h-[85vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden"
+        className="relative w-full max-w-lg max-h-[95vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -1039,7 +1117,7 @@ export default function Component({ service }) {
 
   return (
     <Container service={service}>
-      <div className="flex flex-row w-full gap-3">
+      <div className="flex flex-col sm:flex-row w-full gap-3">
 
         {/* ── Left panel: Matches ─────────────────────────────────────────── */}
         <div className="flex flex-col flex-1 min-w-0">

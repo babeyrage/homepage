@@ -62,9 +62,11 @@ function reconstructSeries(matches) {
         numberOfGames: seriesTypeToNumberOfGames(m.series_type),
         team1Id: m.radiant_team_id,
         team1Name: m.radiant_name ?? "TBD",
+        team1Tag: "",
         team1Logo: null,
         team2Id: m.dire_team_id,
         team2Name: m.dire_name ?? "TBD",
+        team2Tag: "",
         team2Logo: null,
         team1Wins: 0,
         team2Wins: 0,
@@ -164,10 +166,12 @@ export default async function handler(req, res) {
         const t2 = teamMap.get(s.team2Id);
         if (t1) {
           s.team1Name = t1.name;
+          s.team1Tag  = t1.tag;
           s.team1Logo = t1.logo;
         }
         if (t2) {
           s.team2Name = t2.name;
+          s.team2Tag  = t2.tag;
           s.team2Logo = t2.logo;
         }
       }
