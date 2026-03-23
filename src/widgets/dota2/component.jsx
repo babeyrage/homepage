@@ -210,7 +210,8 @@ function FirstPickBadge() {
 //  col 7: meta          3.5rem  — "Bo3 +/-" / duration
 const SERIES_GRID = "4.5rem 1fr 6px 3rem 6px 1fr 3.5rem";
 
-// ── Individual game row — returns 7 Fragment cells for the shared grid ─────────
+// ── Individual game row — single button spanning all columns via subgrid ───────
+// Clicking anywhere on the row opens the match detail modal.
 
 function GameRow({ game, idx, team1Id, onGameClick }) {
   const { data, isLoading } = useSWR(
@@ -243,14 +244,19 @@ function GameRow({ game, idx, team1Id, onGameClick }) {
   const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
 
   return (
-    <>
+    <button
+      type="button"
+      onClick={() => onGameClick?.(game)}
+      className="max-sm:hidden grid items-center py-1 hover:bg-theme-200/50 dark:hover:bg-theme-900/30 transition-colors cursor-pointer"
+      style={{ gridColumn: "1 / -1", gridTemplateColumns: "subgrid" }}
+    >
       {/* Col 1: game label */}
-      <span className="max-sm:hidden text-[9px] text-theme-400 dark:text-theme-500 font-medium tabular-nums leading-none self-center">
+      <span className="text-[9px] text-theme-400 dark:text-theme-500 font-medium tabular-nums leading-none self-center">
         G{idx + 1}
       </span>
 
       {/* Col 2: left team — FP badge + faction-tinted hero group, right-aligned toward pip */}
-      <div className="max-sm:hidden flex items-center gap-1.5 justify-end py-1 min-w-0">
+      <div className="flex items-center gap-1.5 justify-end py-1 min-w-0">
         {leftHasFirstPick && <FirstPickBadge />}
         <HeroGroup isRadiant={t1IsRadiant}>
           {leftPicks.length > 0
@@ -260,22 +266,22 @@ function GameRow({ game, idx, team1Id, onGameClick }) {
       </div>
 
       {/* Col 3: left win pip */}
-      <div className="max-sm:hidden flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <span className={`block w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
 
       {/* Col 4: kill score */}
-      <span className="max-sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1 leading-none self-center">
+      <span className="text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1 leading-none self-center">
         {game.team1Score}–{game.team2Score}
       </span>
 
       {/* Col 5: right win pip */}
-      <div className="max-sm:hidden flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <span className={`block w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
 
       {/* Col 6: right team — faction-tinted hero group + FP badge, left-aligned from pip */}
-      <div className="max-sm:hidden flex items-center gap-1.5 py-1 min-w-0">
+      <div className="flex items-center gap-1.5 py-1 min-w-0">
         <HeroGroup isRadiant={!t1IsRadiant}>
           {rightPicks.length > 0
             ? rightPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)
@@ -284,30 +290,18 @@ function GameRow({ game, idx, team1Id, onGameClick }) {
         {rightHasFirstPick && <FirstPickBadge />}
       </div>
 
-      {/* Col 7: duration + stats button */}
-      <div className="max-sm:hidden flex flex-col items-end justify-center gap-0.5 py-1">
+      {/* Col 7: duration */}
+      <div className="flex items-center justify-end py-1">
         <span className="text-[8px] tabular-nums text-theme-400 dark:text-theme-500 leading-none">
           {duration ?? ""}
         </span>
-        {onGameClick && (
-          <button
-            type="button"
-            onClick={() => onGameClick(game)}
-            className="text-[8px] font-medium text-theme-400 dark:text-theme-500 hover:text-theme-600 dark:hover:text-theme-300 transition-colors leading-none"
-            title="View match stats"
-          >
-            ⊞
-          </button>
-        )}
       </div>
-    </>
+    </button>
   );
 }
 
-// ── Mobile game row — Fragment cells for the shared parent subgrid ───────────
-// Returns 7 sm:hidden cells (one per SERIES_GRID column) so pips land in the
-// same 6px columns as the series pips, guaranteeing vertical alignment.
-// An 8th sm:hidden cell spanning all columns holds the hero row below.
+// ── Mobile game row — single button spanning all columns via subgrid ──────────
+// Clicking anywhere on the row opens the match detail modal.
 
 function MobileGameRow({ game, idx, team1Id, onGameClick }) {
   const { data, isLoading } = useSWR(
@@ -338,46 +332,41 @@ function MobileGameRow({ game, idx, team1Id, onGameClick }) {
   const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
 
   return (
-    <>
+    <button
+      type="button"
+      onClick={() => onGameClick?.(game)}
+      className="sm:hidden grid items-center py-1 hover:bg-theme-200/50 dark:hover:bg-theme-900/30 transition-colors cursor-pointer"
+      style={{ gridColumn: "1 / -1", gridTemplateColumns: "subgrid" }}
+    >
       {/* Col 1: game label */}
-      <span className="sm:hidden text-xs text-theme-600 dark:text-theme-300 font-semibold tabular-nums leading-none self-center">
+      <span className="text-xs text-theme-600 dark:text-theme-300 font-semibold tabular-nums leading-none self-center">
         G{idx + 1}
       </span>
       {/* Col 2: left spacer */}
-      <div className="sm:hidden" />
+      <div />
       {/* Col 3: left win pip — same column as series pip */}
-      <div className="sm:hidden flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <span className={`block w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
       {/* Col 4: kill score */}
-      <span className="sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center leading-none self-center">
+      <span className="text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center leading-none self-center">
         {game.team1Score}–{game.team2Score}
       </span>
       {/* Col 5: right win pip — same column as series pip */}
-      <div className="sm:hidden flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <span className={`block w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
       {/* Col 6: right spacer */}
-      <div className="sm:hidden" />
-      {/* Col 7: duration + stats button */}
-      <div className="sm:hidden flex flex-col items-end justify-center gap-0.5">
+      <div />
+      {/* Col 7: duration */}
+      <div className="flex items-end justify-end">
         <span className="text-[8px] tabular-nums text-theme-400 dark:text-theme-500 leading-none">
           {duration ?? ""}
         </span>
-        {onGameClick && (
-          <button
-            type="button"
-            onClick={() => onGameClick(game)}
-            className="text-[8px] font-medium text-theme-400 dark:text-theme-500 hover:text-theme-600 dark:hover:text-theme-300 transition-colors leading-none"
-            title="View match stats"
-          >
-            ⊞
-          </button>
-        )}
       </div>
       {/* Row 2: FP badge + heroes — spans all columns */}
       <div
-        className="sm:hidden flex items-center justify-between gap-1 pt-1 pb-1"
+        className="flex items-center justify-between gap-1 pt-1 pb-1"
         style={{ gridColumn: "1 / -1" }}
       >
         <div className="flex items-center gap-1">
@@ -397,7 +386,7 @@ function MobileGameRow({ game, idx, team1Id, onGameClick }) {
           {rightHasFirstPick && <FirstPickBadge />}
         </div>
       </div>
-    </>
+    </button>
   );
 }
 
@@ -724,11 +713,133 @@ function TeamTable({ players, team }) {
   );
 }
 
+const STAT_TABS = ["KDA", "Farm", "Damage", "Items"];
+
+function SmallPlayerRow({ player, tab }) {
+  return (
+    <tr className="border-b border-zinc-800 hover:bg-zinc-800/60 transition-colors">
+      {/* Compact player cell: small hero portrait + name */}
+      <td className="px-2 py-1.5 max-w-[110px]">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <div className="w-9 h-6 shrink-0 rounded-sm overflow-hidden bg-zinc-800">
+            {player.hero.img && (
+              <img src={player.hero.img} alt={player.hero.name} className="w-full h-full object-cover object-top" />
+            )}
+          </div>
+          <span className="text-[10px] font-medium text-zinc-200 truncate">
+            {player.proName ?? player.personaname ?? player.hero.name ?? "—"}
+          </span>
+        </div>
+      </td>
+
+      {tab === "KDA" && (
+        <>
+          <td className="text-center px-1 w-8 text-[11px] font-semibold text-emerald-400 tabular-nums">{player.kills}</td>
+          <td className="text-center px-1 w-8 text-[11px] font-semibold text-red-400 tabular-nums">{player.deaths}</td>
+          <td className="text-center px-1 w-8 text-[11px] text-zinc-300 tabular-nums">{player.assists}</td>
+          <td className="text-center px-1 w-16 text-[11px] font-semibold text-amber-400 tabular-nums">{fmtK(player.netWorth)}</td>
+        </>
+      )}
+
+      {tab === "Farm" && (
+        <>
+          <td className="text-center px-1 w-14 text-[10px] text-zinc-400 tabular-nums whitespace-nowrap">{player.lastHits}/{player.denies}</td>
+          <td className="text-center px-1 w-16 text-[10px] text-zinc-400 tabular-nums whitespace-nowrap">{player.gpm}/{player.xpm}</td>
+          <td className="text-center px-1 w-16 text-[10px] font-semibold text-amber-400 tabular-nums">{fmtK(player.netWorth)}</td>
+        </>
+      )}
+
+      {tab === "Damage" && (
+        <>
+          <td className="text-center px-1 w-16 text-[10px] text-zinc-400 tabular-nums">{fmtK(player.heroDamage)}</td>
+          <td className="text-center px-1 w-14 text-[10px] text-zinc-500 tabular-nums">{player.towerDamage > 0 ? fmtK(player.towerDamage) : "—"}</td>
+          <td className="text-center px-1 w-16 text-[10px] font-semibold text-amber-400 tabular-nums">{fmtK(player.netWorth)}</td>
+        </>
+      )}
+
+      {tab === "Items" && (
+        <td className="px-2 py-1.5">
+          <div className="flex flex-wrap items-center gap-0.5">
+            {player.items.map((item, i) => <ItemSlot key={i} item={item} size="sm" />)}
+            {player.neutral && (
+              <>
+                <div className="w-px h-3.5 bg-zinc-700 mx-0.5 shrink-0" />
+                <ItemSlot item={player.neutral} size="sm" rounded />
+              </>
+            )}
+          </div>
+          {player.backpack?.some(Boolean) && (
+            <div className="flex items-center gap-0.5 mt-0.5">
+              <GiBackpack className="w-3 h-3 text-zinc-500 shrink-0 mr-0.5" />
+              {player.backpack.map((item, i) => <ItemSlot key={i} item={item} size="sm" />)}
+            </div>
+          )}
+        </td>
+      )}
+    </tr>
+  );
+}
+
+function SmallTeamTable({ players, team, tab }) {
+  const thCls = "px-1 py-1.5 text-[9px] font-bold uppercase tracking-wider text-center whitespace-nowrap";
+
+  return (
+    <div>
+      <div className={`flex items-center gap-2 px-3 py-2 border-b border-zinc-700 ${team.isRadiant ? "bg-emerald-950/60" : "bg-red-950/60"}`}>
+        <LogoBox src={team.logo} size="sm" />
+        <span className="text-sm font-bold text-white">{team.name}</span>
+        {team.won && (
+          <span className="ml-1 text-[9px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-1.5 py-0.5 rounded">
+            Winner
+          </span>
+        )}
+      </div>
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="border-b border-zinc-700 bg-zinc-800/60">
+            <th className="px-2 py-1.5 text-left text-[9px] font-bold uppercase tracking-wider text-zinc-500">Player</th>
+            {tab === "KDA" && (
+              <>
+                <th className={`${thCls} text-emerald-600 w-8`}>K</th>
+                <th className={`${thCls} text-red-600 w-8`}>D</th>
+                <th className={`${thCls} text-zinc-500 w-8`}>A</th>
+                <th className={`${thCls} text-amber-600 w-16`}>NET</th>
+              </>
+            )}
+            {tab === "Farm" && (
+              <>
+                <th className={`${thCls} text-zinc-500 w-14`}>LH/DN</th>
+                <th className={`${thCls} text-zinc-500 w-16`}>GPM/XPM</th>
+                <th className={`${thCls} text-amber-600 w-16`}>NET</th>
+              </>
+            )}
+            {tab === "Damage" && (
+              <>
+                <th className={`${thCls} text-zinc-500 w-16`}>HD</th>
+                <th className={`${thCls} text-zinc-500 w-14`}>TD</th>
+                <th className={`${thCls} text-amber-600 w-16`}>NET</th>
+              </>
+            )}
+            {tab === "Items" && (
+              <th className="px-2 py-1.5 text-left text-[9px] font-bold uppercase tracking-wider text-zinc-500">Items</th>
+            )}
+          </tr>
+        </thead>
+        <tbody>
+          {players.map((p) => <SmallPlayerRow key={p.slot} player={p} tab={tab} />)}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function MatchDetailModal({ game, series, onClose }) {
   const { data, isLoading } = useSWR(
     `/api/widgets/dota2?mode=match&matchId=${game.id}`,
     { revalidateOnFocus: false },
   );
+
+  const [activeTab, setActiveTab] = useState("KDA");
 
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
@@ -789,18 +900,46 @@ function MatchDetailModal({ game, series, onClose }) {
           </button>
         </div>
 
-        {/* ── Body: scrollable, horizontal overflow for table ── */}
+        {/* ── Body ── */}
         <div className="flex-1 overflow-auto">
           {isLoading ? (
             <div className="flex flex-col gap-1.5 p-4">
               {Array.from({ length: 10 }).map((_, i) => <PulseRow key={i} />)}
             </div>
           ) : (
-            <div className="min-w-[700px]">
-              <TeamTable players={radiantPlayers} team={radiantTeam} />
-              <div className="border-t-2 border-zinc-700" />
-              <TeamTable players={direPlayers} team={direTeam} />
-            </div>
+            <>
+              {/* Small screens: tab bar + compact tables */}
+              <div className="block sm:hidden">
+                <div className="flex border-b border-zinc-700 bg-zinc-800/60 sticky top-0 z-10">
+                  {STAT_TABS.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setActiveTab(t)}
+                      className={`flex-1 py-2 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
+                        activeTab === t
+                          ? "text-white border-b-2 border-white -mb-px"
+                          : "text-zinc-500 hover:text-zinc-300"
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+                <SmallTeamTable players={radiantPlayers} team={radiantTeam} tab={activeTab} />
+                <div className="border-t-2 border-zinc-700" />
+                <SmallTeamTable players={direPlayers} team={direTeam} tab={activeTab} />
+              </div>
+
+              {/* Large screens: full scrollable table */}
+              <div className="hidden sm:block">
+                <div className="min-w-[700px]">
+                  <TeamTable players={radiantPlayers} team={radiantTeam} />
+                  <div className="border-t-2 border-zinc-700" />
+                  <TeamTable players={direPlayers} team={direTeam} />
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
