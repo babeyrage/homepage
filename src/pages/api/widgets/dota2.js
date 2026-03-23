@@ -193,9 +193,10 @@ export default async function handler(req, res) {
     }
 
     try {
-      const [matchRaw, heroesRaw] = await Promise.all([
+      const [matchRaw, heroesRaw, itemConstantsRaw] = await Promise.all([
         cachedRequest(`${OPENDOTA_BASE}/matches/${matchId}`, 60),
         cachedRequest(`${OPENDOTA_BASE}/heroes`, 1440),
+        cachedRequest(`${OPENDOTA_BASE}/constants/items`, 1440),
       ]);
 
       // Build hero lookup: id → { id, name, img }
@@ -213,6 +214,28 @@ export default async function handler(req, res) {
         }
       }
 
+      // Build item lookup: id → { name, dname, img } using OpenDota constants
+      const itemMap = new Map();
+      if (itemConstantsRaw && typeof itemConstantsRaw === "object") {
+        for (const [name, data] of Object.entries(itemConstantsRaw)) {
+          if (typeof data.id === "number" && data.id > 0) {
+            itemMap.set(data.id, {
+              name,
+              dname: data.dname ?? name,
+              img: `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/${name}.png`,
+            });
+          }
+        }
+      }
+
+      const toItem = (id) => {
+        if (!id) return null;
+        const entry = itemMap.get(id);
+        return entry
+          ? { id, name: entry.dname, img: entry.img }
+          : { id, name: "", img: null };
+      };
+
       // picks_bans filtered to picks only, sorted by draft order
       const picks = Array.isArray(matchRaw.picks_bans)
         ? matchRaw.picks_bans.filter((p) => p.is_pick).sort((a, b) => a.order - b.order)
@@ -225,6 +248,37 @@ export default async function handler(req, res) {
       // First pick = team of the lowest-order pick entry (null if no draft data)
       const firstPickIsRadiant = picks.length > 0 ? picks[0].team === 0 : null;
 
+      // Per-player stats — slot 0-4 = Radiant, 128-132 = Dire
+      const players = Array.isArray(matchRaw.players)
+        ? matchRaw.players.map((p) => {
+            const hero = heroMap.get(p.hero_id) ?? { id: p.hero_id, name: "", img: null };
+            return {
+              slot: p.player_slot,
+              isRadiant: p.player_slot < 128,
+              personaname: p.personaname ?? null,
+              hero,
+              level: p.level ?? 0,
+              kills: p.kills ?? 0,
+              deaths: p.deaths ?? 0,
+              assists: p.assists ?? 0,
+              lastHits: p.last_hits ?? 0,
+              denies: p.denies ?? 0,
+              netWorth: p.net_worth ?? 0,
+              gpm: p.gold_per_min ?? 0,
+              xpm: p.xp_per_min ?? 0,
+              heroDamage: p.hero_damage ?? 0,
+              towerDamage: p.tower_damage ?? 0,
+              heroHealing: p.hero_healing ?? 0,
+              items: [p.item_0, p.item_1, p.item_2, p.item_3, p.item_4, p.item_5].map(toItem),
+              backpack: [p.backpack_0, p.backpack_1, p.backpack_2].map(toItem),
+              neutral: toItem(p.item_neutral),
+            };
+          })
+        : [];
+
+      const radiantPlayers = players.filter((p) => p.isRadiant);
+      const direPlayers    = players.filter((p) => !p.isRadiant);
+
       return res.json({
         matchId: matchRaw.match_id,
         duration: matchRaw.duration,
@@ -234,6 +288,8 @@ export default async function handler(req, res) {
         firstPickIsRadiant,
         radiantPicks,
         direPicks,
+        radiantPlayers,
+        direPlayers,
       });
     } catch (e) {
       logger.error("OpenDota match fetch failed (matchId=%s): %s", matchId, e);

@@ -211,7 +211,7 @@ const SERIES_GRID = "4.5rem 1fr 6px 3rem 6px 1fr 3.5rem";
 
 // ── Individual game row — returns 7 Fragment cells for the shared grid ─────────
 
-function GameRow({ game, idx, team1Id }) {
+function GameRow({ game, idx, team1Id, onGameClick }) {
   const { data, isLoading } = useSWR(
     `/api/widgets/dota2?mode=match&matchId=${game.id}`,
     { revalidateOnFocus: false },
@@ -241,15 +241,25 @@ function GameRow({ game, idx, team1Id }) {
   const leftHasFirstPick  = showFirstPick && (t1IsRadiant === firstPickIsRadiant);
   const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
 
+  const clickProps = onGameClick
+    ? { role: "button", tabIndex: 0, onClick: () => onGameClick(game), className: "cursor-pointer" }
+    : {};
+
   return (
     <>
       {/* Col 1: game label */}
-      <span className="max-sm:hidden text-[9px] text-theme-400 dark:text-theme-500 font-medium tabular-nums leading-none self-center">
+      <span
+        {...clickProps}
+        className={`max-sm:hidden text-[9px] text-theme-400 dark:text-theme-500 font-medium tabular-nums leading-none self-center ${clickProps.className ?? ""}`}
+      >
         G{idx + 1}
       </span>
 
       {/* Col 2: left team — FP badge + faction-tinted hero group, right-aligned toward pip */}
-      <div className="max-sm:hidden flex items-center gap-1.5 justify-end py-1 min-w-0">
+      <div
+        {...clickProps}
+        className={`max-sm:hidden flex items-center gap-1.5 justify-end py-1 min-w-0 ${clickProps.className ?? ""}`}
+      >
         {leftHasFirstPick && <FirstPickBadge />}
         <HeroGroup isRadiant={t1IsRadiant}>
           {leftPicks.length > 0
@@ -258,23 +268,35 @@ function GameRow({ game, idx, team1Id }) {
         </HeroGroup>
       </div>
 
-      {/* Col 3: left win pip — centred via flex to match series pip column */}
-      <div className="max-sm:hidden flex items-center justify-center">
+      {/* Col 3: left win pip */}
+      <div
+        {...clickProps}
+        className={`max-sm:hidden flex items-center justify-center ${clickProps.className ?? ""}`}
+      >
         <span className={`block w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
 
       {/* Col 4: kill score */}
-      <span className="max-sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1 leading-none self-center">
+      <span
+        {...clickProps}
+        className={`max-sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1 leading-none self-center ${clickProps.className ?? ""}`}
+      >
         {game.team1Score}–{game.team2Score}
       </span>
 
-      {/* Col 5: right win pip — centred via flex */}
-      <div className="max-sm:hidden flex items-center justify-center">
+      {/* Col 5: right win pip */}
+      <div
+        {...clickProps}
+        className={`max-sm:hidden flex items-center justify-center ${clickProps.className ?? ""}`}
+      >
         <span className={`block w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
 
       {/* Col 6: right team — faction-tinted hero group + FP badge, left-aligned from pip */}
-      <div className="max-sm:hidden flex items-center gap-1.5 py-1 min-w-0">
+      <div
+        {...clickProps}
+        className={`max-sm:hidden flex items-center gap-1.5 py-1 min-w-0 ${clickProps.className ?? ""}`}
+      >
         <HeroGroup isRadiant={!t1IsRadiant}>
           {rightPicks.length > 0
             ? rightPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)
@@ -284,7 +306,10 @@ function GameRow({ game, idx, team1Id }) {
       </div>
 
       {/* Col 7: duration */}
-      <span className="max-sm:hidden text-[8px] tabular-nums text-theme-400 dark:text-theme-500 py-1 leading-none self-center text-right">
+      <span
+        {...clickProps}
+        className={`max-sm:hidden text-[8px] tabular-nums text-theme-400 dark:text-theme-500 py-1 leading-none self-center text-right ${clickProps.className ?? ""}`}
+      >
         {duration ?? ""}
       </span>
     </>
@@ -296,7 +321,7 @@ function GameRow({ game, idx, team1Id }) {
 // same 6px columns as the series pips, guaranteeing vertical alignment.
 // An 8th sm:hidden cell spanning all columns holds the hero row below.
 
-function MobileGameRow({ game, idx, team1Id }) {
+function MobileGameRow({ game, idx, team1Id, onGameClick }) {
   const { data, isLoading } = useSWR(
     `/api/widgets/dota2?mode=match&matchId=${game.id}`,
     { revalidateOnFocus: false },
@@ -324,34 +349,50 @@ function MobileGameRow({ game, idx, team1Id }) {
   const leftHasFirstPick  = showFirstPick && (t1IsRadiant === firstPickIsRadiant);
   const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
 
+  const handleClick = onGameClick ? () => onGameClick(game) : undefined;
+  const clickClass  = onGameClick ? "cursor-pointer" : "";
+
   return (
     <>
       {/* Col 1: game label */}
-      <span className="sm:hidden text-xs text-theme-600 dark:text-theme-300 font-semibold tabular-nums leading-none self-center">
+      <span
+        className={`sm:hidden text-xs text-theme-600 dark:text-theme-300 font-semibold tabular-nums leading-none self-center ${clickClass}`}
+        onClick={handleClick}
+      >
         G{idx + 1}
       </span>
       {/* Col 2: left spacer */}
-      <div className="sm:hidden" />
+      <div className={`sm:hidden ${clickClass}`} onClick={handleClick} />
       {/* Col 3: left win pip — same column as series pip */}
-      <div className="sm:hidden flex items-center justify-center">
+      <div className={`sm:hidden flex items-center justify-center ${clickClass}`} onClick={handleClick}>
         <span className={`block w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
       {/* Col 4: kill score */}
-      <span className="sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center leading-none self-center">
+      <span
+        className={`sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center leading-none self-center ${clickClass}`}
+        onClick={handleClick}
+      >
         {game.team1Score}–{game.team2Score}
       </span>
       {/* Col 5: right win pip — same column as series pip */}
-      <div className="sm:hidden flex items-center justify-center">
+      <div className={`sm:hidden flex items-center justify-center ${clickClass}`} onClick={handleClick}>
         <span className={`block w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
       {/* Col 6: right spacer */}
-      <div className="sm:hidden" />
+      <div className={`sm:hidden ${clickClass}`} onClick={handleClick} />
       {/* Col 7: duration */}
-      <span className="sm:hidden text-[8px] tabular-nums text-theme-400 dark:text-theme-500 leading-none self-center text-right">
+      <span
+        className={`sm:hidden text-[8px] tabular-nums text-theme-400 dark:text-theme-500 leading-none self-center text-right ${clickClass}`}
+        onClick={handleClick}
+      >
         {duration ?? ""}
       </span>
       {/* Row 2: FP badge + heroes — spans all columns */}
-      <div className="sm:hidden flex items-center justify-between gap-1 pt-1 pb-1" style={{ gridColumn: "1 / -1" }}>
+      <div
+        className={`sm:hidden flex items-center justify-between gap-1 pt-1 pb-1 ${clickClass}`}
+        style={{ gridColumn: "1 / -1" }}
+        onClick={handleClick}
+      >
         <div className="flex items-center gap-1">
           {leftHasFirstPick && <FirstPickBadge />}
           <HeroGroup isRadiant={t1IsRadiant}>
@@ -381,6 +422,7 @@ function winsNeeded(numberOfGames) {
 
 function SeriesRow({ series }) {
   const [expanded, setExpanded] = useState(false);
+  const [selectedGame, setSelectedGame] = useState(null);
 
   const { team1Id, team1Name, team1Tag, team1Logo, team2Id, team2Name, team2Tag, team2Logo, winnerId, games, numberOfGames } = series;
 
@@ -486,15 +528,257 @@ function SeriesRow({ series }) {
         >
           {/* Mobile: Fragment cells sit directly in the subgrid (sm:hidden) */}
           {games.map((game, idx) => (
-            <MobileGameRow key={`m-${game.id}`} game={game} idx={idx} team1Id={team1Id} />
+            <MobileGameRow key={`m-${game.id}`} game={game} idx={idx} team1Id={team1Id} onGameClick={setSelectedGame} />
           ))}
           {/* Desktop: 7-cell fragments — cells carry max-sm:hidden */}
           {games.map((game, idx) => (
-            <GameRow key={game.id} game={game} idx={idx} team1Id={team1Id} />
+            <GameRow key={game.id} game={game} idx={idx} team1Id={team1Id} onGameClick={setSelectedGame} />
           ))}
         </div>
       )}
+
+      {selectedGame && (
+        <MatchDetailModal
+          game={selectedGame}
+          series={series}
+          onClose={() => setSelectedGame(null)}
+        />
+      )}
     </div>
+  );
+}
+
+// ── Match detail modal ────────────────────────────────────────────────────────
+
+const fmtK = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n ?? 0));
+
+function ItemSlot({ item, size = "md" }) {
+  const cls = size === "sm" ? "w-5 h-5" : "w-6 h-6";
+  if (!item?.img) return <div className={`${cls} rounded-sm bg-zinc-700/60 shrink-0`} />;
+  return (
+    <img
+      src={item.img}
+      alt={item.name ?? ""}
+      title={item.name ?? ""}
+      className={`${cls} rounded-sm object-cover bg-zinc-700/60 shrink-0`}
+    />
+  );
+}
+
+function PlayerTableRow({ player }) {
+  return (
+    <tr className="border-b border-zinc-800 hover:bg-zinc-800/60 transition-colors">
+      {/* PLAYER: wide hero portrait + hero name + steam name */}
+      <td className="px-2 py-1.5 min-w-[180px]">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-16 h-9 shrink-0 rounded-sm overflow-hidden bg-zinc-800">
+            {player.hero.img && (
+              <img src={player.hero.img} alt={player.hero.name} className="w-full h-full object-cover object-top" />
+            )}
+          </div>
+          <div className="flex flex-col min-w-0">
+            <span className="text-[11px] font-semibold text-zinc-200 truncate leading-tight">{player.hero.name || "—"}</span>
+            {player.personaname && (
+              <span className="text-[9px] text-zinc-500 truncate leading-tight">{player.personaname}</span>
+            )}
+          </div>
+        </div>
+      </td>
+      {/* LVL */}
+      <td className="text-center px-1 w-9">
+        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-zinc-700 text-[10px] font-bold text-zinc-200 tabular-nums">
+          {player.level}
+        </span>
+      </td>
+      {/* K */}
+      <td className="text-center px-1 w-8 text-[11px] font-semibold text-emerald-400 tabular-nums">{player.kills}</td>
+      {/* D */}
+      <td className="text-center px-1 w-8 text-[11px] font-semibold text-red-400 tabular-nums">{player.deaths}</td>
+      {/* A */}
+      <td className="text-center px-1 w-8 text-[11px] text-zinc-300 tabular-nums">{player.assists}</td>
+      {/* LH / DN */}
+      <td className="text-center px-1 w-14 text-[10px] text-zinc-400 tabular-nums whitespace-nowrap">{player.lastHits}/{player.denies}</td>
+      {/* NET */}
+      <td className="text-center px-1 w-14 text-[11px] font-semibold text-amber-400 tabular-nums">{fmtK(player.netWorth)}</td>
+      {/* GPM / XPM */}
+      <td className="text-center px-1 w-16 text-[10px] text-zinc-400 tabular-nums whitespace-nowrap">{player.gpm}/{player.xpm}</td>
+      {/* HD */}
+      <td className="text-center px-1 w-14 text-[10px] text-zinc-400 tabular-nums">{fmtK(player.heroDamage)}</td>
+      {/* TD */}
+      <td className="text-center px-1 w-12 text-[10px] text-zinc-500 tabular-nums">{player.towerDamage > 0 ? fmtK(player.towerDamage) : "—"}</td>
+      {/* ITEMS: 6 main + neutral + backpack row */}
+      <td className="px-2 py-1.5">
+        <div className="flex items-center gap-0.5">
+          {player.items.map((item, i) => <ItemSlot key={i} item={item} />)}
+          {player.neutral && (
+            <>
+              <div className="w-px h-4 bg-zinc-700 mx-1 shrink-0" />
+              <ItemSlot item={player.neutral} size="sm" />
+            </>
+          )}
+        </div>
+        {player.backpack?.some(Boolean) && (
+          <div className="flex items-center gap-0.5 mt-0.5">
+            {player.backpack.map((item, i) => <ItemSlot key={i} item={item} size="sm" />)}
+          </div>
+        )}
+      </td>
+    </tr>
+  );
+}
+
+function TeamTable({ players, team }) {
+  const totals = players.reduce(
+    (acc, p) => ({
+      kills:       acc.kills       + p.kills,
+      deaths:      acc.deaths      + p.deaths,
+      assists:     acc.assists     + p.assists,
+      lastHits:    acc.lastHits    + p.lastHits,
+      denies:      acc.denies      + p.denies,
+      netWorth:    acc.netWorth    + p.netWorth,
+      heroDamage:  acc.heroDamage  + p.heroDamage,
+      towerDamage: acc.towerDamage + p.towerDamage,
+    }),
+    { kills: 0, deaths: 0, assists: 0, lastHits: 0, denies: 0, netWorth: 0, heroDamage: 0, towerDamage: 0 },
+  );
+
+  const thCls = "px-1 py-1.5 text-[9px] font-bold uppercase tracking-wider text-center whitespace-nowrap";
+
+  return (
+    <div>
+      {/* Team header */}
+      <div className={`flex items-center gap-2 px-3 py-2 border-b border-zinc-700 ${team.isRadiant ? "bg-emerald-950/60" : "bg-red-950/60"}`}>
+        <LogoBox src={team.logo} size="sm" />
+        <span className="text-sm font-bold text-white">{team.name}</span>
+        {team.won && (
+          <span className="ml-1 text-[9px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-1.5 py-0.5 rounded">
+            Winner
+          </span>
+        )}
+      </div>
+
+      {/* Table */}
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="border-b border-zinc-700 bg-zinc-800/60">
+            <th className="px-2 py-1.5 text-left text-[9px] font-bold uppercase tracking-wider text-zinc-500">Player</th>
+            <th className={`${thCls} text-zinc-500 w-9`}>LVL</th>
+            <th className={`${thCls} text-emerald-600 w-8`}>K</th>
+            <th className={`${thCls} text-red-600 w-8`}>D</th>
+            <th className={`${thCls} text-zinc-500 w-8`}>A</th>
+            <th className={`${thCls} text-zinc-500 w-14`}>LH/DN</th>
+            <th className={`${thCls} text-amber-600 w-14`}>NET</th>
+            <th className={`${thCls} text-zinc-500 w-16`}>GPM/XPM</th>
+            <th className={`${thCls} text-zinc-500 w-14`}>HD</th>
+            <th className={`${thCls} text-zinc-500 w-12`}>TD</th>
+            <th className="px-2 py-1.5 text-left text-[9px] font-bold uppercase tracking-wider text-zinc-500">Items</th>
+          </tr>
+        </thead>
+        <tbody>
+          {players.map((p) => <PlayerTableRow key={p.slot} player={p} />)}
+        </tbody>
+        <tfoot>
+          <tr className="border-t border-zinc-700 bg-zinc-800/30">
+            <td className="px-2 py-1 text-[9px] text-zinc-600 font-medium">Totals</td>
+            <td />
+            <td className="text-center px-1 text-[10px] font-semibold text-emerald-500 tabular-nums">{totals.kills}</td>
+            <td className="text-center px-1 text-[10px] font-semibold text-red-500 tabular-nums">{totals.deaths}</td>
+            <td className="text-center px-1 text-[10px] text-zinc-400 tabular-nums">{totals.assists}</td>
+            <td className="text-center px-1 text-[10px] text-zinc-500 tabular-nums whitespace-nowrap">{totals.lastHits}/{totals.denies}</td>
+            <td className="text-center px-1 text-[10px] font-semibold text-amber-500 tabular-nums">{fmtK(totals.netWorth)}</td>
+            <td />
+            <td className="text-center px-1 text-[10px] text-zinc-500 tabular-nums">{fmtK(totals.heroDamage)}</td>
+            <td className="text-center px-1 text-[10px] text-zinc-500 tabular-nums">{totals.towerDamage > 0 ? fmtK(totals.towerDamage) : "—"}</td>
+            <td />
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  );
+}
+
+function MatchDetailModal({ game, series, onClose }) {
+  const { data, isLoading } = useSWR(
+    `/api/widgets/dota2?mode=match&matchId=${game.id}`,
+    { revalidateOnFocus: false },
+  );
+
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  const { team1Id, team1Name, team1Logo, team2Name, team2Logo } = series;
+  const t1Won      = game.winnerId === team1Id;
+  const t1IsRadiant = game.team1IsRadiant ?? true;
+  const duration   = game.length
+    ? `${Math.floor(game.length / 60)}:${String(game.length % 60).padStart(2, "0")}`
+    : null;
+
+  const radiantPlayers = data?.radiantPlayers ?? [];
+  const direPlayers    = data?.direPlayers    ?? [];
+
+  const radiantTeam = t1IsRadiant
+    ? { name: team1Name, logo: team1Logo,  won: t1Won,  isRadiant: true }
+    : { name: team2Name, logo: team2Logo,  won: !t1Won, isRadiant: true };
+  const direTeam = t1IsRadiant
+    ? { name: team2Name, logo: team2Logo,  won: !t1Won, isRadiant: false }
+    : { name: team1Name, logo: team1Logo,  won: t1Won,  isRadiant: false };
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-5xl max-h-[95vh] flex flex-col rounded-xl bg-zinc-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* ── Header: team · score · team ── */}
+        <div className="flex items-center gap-4 px-4 py-3 bg-zinc-800 border-b border-zinc-700 shrink-0">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <LogoBox src={team1Logo} size="md" />
+            <span className="text-sm font-bold text-zinc-100 truncate">{team1Name}</span>
+            {t1Won && <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-1.5 py-0.5 rounded shrink-0">Win</span>}
+          </div>
+          <div className="flex flex-col items-center shrink-0">
+            <span className="text-xl font-bold tabular-nums text-zinc-100 leading-none">
+              {game.team1Score ?? "—"} – {game.team2Score ?? "—"}
+            </span>
+            {duration && <span className="text-[10px] text-zinc-500 tabular-nums mt-0.5">{duration}</span>}
+          </div>
+          <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
+            {!t1Won && <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-1.5 py-0.5 rounded shrink-0">Win</span>}
+            <span className="text-sm font-bold text-zinc-100 truncate">{team2Name}</span>
+            <LogoBox src={team2Logo} size="md" />
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="shrink-0 ml-2 text-zinc-500 hover:text-zinc-200 transition-colors text-base leading-none"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* ── Body: scrollable, horizontal overflow for table ── */}
+        <div className="flex-1 overflow-auto">
+          {isLoading ? (
+            <div className="flex flex-col gap-1.5 p-4">
+              {Array.from({ length: 10 }).map((_, i) => <PulseRow key={i} />)}
+            </div>
+          ) : (
+            <div className="min-w-[700px]">
+              <TeamTable players={radiantPlayers} team={radiantTeam} />
+              <div className="border-t-2 border-zinc-700" />
+              <TeamTable players={direPlayers} team={direTeam} />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body,
   );
 }
 
