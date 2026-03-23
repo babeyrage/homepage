@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { useTranslation } from "next-i18next";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { GiBackpack } from "react-icons/gi";
 import useSWR from "swr";
 
 import Container from "components/services/widget/container";
@@ -538,16 +539,53 @@ function SeriesRow({ series }) {
 
 const fmtK = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n ?? 0));
 
-function ItemSlot({ item, size = "md" }) {
+function ItemSlot({ item, size = "md", rounded = false }) {
   const cls = size === "sm" ? "w-5 h-5" : "w-6 h-6";
-  if (!item?.img) return <div className={`${cls} rounded-sm bg-zinc-700/60 shrink-0`} />;
+  const roundCls = rounded ? "rounded-full" : "rounded-sm";
+  if (!item?.img) return <div className={`${cls} ${roundCls} bg-zinc-700/60 shrink-0`} />;
   return (
     <img
       src={item.img}
       alt={item.name ?? ""}
       title={item.name ?? ""}
-      className={`${cls} rounded-sm object-cover bg-zinc-700/60 shrink-0`}
+      className={`${cls} ${roundCls} object-cover bg-zinc-700/60 shrink-0`}
     />
+  );
+}
+
+function LevelRing({ level }) {
+  const r = 9;
+  const strokeWidth = 2.5;
+  const circumference = 2 * Math.PI * r;
+  const offset = circumference * (1 - Math.min(level, 30) / 30);
+
+  // Colour shifts with level progression
+  const ringColor =
+    level >= 25 ? "#f59e0b" :
+    level >= 15 ? "#fb923c" :
+    level >= 5  ? "#60a5fa" :
+                  "#6b7280";
+
+  return (
+    <div className="relative w-7 h-7 shrink-0">
+      <svg viewBox="0 0 24 24" className="w-full h-full -rotate-90">
+        {/* Track */}
+        <circle cx="12" cy="12" r={r} fill="none" stroke="#3f3f46" strokeWidth={strokeWidth} />
+        {/* Progress */}
+        <circle
+          cx="12" cy="12" r={r}
+          fill="none"
+          stroke={ringColor}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-zinc-200 tabular-nums leading-none">
+        {level}
+      </span>
+    </div>
   );
 }
 
@@ -564,17 +602,19 @@ function PlayerTableRow({ player }) {
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-[11px] font-semibold text-zinc-200 truncate leading-tight">{player.hero.name || "—"}</span>
-            {player.personaname && (
-              <span className="text-[9px] text-zinc-500 truncate leading-tight">{player.personaname}</span>
+            {(player.proName || player.personaname) && (
+              <span className="text-[9px] text-zinc-500 truncate leading-tight">
+                {player.proName ?? player.personaname}
+              </span>
             )}
           </div>
         </div>
       </td>
       {/* LVL */}
       <td className="text-center px-1 w-9">
-        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-zinc-700 text-[10px] font-bold text-zinc-200 tabular-nums">
-          {player.level}
-        </span>
+        <div className="flex justify-center">
+          <LevelRing level={player.level} />
+        </div>
       </td>
       {/* K */}
       <td className="text-center px-1 w-8 text-[11px] font-semibold text-emerald-400 tabular-nums">{player.kills}</td>
@@ -599,12 +639,13 @@ function PlayerTableRow({ player }) {
           {player.neutral && (
             <>
               <div className="w-px h-4 bg-zinc-700 mx-1 shrink-0" />
-              <ItemSlot item={player.neutral} size="sm" />
+              <ItemSlot item={player.neutral} size="sm" rounded />
             </>
           )}
         </div>
         {player.backpack?.some(Boolean) && (
           <div className="flex items-center gap-0.5 mt-0.5">
+            <GiBackpack className="w-3.5 h-3.5 text-zinc-500 shrink-0 mr-0.5" />
             {player.backpack.map((item, i) => <ItemSlot key={i} item={item} size="sm" />)}
           </div>
         )}

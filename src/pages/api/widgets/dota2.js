@@ -255,6 +255,7 @@ export default async function handler(req, res) {
             return {
               slot: p.player_slot,
               isRadiant: p.player_slot < 128,
+              proName: p.name ?? null,
               personaname: p.personaname ?? null,
               hero,
               level: p.level ?? 0,
