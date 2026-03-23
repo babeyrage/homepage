@@ -241,25 +241,15 @@ function GameRow({ game, idx, team1Id, onGameClick }) {
   const leftHasFirstPick  = showFirstPick && (t1IsRadiant === firstPickIsRadiant);
   const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
 
-  const clickProps = onGameClick
-    ? { role: "button", tabIndex: 0, onClick: () => onGameClick(game), className: "cursor-pointer" }
-    : {};
-
   return (
     <>
       {/* Col 1: game label */}
-      <span
-        {...clickProps}
-        className={`max-sm:hidden text-[9px] text-theme-400 dark:text-theme-500 font-medium tabular-nums leading-none self-center ${clickProps.className ?? ""}`}
-      >
+      <span className="max-sm:hidden text-[9px] text-theme-400 dark:text-theme-500 font-medium tabular-nums leading-none self-center">
         G{idx + 1}
       </span>
 
       {/* Col 2: left team — FP badge + faction-tinted hero group, right-aligned toward pip */}
-      <div
-        {...clickProps}
-        className={`max-sm:hidden flex items-center gap-1.5 justify-end py-1 min-w-0 ${clickProps.className ?? ""}`}
-      >
+      <div className="max-sm:hidden flex items-center gap-1.5 justify-end py-1 min-w-0">
         {leftHasFirstPick && <FirstPickBadge />}
         <HeroGroup isRadiant={t1IsRadiant}>
           {leftPicks.length > 0
@@ -269,34 +259,22 @@ function GameRow({ game, idx, team1Id, onGameClick }) {
       </div>
 
       {/* Col 3: left win pip */}
-      <div
-        {...clickProps}
-        className={`max-sm:hidden flex items-center justify-center ${clickProps.className ?? ""}`}
-      >
+      <div className="max-sm:hidden flex items-center justify-center">
         <span className={`block w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
 
       {/* Col 4: kill score */}
-      <span
-        {...clickProps}
-        className={`max-sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1 leading-none self-center ${clickProps.className ?? ""}`}
-      >
+      <span className="max-sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1 leading-none self-center">
         {game.team1Score}–{game.team2Score}
       </span>
 
       {/* Col 5: right win pip */}
-      <div
-        {...clickProps}
-        className={`max-sm:hidden flex items-center justify-center ${clickProps.className ?? ""}`}
-      >
+      <div className="max-sm:hidden flex items-center justify-center">
         <span className={`block w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
 
       {/* Col 6: right team — faction-tinted hero group + FP badge, left-aligned from pip */}
-      <div
-        {...clickProps}
-        className={`max-sm:hidden flex items-center gap-1.5 py-1 min-w-0 ${clickProps.className ?? ""}`}
-      >
+      <div className="max-sm:hidden flex items-center gap-1.5 py-1 min-w-0">
         <HeroGroup isRadiant={!t1IsRadiant}>
           {rightPicks.length > 0
             ? rightPicks.slice(0, 5).map((hero, i) => <HeroIcon key={i} hero={hero} />)
@@ -305,13 +283,22 @@ function GameRow({ game, idx, team1Id, onGameClick }) {
         {rightHasFirstPick && <FirstPickBadge />}
       </div>
 
-      {/* Col 7: duration */}
-      <span
-        {...clickProps}
-        className={`max-sm:hidden text-[8px] tabular-nums text-theme-400 dark:text-theme-500 py-1 leading-none self-center text-right ${clickProps.className ?? ""}`}
-      >
-        {duration ?? ""}
-      </span>
+      {/* Col 7: duration + stats button */}
+      <div className="max-sm:hidden flex flex-col items-end justify-center gap-0.5 py-1">
+        <span className="text-[8px] tabular-nums text-theme-400 dark:text-theme-500 leading-none">
+          {duration ?? ""}
+        </span>
+        {onGameClick && (
+          <button
+            type="button"
+            onClick={() => onGameClick(game)}
+            className="text-[8px] font-medium text-theme-400 dark:text-theme-500 hover:text-theme-600 dark:hover:text-theme-300 transition-colors leading-none"
+            title="View match stats"
+          >
+            ⊞
+          </button>
+        )}
+      </div>
     </>
   );
 }
@@ -349,49 +336,48 @@ function MobileGameRow({ game, idx, team1Id, onGameClick }) {
   const leftHasFirstPick  = showFirstPick && (t1IsRadiant === firstPickIsRadiant);
   const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
 
-  const handleClick = onGameClick ? () => onGameClick(game) : undefined;
-  const clickClass  = onGameClick ? "cursor-pointer" : "";
-
   return (
     <>
       {/* Col 1: game label */}
-      <span
-        className={`sm:hidden text-xs text-theme-600 dark:text-theme-300 font-semibold tabular-nums leading-none self-center ${clickClass}`}
-        onClick={handleClick}
-      >
+      <span className="sm:hidden text-xs text-theme-600 dark:text-theme-300 font-semibold tabular-nums leading-none self-center">
         G{idx + 1}
       </span>
       {/* Col 2: left spacer */}
-      <div className={`sm:hidden ${clickClass}`} onClick={handleClick} />
+      <div className="sm:hidden" />
       {/* Col 3: left win pip — same column as series pip */}
-      <div className={`sm:hidden flex items-center justify-center ${clickClass}`} onClick={handleClick}>
+      <div className="sm:hidden flex items-center justify-center">
         <span className={`block w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
       {/* Col 4: kill score */}
-      <span
-        className={`sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center leading-none self-center ${clickClass}`}
-        onClick={handleClick}
-      >
+      <span className="sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center leading-none self-center">
         {game.team1Score}–{game.team2Score}
       </span>
       {/* Col 5: right win pip — same column as series pip */}
-      <div className={`sm:hidden flex items-center justify-center ${clickClass}`} onClick={handleClick}>
+      <div className="sm:hidden flex items-center justify-center">
         <span className={`block w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
       {/* Col 6: right spacer */}
-      <div className={`sm:hidden ${clickClass}`} onClick={handleClick} />
-      {/* Col 7: duration */}
-      <span
-        className={`sm:hidden text-[8px] tabular-nums text-theme-400 dark:text-theme-500 leading-none self-center text-right ${clickClass}`}
-        onClick={handleClick}
-      >
-        {duration ?? ""}
-      </span>
+      <div className="sm:hidden" />
+      {/* Col 7: duration + stats button */}
+      <div className="sm:hidden flex flex-col items-end justify-center gap-0.5">
+        <span className="text-[8px] tabular-nums text-theme-400 dark:text-theme-500 leading-none">
+          {duration ?? ""}
+        </span>
+        {onGameClick && (
+          <button
+            type="button"
+            onClick={() => onGameClick(game)}
+            className="text-[8px] font-medium text-theme-400 dark:text-theme-500 hover:text-theme-600 dark:hover:text-theme-300 transition-colors leading-none"
+            title="View match stats"
+          >
+            ⊞
+          </button>
+        )}
+      </div>
       {/* Row 2: FP badge + heroes — spans all columns */}
       <div
-        className={`sm:hidden flex items-center justify-between gap-1 pt-1 pb-1 ${clickClass}`}
+        className="sm:hidden flex items-center justify-between gap-1 pt-1 pb-1"
         style={{ gridColumn: "1 / -1" }}
-        onClick={handleClick}
       >
         <div className="flex items-center gap-1">
           {leftHasFirstPick && <FirstPickBadge />}
