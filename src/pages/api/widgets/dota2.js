@@ -12,18 +12,15 @@ const ALLOWED_TIER_IDS = new Set([1, 2]);
 function filterAndCategoriseLeagues(raw) {
   const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.data) ? raw.data : []);
   const now = Date.now();
-  const fourWeeksAgo = now - 60 * 24 * 60 * 60 * 1000;
-
-  // Today at midnight (start of day) for date-only comparisons
-  const todayStart = new Date(now);
-  todayStart.setHours(0, 0, 0, 0);
+  const fourWeeksAgo = now - 28 * 24 * 60 * 60 * 1000;
+  const sevenDays = 7 * 24 * 60 * 60 * 1000;
 
   return list
     .filter((l) => {
       if (!ALLOWED_TIER_IDS.has(l.tier?.id)) return false;
       const lastTime = new Date(l.last).getTime();
-      // Keep leagues that are still ongoing OR ended within the last 4 weeks
-      return lastTime >= fourWeeksAgo;
+      // Keep leagues that are still ongoing (within 7-day buffer) OR ended within the last 4 weeks
+      return lastTime + sevenDays >= now || lastTime >= fourWeeksAgo;
     })
     .map((l) => ({
       leagueId: l.leagueId,
@@ -33,9 +30,11 @@ function filterAndCategoriseLeagues(raw) {
       first: l.first,
       last: l.last,
       count: l.count ?? 0,
-      // l.last is the timestamp of the most recently completed match.
-      // A tournament is ongoing if its last recorded game was today or later.
-      isCurrent: new Date(l.last).setHours(0, 0, 0, 0) >= todayStart.getTime(),
+      // A tournament is ongoing if today falls within first → last + 7-day buffer.
+      // The buffer handles rest days and breaks between stages.
+      isCurrent:
+        new Date(l.first).getTime() <= now &&
+        new Date(l.last).getTime() + sevenDays >= now,
       tags: l.tags ?? [],
     }))
     .sort((a, b) => {
