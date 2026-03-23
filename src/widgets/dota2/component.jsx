@@ -291,7 +291,10 @@ function GameRow({ game, idx, team1Id }) {
   );
 }
 
-// ── Mobile game row — two-row layout for small screens ───────────────────────
+// ── Mobile game row — Fragment cells for the shared parent subgrid ───────────
+// Returns 7 sm:hidden cells (one per SERIES_GRID column) so pips land in the
+// same 6px columns as the series pips, guaranteeing vertical alignment.
+// An 8th sm:hidden cell spanning all columns holds the hero row below.
 
 function MobileGameRow({ game, idx, team1Id }) {
   const { data, isLoading } = useSWR(
@@ -306,7 +309,10 @@ function MobileGameRow({ game, idx, team1Id }) {
 
   if (isLoading || !data) {
     return (
-      <div className="h-12 rounded-sm bg-theme-200/30 dark:bg-theme-900/15 animate-pulse my-px" />
+      <div
+        style={{ gridColumn: "1 / -1" }}
+        className="sm:hidden h-8 rounded-sm bg-theme-200/30 dark:bg-theme-900/15 animate-pulse my-px"
+      />
     );
   }
 
@@ -319,21 +325,33 @@ function MobileGameRow({ game, idx, team1Id }) {
   const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
 
   return (
-    <div className="mb-1 rounded-sm bg-theme-200/20 dark:bg-theme-900/10 px-2 py-1">
-      {/* Row 1: game number · score · duration */}
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-[9px] font-bold text-theme-500 dark:text-theme-400 uppercase tracking-wide">G{idx + 1}</span>
-        <div className="flex items-center gap-1">
-          <span className={`w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
-          <span className="text-[10px] font-bold tabular-nums text-theme-700 dark:text-theme-200">
-            {game.team1Score}–{game.team2Score}
-          </span>
-          <span className={`w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
-        </div>
-        <span className="text-[9px] tabular-nums text-theme-400 dark:text-theme-500">{duration ?? ""}</span>
+    <>
+      {/* Col 1: game label */}
+      <span className="sm:hidden text-xs text-theme-600 dark:text-theme-300 font-semibold tabular-nums leading-none self-center">
+        G{idx + 1}
+      </span>
+      {/* Col 2: left spacer */}
+      <div className="sm:hidden" />
+      {/* Col 3: left win pip — same column as series pip */}
+      <div className="sm:hidden flex items-center justify-center">
+        <span className={`block w-1.5 h-1.5 rounded-full ${t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
       </div>
-      {/* Row 2: FP + heroes left · heroes right + FP */}
-      <div className="flex items-center justify-between gap-1">
+      {/* Col 4: kill score */}
+      <span className="sm:hidden text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center leading-none self-center">
+        {game.team1Score}–{game.team2Score}
+      </span>
+      {/* Col 5: right win pip — same column as series pip */}
+      <div className="sm:hidden flex items-center justify-center">
+        <span className={`block w-1.5 h-1.5 rounded-full ${!t1Won ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`} />
+      </div>
+      {/* Col 6: right spacer */}
+      <div className="sm:hidden" />
+      {/* Col 7: duration */}
+      <span className="sm:hidden text-[8px] tabular-nums text-theme-400 dark:text-theme-500 leading-none self-center text-right">
+        {duration ?? ""}
+      </span>
+      {/* Row 2: FP badge + heroes — spans all columns */}
+      <div className="sm:hidden flex items-center justify-between gap-1 pt-1 pb-1" style={{ gridColumn: "1 / -1" }}>
         <div className="flex items-center gap-1">
           {leftHasFirstPick && <FirstPickBadge />}
           <HeroGroup isRadiant={t1IsRadiant}>
@@ -351,7 +369,7 @@ function MobileGameRow({ game, idx, team1Id }) {
           {rightHasFirstPick && <FirstPickBadge />}
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -466,11 +484,9 @@ function SeriesRow({ series }) {
           className="grid items-center border-t border-theme-300/20 dark:border-theme-700/20 py-1"
           style={{ gridColumn: "1 / -1", gridTemplateColumns: "subgrid" }}
         >
-          {/* Mobile: two-row card per game (spans all columns) */}
+          {/* Mobile: Fragment cells sit directly in the subgrid (sm:hidden) */}
           {games.map((game, idx) => (
-            <div key={`m-${game.id}`} className="sm:hidden py-0.5" style={{ gridColumn: "1 / -1" }}>
-              <MobileGameRow game={game} idx={idx} team1Id={team1Id} />
-            </div>
+            <MobileGameRow key={`m-${game.id}`} game={game} idx={idx} team1Id={team1Id} />
           ))}
           {/* Desktop: 7-cell fragments — cells carry max-sm:hidden */}
           {games.map((game, idx) => (
