@@ -324,6 +324,9 @@ export default async function handler(req, res) {
             img: shortName
               ? `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${shortName}.png`
               : null,
+            vertImg: shortName
+              ? `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/heroes/${shortName}_vert.png`
+              : null,
           });
         }
       }
@@ -348,11 +351,12 @@ export default async function handler(req, res) {
             .sort((a, b) => b.games_played - a.games_played)
             .slice(0, 10)
             .map((h) => {
-              const info = heroMap.get(h.hero_id) ?? { name: h.name ?? "Unknown", img: null };
+              const info = heroMap.get(h.hero_id) ?? { name: h.name ?? "Unknown", img: null, vertImg: null };
               return {
                 heroId: h.hero_id,
                 name: info.name,
                 img: info.img,
+                vertImg: info.vertImg,
                 gamesPlayed: h.games_played,
                 wins: h.wins ?? 0,
               };
