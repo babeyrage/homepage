@@ -1069,7 +1069,7 @@ function TeamModal({ teamId, teamName, teamLogo, onClose }) {
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
                     Recent Matches
                   </p>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-0.5">
                     {data.recentMatches.map((match) => {
                       const isOpen = expandedMatchId === match.matchId;
                       const dur = match.duration
@@ -1082,52 +1082,55 @@ function TeamModal({ teamId, teamName, teamLogo, onClose }) {
                       const oppScore  = match.radiant ? match.direScore    : match.radiantScore;
                       return (
                         <div key={match.matchId} className="rounded-md overflow-hidden">
-                          {/* Collapsed row */}
+                          {/* Collapsed row — date left, opponent centre, result right */}
                           <button
                             type="button"
                             onClick={() => setExpandedMatchId(isOpen ? null : match.matchId)}
-                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-left transition-colors ${match.won ? "bg-emerald-500/5 dark:bg-emerald-500/10 hover:bg-emerald-500/10 dark:hover:bg-emerald-500/15" : "bg-red-500/5 dark:bg-red-500/10 hover:bg-red-500/10 dark:hover:bg-red-500/15"}`}
+                            className={`w-full grid grid-cols-[auto_1fr_auto_auto] gap-x-2 items-center px-2.5 py-1.5 text-left transition-colors
+                              ${match.won
+                                ? "bg-emerald-500/5 dark:bg-emerald-500/10 hover:bg-emerald-500/10 dark:hover:bg-emerald-500/15"
+                                : "bg-red-500/5 dark:bg-red-500/10 hover:bg-red-500/10 dark:hover:bg-red-500/15"}`}
                           >
-                            <span className={`shrink-0 text-[10px] font-bold w-4 ${match.won ? "text-emerald-500" : "text-red-400"}`}>
-                              {match.won ? "W" : "L"}
+                            {/* Date */}
+                            <span className="text-[10px] tabular-nums text-zinc-400 dark:text-zinc-500 shrink-0 w-16">
+                              {date ?? "—"}
                             </span>
-                            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                            {/* Opponent */}
+                            <div className="flex items-center gap-1.5 min-w-0">
                               <LogoBox src={match.opposingTeamLogo} size="xs" />
                               <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-200 truncate">
                                 {match.opposingTeamName}
                               </span>
                             </div>
-                            <span className={`text-[9px] transition-transform shrink-0 text-zinc-400 dark:text-zinc-500 ${isOpen ? "rotate-180" : ""}`}>
+                            {/* W/L */}
+                            <span className={`text-[10px] font-bold shrink-0 ${match.won ? "text-emerald-500" : "text-red-400"}`}>
+                              {match.won ? "W" : "L"}
+                            </span>
+                            {/* Chevron */}
+                            <span className={`text-[9px] text-zinc-400 dark:text-zinc-500 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}>
                               ▼
                             </span>
                           </button>
+
                           {/* Expanded stats */}
                           {isOpen && (
-                            <div className="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 border-t border-zinc-200 dark:border-zinc-700 grid grid-cols-2 gap-x-4 gap-y-1">
-                              <div className="flex justify-between">
-                                <span className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">Score</span>
-                                <span className="text-[10px] font-bold tabular-nums">
-                                  <span className={match.won ? "text-emerald-500" : "text-red-400"}>{teamScore}</span>
-                                  <span className="text-zinc-400 mx-0.5">–</span>
-                                  <span className={!match.won ? "text-emerald-500" : "text-red-400"}>{oppScore}</span>
+                            <div className="bg-zinc-100 dark:bg-zinc-800/80 border-t border-zinc-200 dark:border-zinc-700">
+                              {/* Score banner */}
+                              <div className="flex flex-col items-center py-2.5 gap-1 border-b border-zinc-200 dark:border-zinc-700">
+                                <div className="flex items-center justify-center gap-4">
+                                  <span className={`text-2xl font-black tabular-nums w-8 text-right ${match.won ? "text-emerald-500" : "text-red-400"}`}>{teamScore}</span>
+                                  <span className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">–</span>
+                                  <span className={`text-2xl font-black tabular-nums w-8 text-left ${!match.won ? "text-emerald-500" : "text-red-400"}`}>{oppScore}</span>
+                                </div>
+                                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${match.won ? "bg-emerald-500/20 text-emerald-500" : "bg-red-500/20 text-red-400"}`}>
+                                  {match.won ? "Victory" : "Defeat"}
                                 </span>
                               </div>
-                              {dur && (
-                                <div className="flex justify-between">
-                                  <span className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">Duration</span>
-                                  <span className="text-[10px] tabular-nums text-zinc-600 dark:text-zinc-300">{dur}</span>
-                                </div>
-                              )}
-                              {date && (
-                                <div className="flex justify-between">
-                                  <span className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">Date</span>
-                                  <span className="text-[10px] text-zinc-600 dark:text-zinc-300">{date}</span>
-                                </div>
-                              )}
+                              {/* Tournament */}
                               {match.leagueName && (
-                                <div className="flex justify-between col-span-2">
-                                  <span className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">League</span>
-                                  <span className="text-[10px] text-zinc-600 dark:text-zinc-300 truncate ml-2 text-right">{match.leagueName}</span>
+                                <div className="px-3 py-1.5 border-t border-zinc-200 dark:border-zinc-700 flex items-center gap-1.5">
+                                  <span className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 shrink-0">Tournament</span>
+                                  <span className="text-[10px] text-zinc-600 dark:text-zinc-300 truncate">{match.leagueName}</span>
                                 </div>
                               )}
                             </div>
@@ -1139,47 +1142,57 @@ function TeamModal({ teamId, teamName, teamLogo, onClose }) {
                 </div>
               )}
 
-              {/* Most Played Heroes — 2-column grid */}
+              {/* Most Played Heroes — table */}
               {data.heroes?.length > 0 && (
                 <div className="border-t border-zinc-200 dark:border-zinc-700 pt-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
                     Most Played Heroes
                   </p>
-                  <div className="grid grid-cols-2 gap-1.5">
+                  {/* Column headers */}
+                  <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 px-2 mb-1">
+                    <span className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">Hero</span>
+                    <span className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 text-right">Played</span>
+                    <span className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 text-right w-14">Win Rate</span>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
                     {data.heroes.map((hero) => {
                       const hr = hero.gamesPlayed > 0 ? Math.round((hero.wins / hero.gamesPlayed) * 100) : null;
                       return (
-                        <div key={hero.heroId} className="flex flex-col rounded-md bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                          {/* Vertical hero portrait */}
-                          <div className="w-full aspect-[3/4] bg-black/30 overflow-hidden">
-                            {(hero.vertImg || hero.img) && (
+                        <div key={hero.heroId} className="grid grid-cols-[1fr_auto_auto] gap-x-3 items-center px-2 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800">
+                          {/* Hero portrait + name */}
+                          <div className="flex items-center gap-2 min-w-0">
+                            {hero.img ? (
                               <img
-                                src={hero.vertImg ?? hero.img}
+                                src={hero.img}
                                 alt={hero.name}
-                                className="w-full h-full object-cover object-top"
+                                className="h-5 w-9 rounded-sm object-cover object-center shrink-0"
                               />
+                            ) : (
+                              <div className="h-5 w-9 rounded-sm bg-zinc-300 dark:bg-zinc-700 shrink-0" />
                             )}
-                          </div>
-                          {/* Stats row */}
-                          <div className="flex items-center justify-between px-2 pt-1 gap-1">
-                            <span className="text-[10px] font-semibold text-zinc-700 dark:text-zinc-200 truncate leading-none">
+                            <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-200 truncate">
                               {hero.name}
                             </span>
-                            {hr !== null && (
-                              <span className={`text-[10px] tabular-nums font-semibold shrink-0 ${hr >= 50 ? "text-emerald-500" : "text-red-400"}`}>
-                                {hr}%
-                              </span>
+                          </div>
+                          {/* Games played */}
+                          <span className="text-[10px] tabular-nums text-zinc-500 dark:text-zinc-400 text-right shrink-0">
+                            {hero.gamesPlayed}
+                          </span>
+                          {/* Win rate + bar */}
+                          <div className="flex flex-col items-end gap-0.5 shrink-0 w-14">
+                            {hr !== null ? (
+                              <>
+                                <span className={`text-[10px] tabular-nums font-semibold leading-none ${hr >= 50 ? "text-emerald-500" : "text-red-400"}`}>
+                                  {hr}%
+                                </span>
+                                <div className="w-full h-1 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
+                                  <div className={`h-full rounded-full ${hr >= 50 ? "bg-emerald-500" : "bg-red-400"}`} style={{ width: `${hr}%` }} />
+                                </div>
+                              </>
+                            ) : (
+                              <span className="text-[10px] text-zinc-400">—</span>
                             )}
                           </div>
-                          <span className="text-[9px] tabular-nums text-zinc-500 dark:text-zinc-400 px-2 pb-0.5 leading-none">
-                            {hero.gamesPlayed} played
-                          </span>
-                          {/* Win rate bar */}
-                          {hr !== null && (
-                            <div className="h-0.5 bg-zinc-200 dark:bg-zinc-700 mx-2 mb-1.5 rounded-full overflow-hidden">
-                              <div className={`h-full rounded-full ${hr >= 50 ? "bg-emerald-500" : "bg-red-400"}`} style={{ width: `${hr}%` }} />
-                            </div>
-                          )}
                         </div>
                       );
                     })}
