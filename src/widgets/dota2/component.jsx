@@ -988,7 +988,7 @@ function TeamModal({ teamId, teamName, teamLogo, onClose }) {
           <div className="flex items-center gap-2 shrink-0">
             {data?.rating != null && (
               <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded tabular-nums">
-                {data.rating} pts
+                Rating: {data.rating}
               </span>
             )}
             {data && (
