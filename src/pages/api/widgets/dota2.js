@@ -298,5 +298,107 @@ export default async function handler(req, res) {
     }
   }
 
+  // ── mode=team ─────────────────────────────────────────────────────────────────
+  // Fetches team info, current roster, most-played heroes, and recent matches.
+  if (mode === "team") {
+    const { teamId } = req.query;
+    if (!teamId || !/^\d+$/.test(teamId)) {
+      return res.status(400).json({ error: "Missing or invalid teamId" });
+    }
+
+    try {
+      const [teamRaw, playersRaw, heroesRaw, heroConstantsRaw, matchesRaw] = await Promise.all([
+        cachedRequest(`${OPENDOTA_BASE}/teams/${teamId}`, 30),
+        cachedRequest(`${OPENDOTA_BASE}/teams/${teamId}/players`, 30),
+        cachedRequest(`${OPENDOTA_BASE}/teams/${teamId}/heroes`, 30),
+        cachedRequest(`${OPENDOTA_BASE}/heroes`, 1440),
+        cachedRequest(`${OPENDOTA_BASE}/teams/${teamId}/matches`, 30),
+      ]);
+
+      const heroMap = new Map();
+      if (Array.isArray(heroConstantsRaw)) {
+        for (const h of heroConstantsRaw) {
+          const shortName = h.name?.replace("npc_dota_hero_", "") ?? "";
+          heroMap.set(h.id, {
+            name: h.localized_name ?? shortName,
+            img: shortName
+              ? `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/${shortName}.png`
+              : null,
+            vertImg: shortName
+              ? `https://cdn.cloudflare.steamstatic.com/apps/dota2/images/heroes/${shortName}_vert.png`
+              : null,
+          });
+        }
+      }
+
+      const allPlayers = Array.isArray(playersRaw) ? playersRaw : [];
+      const currentMembers = allPlayers.filter((p) => p.is_current_team_member);
+      // Fall back to the 5 most-active players if the flag is unreliable
+      const playerSource = currentMembers.length > 0
+        ? currentMembers
+        : allPlayers.sort((a, b) => (b.games_played ?? 0) - (a.games_played ?? 0)).slice(0, 5);
+
+      const players = playerSource.map((p) => ({
+        accountId: p.account_id,
+        name: p.name ?? null,
+        gamesPlayed: p.games_played ?? 0,
+        wins: p.wins ?? 0,
+      }));
+
+      const heroes = Array.isArray(heroesRaw)
+        ? heroesRaw
+            .filter((h) => h.games_played > 0)
+            .sort((a, b) => b.games_played - a.games_played)
+            .slice(0, 10)
+            .map((h) => {
+              const info = heroMap.get(h.hero_id) ?? { name: h.name ?? "Unknown", img: null, vertImg: null };
+              return {
+                heroId: h.hero_id,
+                name: info.name,
+                img: info.img,
+                vertImg: info.vertImg,
+                gamesPlayed: h.games_played,
+                wins: h.wins ?? 0,
+              };
+            })
+        : [];
+
+      const recentMatches = Array.isArray(matchesRaw)
+        ? matchesRaw
+            .sort((a, b) => b.start_time - a.start_time)
+            .slice(0, 10)
+            .map((m) => ({
+              matchId: m.match_id,
+              radiant: m.radiant,
+              won: m.radiant ? m.radiant_win : !m.radiant_win,
+              radiantScore: m.radiant_score,
+              direScore: m.dire_score,
+              duration: m.duration,
+              startTime: m.start_time,
+              leagueId: m.leagueid,
+              leagueName: m.league_name ?? null,
+              opposingTeamId: m.opposing_team_id,
+              opposingTeamName: m.opposing_team_name ?? "Unknown",
+              opposingTeamLogo: m.opposing_team_logo ?? null,
+            }))
+        : [];
+
+      return res.json({
+        teamId: teamRaw.team_id,
+        name: teamRaw.name,
+        tag: teamRaw.tag,
+        rating: teamRaw.rating ? Math.round(teamRaw.rating) : null,
+        wins: teamRaw.wins ?? 0,
+        losses: teamRaw.losses ?? 0,
+        players,
+        heroes,
+        recentMatches,
+      });
+    } catch (e) {
+      logger.error("OpenDota team fetch failed (teamId=%s): %s", teamId, e);
+      return res.status(500).json({ error: "Failed to fetch team data" });
+    }
+  }
+
   return res.status(400).json({ error: "Invalid or missing mode" });
 }
