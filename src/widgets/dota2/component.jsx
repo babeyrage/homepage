@@ -132,7 +132,6 @@ function ModalMatchRow({ match, showAbsolute }) {
 
       {/* Centre: time */}
       <div className="shrink-0 flex flex-col items-center gap-0.5 min-w-[52px]">
-        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">vs</span>
         <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-300 tabular-nums">
           {beginAt
             ? showAbsolute
@@ -140,6 +139,7 @@ function ModalMatchRow({ match, showAbsolute }) {
               : beginAt.toRelative()
             : ""}
         </span>
+        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">vs</span>
         {match.streamUrl && (
           <a
             href={match.streamUrl}
