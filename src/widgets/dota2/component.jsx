@@ -974,8 +974,8 @@ function TeamModal({ teamId, teamName, teamLogo, onClose }) {
         className="relative w-full max-w-lg max-h-[95vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-zinc-200 dark:border-zinc-700 shrink-0">
+        {/* ── Header: logo + name + close ── */}
+        <div className="flex items-center justify-between gap-3 px-4 py-3 shrink-0">
           <div className="flex items-center gap-2.5 min-w-0">
             <LogoBox src={teamLogo} size="lg" />
             <div className="flex flex-col min-w-0">
@@ -985,113 +985,52 @@ function TeamModal({ teamId, teamName, teamLogo, onClose }) {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            {data?.rating != null && (
-              <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded tabular-nums">
-                Rating: {data.rating}
-              </span>
-            )}
-            {data && (
-              <span className="text-[10px] tabular-nums text-zinc-600 dark:text-zinc-300">
-                <span className="font-semibold text-emerald-500">{data.wins}W</span>
-                {" · "}
-                <span className="font-semibold text-red-400">{data.losses}L</span>
-                {winRate !== null && <span className="text-zinc-400 ml-1">({winRate}%)</span>}
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors text-base leading-none"
-            >
-              ✕
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="shrink-0 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors text-base leading-none"
+          >
+            ✕
+          </button>
         </div>
 
-        {/* Body */}
+        {/* ── Stat strip ── */}
+        {data && (
+          <div className="grid grid-cols-4 border-t border-b border-zinc-200 dark:border-zinc-700 shrink-0">
+            {[
+              { label: "Rating", value: data.rating ?? "—", color: "text-amber-500 dark:text-amber-400" },
+              { label: "Wins", value: data.wins, color: "text-emerald-500" },
+              { label: "Losses", value: data.losses, color: "text-red-400" },
+              { label: "Win Rate", value: winRate !== null ? `${winRate}%` : "—", color: winRate >= 50 ? "text-emerald-500" : "text-red-400", bar: winRate },
+            ].map(({ label, value, color, bar }) => (
+              <div key={label} className="flex flex-col items-center py-2.5 px-1 gap-0.5 border-r border-zinc-200 dark:border-zinc-700 last:border-r-0">
+                <span className={`text-sm font-bold tabular-nums ${color}`}>{value}</span>
+                <span className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">{label}</span>
+                {bar != null && (
+                  <div className="w-10 h-1 mt-0.5 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
+                    <div className={`h-full rounded-full ${bar >= 50 ? "bg-emerald-500" : "bg-red-400"}`} style={{ width: `${bar}%` }} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── Scrollable body ── */}
         <div className="flex-1 overflow-y-auto px-4 py-3">
           {isLoading ? (
             <div className="flex flex-col gap-1.5">
               {Array.from({ length: 8 }).map((_, i) => <PulseRow key={i} />)}
             </div>
-          ) : !data || (!data.players?.length && !data.heroes?.length) ? (
+          ) : !data || (!data.players?.length && !data.heroes?.length && !data.recentMatches?.length) ? (
             <div className="py-8 text-center text-[11px] text-zinc-400 dark:text-zinc-500">
               No stats available for this team
             </div>
           ) : (
             <>
-              {/* Current Roster */}
-              {data.players?.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
-                    Current Roster
-                  </p>
-                  <div className="flex flex-col gap-1">
-                    {data.players.map((player) => {
-                      const pr = player.gamesPlayed > 0 ? Math.round((player.wins / player.gamesPlayed) * 100) : null;
-                      return (
-                        <div
-                          key={player.accountId}
-                          className="flex items-center justify-between px-2.5 py-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800"
-                        >
-                          <span className="text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 truncate">
-                            {player.name ?? "Unknown"}
-                          </span>
-                          <div className="flex items-center gap-3 shrink-0 ml-2">
-                            <span className="text-[10px] tabular-nums text-zinc-500 dark:text-zinc-400">
-                              {player.gamesPlayed}g
-                            </span>
-                            {pr !== null && (
-                              <span className={`text-[10px] tabular-nums font-medium w-8 text-right ${pr >= 50 ? "text-emerald-500" : "text-red-400"}`}>
-                                {pr}%
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Most Played Heroes */}
-              {data.heroes?.length > 0 && (
-                <div className={data.players?.length > 0 ? "border-t border-zinc-200 dark:border-zinc-700 pt-3" : ""}>
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
-                    Most Played Heroes
-                  </p>
-                  <div className="flex flex-col gap-1">
-                    {data.heroes.map((hero) => {
-                      const hr = hero.gamesPlayed > 0 ? Math.round((hero.wins / hero.gamesPlayed) * 100) : null;
-                      return (
-                        <div key={hero.heroId} className="flex items-center gap-2 px-2 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800">
-                          <div className="w-9 h-5 shrink-0 rounded-sm overflow-hidden bg-black/20">
-                            {hero.img && (
-                              <img src={hero.img} alt={hero.name} className="w-full h-full object-cover object-top" />
-                            )}
-                          </div>
-                          <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-200 flex-1 truncate">
-                            {hero.name}
-                          </span>
-                          <span className="text-[10px] tabular-nums text-zinc-500 dark:text-zinc-400 shrink-0">
-                            {hero.gamesPlayed}g
-                          </span>
-                          {hr !== null && (
-                            <span className={`text-[10px] tabular-nums font-semibold w-8 text-right shrink-0 ${hr >= 50 ? "text-emerald-500" : "text-red-400"}`}>
-                              {hr}%
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
               {/* Recent Matches */}
               {data.recentMatches?.length > 0 && (
-                <div className="border-t border-zinc-200 dark:border-zinc-700 pt-3 mt-1">
+                <div className="mb-4">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
                     Recent Matches
                   </p>
@@ -1101,41 +1040,111 @@ function TeamModal({ teamId, teamName, teamLogo, onClose }) {
                         ? `${Math.floor(match.duration / 60)}:${String(match.duration % 60).padStart(2, "0")}`
                         : null;
                       const date = match.startTime
-                        ? DateTime.fromSeconds(match.startTime).toFormat("d MMM")
+                        ? DateTime.fromSeconds(match.startTime).toRelativeCalendar()
                         : null;
-                      const teamScore  = match.radiant ? match.radiantScore : match.direScore;
-                      const oppScore   = match.radiant ? match.direScore    : match.radiantScore;
-
+                      const teamScore = match.radiant ? match.radiantScore : match.direScore;
+                      const oppScore  = match.radiant ? match.direScore    : match.radiantScore;
                       return (
                         <div
                           key={match.matchId}
-                          className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800"
+                          className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md ${match.won ? "bg-emerald-500/5 dark:bg-emerald-500/10" : "bg-red-500/5 dark:bg-red-500/10"}`}
                         >
-                          {/* Win/loss pill */}
-                          <span className={`shrink-0 text-[9px] font-bold uppercase tracking-wide w-5 text-center ${match.won ? "text-emerald-500" : "text-red-400"}`}>
+                          <span className={`shrink-0 text-[10px] font-bold w-4 ${match.won ? "text-emerald-500" : "text-red-400"}`}>
                             {match.won ? "W" : "L"}
                           </span>
-
-                          {/* Opponent logo + name */}
                           <div className="flex items-center gap-1.5 flex-1 min-w-0">
                             <LogoBox src={match.opposingTeamLogo} size="xs" />
                             <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-200 truncate">
                               {match.opposingTeamName}
                             </span>
                           </div>
-
-                          {/* Score */}
-                          <span className="text-[11px] font-bold tabular-nums text-zinc-600 dark:text-zinc-300 shrink-0">
+                          <span className="text-[11px] font-bold tabular-nums shrink-0">
                             <span className={match.won ? "text-emerald-500" : "text-red-400"}>{teamScore}</span>
                             <span className="text-zinc-400 mx-0.5">–</span>
                             <span className={!match.won ? "text-emerald-500" : "text-red-400"}>{oppScore}</span>
                           </span>
-
-                          {/* Duration + date */}
-                          <div className="flex flex-col items-end shrink-0 min-w-[46px]">
+                          <div className="flex flex-col items-end shrink-0 min-w-[48px]">
                             {dur && <span className="text-[9px] tabular-nums text-zinc-500 dark:text-zinc-400 leading-none">{dur}</span>}
-                            {date && <span className="text-[9px] text-zinc-400 dark:text-zinc-500 leading-none mt-0.5">{date}</span>}
+                            {date && <span className="text-[9px] text-zinc-400 dark:text-zinc-500 leading-none mt-0.5 capitalize">{date}</span>}
                           </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Current Roster */}
+              {data.players?.length > 0 && (
+                <div className="border-t border-zinc-200 dark:border-zinc-700 pt-3 mb-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                    Current Roster
+                  </p>
+                  <div className="flex flex-col gap-1">
+                    {data.players.map((player) => {
+                      const pr = player.gamesPlayed > 0 ? Math.round((player.wins / player.gamesPlayed) * 100) : null;
+                      return (
+                        <div key={player.accountId} className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800">
+                          <span className={`text-[11px] font-semibold flex-1 truncate ${player.name ? "text-zinc-700 dark:text-zinc-200" : "text-zinc-400 dark:text-zinc-500 italic"}`}>
+                            {player.name ?? "Unknown Player"}
+                          </span>
+                          <span className="text-[10px] tabular-nums text-zinc-500 dark:text-zinc-400 shrink-0">
+                            {player.gamesPlayed}g
+                          </span>
+                          {pr !== null && (
+                            <div className="flex flex-col items-end gap-0.5 shrink-0 w-10">
+                              <span className={`text-[10px] tabular-nums font-semibold leading-none ${pr >= 50 ? "text-emerald-500" : "text-red-400"}`}>
+                                {pr}%
+                              </span>
+                              <div className="w-full h-1 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
+                                <div className={`h-full rounded-full ${pr >= 50 ? "bg-emerald-500" : "bg-red-400"}`} style={{ width: `${pr}%` }} />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Most Played Heroes — 2-column grid */}
+              {data.heroes?.length > 0 && (
+                <div className="border-t border-zinc-200 dark:border-zinc-700 pt-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                    Most Played Heroes
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {data.heroes.map((hero) => {
+                      const hr = hero.gamesPlayed > 0 ? Math.round((hero.wins / hero.gamesPlayed) * 100) : null;
+                      return (
+                        <div key={hero.heroId} className="flex flex-col rounded-md bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                          {/* Hero portrait banner */}
+                          <div className="w-full h-12 bg-black/20 overflow-hidden">
+                            {hero.img && (
+                              <img src={hero.img} alt={hero.name} className="w-full h-full object-cover object-top" />
+                            )}
+                          </div>
+                          {/* Stats row */}
+                          <div className="flex items-center justify-between px-2 py-1 gap-1">
+                            <span className="text-[10px] font-semibold text-zinc-700 dark:text-zinc-200 truncate leading-none">
+                              {hero.name}
+                            </span>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span className="text-[9px] tabular-nums text-zinc-500 dark:text-zinc-400">{hero.gamesPlayed}g</span>
+                              {hr !== null && (
+                                <span className={`text-[9px] tabular-nums font-semibold ${hr >= 50 ? "text-emerald-500" : "text-red-400"}`}>
+                                  {hr}%
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          {/* Win rate bar */}
+                          {hr !== null && (
+                            <div className="h-0.5 bg-zinc-200 dark:bg-zinc-700 mx-2 mb-1.5 rounded-full overflow-hidden">
+                              <div className={`h-full rounded-full ${hr >= 50 ? "bg-emerald-500" : "bg-red-400"}`} style={{ width: `${hr}%` }} />
+                            </div>
+                          )}
                         </div>
                       );
                     })}
