@@ -948,6 +948,155 @@ function MatchDetailModal({ game, series, onClose }) {
   );
 }
 
+// ── Team detail modal ─────────────────────────────────────────────────────────
+
+function TeamModal({ teamId, teamName, teamLogo, onClose }) {
+  const { data, isLoading } = useSWR(
+    `/api/widgets/dota2?mode=team&teamId=${teamId}`,
+    { revalidateOnFocus: false },
+  );
+
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  const totalGames = data ? (data.wins ?? 0) + (data.losses ?? 0) : 0;
+  const winRate = totalGames > 0 ? Math.round((data.wins / totalGames) * 100) : null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-lg max-h-[95vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-zinc-200 dark:border-zinc-700 shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <LogoBox src={teamLogo} size="lg" />
+            <div className="flex flex-col min-w-0">
+              <span className="text-sm font-bold text-zinc-800 dark:text-zinc-100 truncate">{teamName}</span>
+              {data?.tag && (
+                <span className="text-[10px] text-zinc-400 dark:text-zinc-500">{data.tag}</span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {data?.rating != null && (
+              <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded tabular-nums">
+                {data.rating} pts
+              </span>
+            )}
+            {data && (
+              <span className="text-[10px] tabular-nums text-zinc-600 dark:text-zinc-300">
+                <span className="font-semibold text-emerald-500">{data.wins}W</span>
+                {" · "}
+                <span className="font-semibold text-red-400">{data.losses}L</span>
+                {winRate !== null && <span className="text-zinc-400 ml-1">({winRate}%)</span>}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors text-base leading-none"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto px-4 py-3">
+          {isLoading ? (
+            <div className="flex flex-col gap-1.5">
+              {Array.from({ length: 8 }).map((_, i) => <PulseRow key={i} />)}
+            </div>
+          ) : !data || (!data.players?.length && !data.heroes?.length) ? (
+            <div className="py-8 text-center text-[11px] text-zinc-400 dark:text-zinc-500">
+              No stats available for this team
+            </div>
+          ) : (
+            <>
+              {/* Current Roster */}
+              {data.players?.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                    Current Roster
+                  </p>
+                  <div className="flex flex-col gap-1">
+                    {data.players.map((player) => {
+                      const pr = player.gamesPlayed > 0 ? Math.round((player.wins / player.gamesPlayed) * 100) : null;
+                      return (
+                        <div
+                          key={player.accountId}
+                          className="flex items-center justify-between px-2.5 py-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800"
+                        >
+                          <span className="text-[11px] font-semibold text-zinc-700 dark:text-zinc-200 truncate">
+                            {player.name ?? "Unknown"}
+                          </span>
+                          <div className="flex items-center gap-3 shrink-0 ml-2">
+                            <span className="text-[10px] tabular-nums text-zinc-500 dark:text-zinc-400">
+                              {player.gamesPlayed}g
+                            </span>
+                            {pr !== null && (
+                              <span className={`text-[10px] tabular-nums font-medium w-8 text-right ${pr >= 50 ? "text-emerald-500" : "text-red-400"}`}>
+                                {pr}%
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Most Played Heroes */}
+              {data.heroes?.length > 0 && (
+                <div className={data.players?.length > 0 ? "border-t border-zinc-200 dark:border-zinc-700 pt-3" : ""}>
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                    Most Played Heroes
+                  </p>
+                  <div className="flex flex-col gap-1">
+                    {data.heroes.map((hero) => {
+                      const hr = hero.gamesPlayed > 0 ? Math.round((hero.wins / hero.gamesPlayed) * 100) : null;
+                      return (
+                        <div key={hero.heroId} className="flex items-center gap-2 px-2 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800">
+                          <div className="w-9 h-5 shrink-0 rounded-sm overflow-hidden bg-black/20">
+                            {hero.img && (
+                              <img src={hero.img} alt={hero.name} className="w-full h-full object-cover object-top" />
+                            )}
+                          </div>
+                          <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-200 flex-1 truncate">
+                            {hero.name}
+                          </span>
+                          <span className="text-[10px] tabular-nums text-zinc-500 dark:text-zinc-400 shrink-0">
+                            {hero.gamesPlayed}g
+                          </span>
+                          {hr !== null && (
+                            <span className={`text-[10px] tabular-nums font-semibold w-8 text-right shrink-0 ${hr >= 50 ? "text-emerald-500" : "text-red-400"}`}>
+                              {hr}%
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 // ── Tournament modal (portal — renders outside widget container) ──────────────
 
 const PAGE_SIZE = 10;
@@ -964,6 +1113,7 @@ function TournamentModal({ tournament, onClose }) {
   const { data, isLoading } = useSWR(url, { revalidateOnFocus: false });
 
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [selectedTeam, setSelectedTeam] = useState(null);
   const teams = data?.teams ?? [];
   const series = data?.series ?? [];
   const visibleSeries = series.slice(0, visibleCount);
@@ -984,7 +1134,7 @@ function TournamentModal({ tournament, onClose }) {
     return () => { document.body.style.overflow = prev; };
   }, []);
 
-  return createPortal(
+  const modal = createPortal(
     // Backdrop — click outside to close
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
@@ -1056,31 +1206,9 @@ function TournamentModal({ tournament, onClose }) {
             </div>
           ) : (
             <>
-              {/* Participants */}
-              {teams.length > 0 && (
-                <div className="mb-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
-                    Participants
-                  </p>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {teams.map((team) => (
-                      <div
-                        key={team.teamId}
-                        className="flex items-center gap-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-1.5 min-w-0"
-                      >
-                        <LogoBox src={team.logo} size="md" />
-                        <span className="text-[9px] font-medium text-zinc-700 dark:text-zinc-200 truncate leading-tight">
-                          {team.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Series results */}
               {series.length > 0 ? (
-                <div className={teams.length > 0 ? "border-t border-zinc-200 dark:border-zinc-700 pt-3" : ""}>
+                <div>
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
                     Results — {series.length} series
                   </p>
@@ -1113,12 +1241,50 @@ function TournamentModal({ tournament, onClose }) {
                   </div>
                 )
               )}
+
+              {/* Participants — bottom */}
+              {teams.length > 0 && (
+                <div className="border-t border-zinc-200 dark:border-zinc-700 pt-3 mt-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                    Participants
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {teams.map((team) => (
+                      <button
+                        key={team.teamId}
+                        type="button"
+                        onClick={() => setSelectedTeam(team)}
+                        className="flex items-center gap-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-2 py-1.5 min-w-0 transition-colors text-left"
+                      >
+                        <LogoBox src={team.logo} size="md" />
+                        <span className="text-[9px] font-medium text-zinc-700 dark:text-zinc-200 truncate leading-tight">
+                          {team.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
       </div>
     </div>,
     document.body,
+  );
+
+  return (
+    <>
+      {modal}
+      {selectedTeam && (
+        <TeamModal
+          teamId={selectedTeam.teamId}
+          teamName={selectedTeam.name}
+          teamLogo={selectedTeam.logo}
+          onClose={() => setSelectedTeam(null)}
+        />
+      )}
+    </>
   );
 }
 
@@ -1239,6 +1405,8 @@ function UpcomingTournamentModal({ tournament, widget, onClose }) {
   const visibleEntries = dateEntries.slice(0, visibleDays);
   const hiddenDays = dateEntries.length - visibleDays;
 
+  const [selectedTeam, setSelectedTeam] = useState(null);
+
   // Close on Escape
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
@@ -1253,7 +1421,7 @@ function UpcomingTournamentModal({ tournament, widget, onClose }) {
     return () => { document.body.style.overflow = prev; };
   }, []);
 
-  return createPortal(
+  const modal = createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
       onClick={onClose}
@@ -1300,35 +1468,13 @@ function UpcomingTournamentModal({ tournament, widget, onClose }) {
 
         {/* ── Scrollable body ── */}
         <div className="flex-1 overflow-y-auto px-4 py-3">
-          {/* Participating teams */}
-          {tournament.teams?.length > 0 && (
-            <div className="mb-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
-                Participants
-              </p>
-              <div className="grid grid-cols-3 gap-1.5">
-                {tournament.teams.map((team) => (
-                  <div
-                    key={team.id}
-                    className="flex items-center gap-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-1.5 min-w-0"
-                  >
-                    <LogoBox src={team.logo} size="md" />
-                    <span className="text-[9px] font-medium text-zinc-700 dark:text-zinc-200 truncate leading-tight">
-                      {team.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Scheduled matches */}
           {isLoading ? (
             <div className="flex flex-col gap-1.5">
               <PulseRow /><PulseRow /><PulseRow />
             </div>
           ) : matches.length > 0 ? (
-            <div className={tournament.teams?.length > 0 ? "border-t border-zinc-200 dark:border-zinc-700 pt-3" : ""}>
+            <div>
               <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
                 Schedule — {matches.length} match{matches.length !== 1 ? "es" : ""}
               </p>
@@ -1359,10 +1505,48 @@ function UpcomingTournamentModal({ tournament, widget, onClose }) {
               </div>
             )
           )}
+
+          {/* Participating teams — bottom */}
+          {tournament.teams?.length > 0 && (
+            <div className="border-t border-zinc-200 dark:border-zinc-700 pt-3 mt-3">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                Participants
+              </p>
+              <div className="grid grid-cols-3 gap-1.5">
+                {tournament.teams.map((team) => (
+                  <button
+                    key={team.id}
+                    type="button"
+                    onClick={() => setSelectedTeam(team)}
+                    className="flex items-center gap-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-2 py-1.5 min-w-0 transition-colors text-left"
+                  >
+                    <LogoBox src={team.logo} size="md" />
+                    <span className="text-[9px] font-medium text-zinc-700 dark:text-zinc-200 truncate leading-tight">
+                      {team.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>,
     document.body,
+  );
+
+  return (
+    <>
+      {modal}
+      {selectedTeam && (
+        <TeamModal
+          teamId={selectedTeam.id}
+          teamName={selectedTeam.name}
+          teamLogo={selectedTeam.logo}
+          onClose={() => setSelectedTeam(null)}
+        />
+      )}
+    </>
   );
 }
 
