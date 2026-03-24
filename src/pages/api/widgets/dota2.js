@@ -299,7 +299,7 @@ export default async function handler(req, res) {
   }
 
   // ── mode=team ─────────────────────────────────────────────────────────────────
-  // Fetches team info, current roster, and most-played heroes from OpenDota.
+  // Fetches team info, current roster, most-played heroes, and recent matches.
   if (mode === "team") {
     const { teamId } = req.query;
     if (!teamId || !/^\d+$/.test(teamId)) {
@@ -307,11 +307,12 @@ export default async function handler(req, res) {
     }
 
     try {
-      const [teamRaw, playersRaw, heroesRaw, heroConstantsRaw] = await Promise.all([
+      const [teamRaw, playersRaw, heroesRaw, heroConstantsRaw, matchesRaw] = await Promise.all([
         cachedRequest(`${OPENDOTA_BASE}/teams/${teamId}`, 30),
         cachedRequest(`${OPENDOTA_BASE}/teams/${teamId}/players`, 30),
         cachedRequest(`${OPENDOTA_BASE}/teams/${teamId}/heroes`, 30),
         cachedRequest(`${OPENDOTA_BASE}/heroes`, 1440),
+        cachedRequest(`${OPENDOTA_BASE}/teams/${teamId}/matches`, 30),
       ]);
 
       const heroMap = new Map();
@@ -358,6 +359,26 @@ export default async function handler(req, res) {
             })
         : [];
 
+      const recentMatches = Array.isArray(matchesRaw)
+        ? matchesRaw
+            .sort((a, b) => b.start_time - a.start_time)
+            .slice(0, 10)
+            .map((m) => ({
+              matchId: m.match_id,
+              radiant: m.radiant,
+              won: m.radiant ? m.radiant_win : !m.radiant_win,
+              radiantScore: m.radiant_score,
+              direScore: m.dire_score,
+              duration: m.duration,
+              startTime: m.start_time,
+              leagueId: m.leagueid,
+              leagueName: m.league_name ?? null,
+              opposingTeamId: m.opposing_team_id,
+              opposingTeamName: m.opposing_team_name ?? "Unknown",
+              opposingTeamLogo: m.opposing_team_logo ?? null,
+            }))
+        : [];
+
       return res.json({
         teamId: teamRaw.team_id,
         name: teamRaw.name,
@@ -367,6 +388,7 @@ export default async function handler(req, res) {
         losses: teamRaw.losses ?? 0,
         players,
         heroes,
+        recentMatches,
       });
     } catch (e) {
       logger.error("OpenDota team fetch failed (teamId=%s): %s", teamId, e);

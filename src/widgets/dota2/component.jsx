@@ -1088,6 +1088,60 @@ function TeamModal({ teamId, teamName, teamLogo, onClose }) {
                   </div>
                 </div>
               )}
+
+              {/* Recent Matches */}
+              {data.recentMatches?.length > 0 && (
+                <div className="border-t border-zinc-200 dark:border-zinc-700 pt-3 mt-1">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                    Recent Matches
+                  </p>
+                  <div className="flex flex-col gap-1">
+                    {data.recentMatches.map((match) => {
+                      const dur = match.duration
+                        ? `${Math.floor(match.duration / 60)}:${String(match.duration % 60).padStart(2, "0")}`
+                        : null;
+                      const date = match.startTime
+                        ? DateTime.fromSeconds(match.startTime).toFormat("d MMM")
+                        : null;
+                      const teamScore  = match.radiant ? match.radiantScore : match.direScore;
+                      const oppScore   = match.radiant ? match.direScore    : match.radiantScore;
+
+                      return (
+                        <div
+                          key={match.matchId}
+                          className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800"
+                        >
+                          {/* Win/loss pill */}
+                          <span className={`shrink-0 text-[9px] font-bold uppercase tracking-wide w-5 text-center ${match.won ? "text-emerald-500" : "text-red-400"}`}>
+                            {match.won ? "W" : "L"}
+                          </span>
+
+                          {/* Opponent logo + name */}
+                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                            <LogoBox src={match.opposingTeamLogo} size="xs" />
+                            <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-200 truncate">
+                              {match.opposingTeamName}
+                            </span>
+                          </div>
+
+                          {/* Score */}
+                          <span className="text-[11px] font-bold tabular-nums text-zinc-600 dark:text-zinc-300 shrink-0">
+                            <span className={match.won ? "text-emerald-500" : "text-red-400"}>{teamScore}</span>
+                            <span className="text-zinc-400 mx-0.5">–</span>
+                            <span className={!match.won ? "text-emerald-500" : "text-red-400"}>{oppScore}</span>
+                          </span>
+
+                          {/* Duration + date */}
+                          <div className="flex flex-col items-end shrink-0 min-w-[46px]">
+                            {dur && <span className="text-[9px] tabular-nums text-zinc-500 dark:text-zinc-400 leading-none">{dur}</span>}
+                            {date && <span className="text-[9px] text-zinc-400 dark:text-zinc-500 leading-none mt-0.5">{date}</span>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
