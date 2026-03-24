@@ -131,7 +131,7 @@ function ModalMatchRow({ match, showAbsolute }) {
       </div>
 
       {/* Centre: time */}
-      <div className="shrink-0 flex flex-col items-center gap-0.5 min-w-[52px]">
+      <div className="shrink-0 flex flex-col items-center gap-0.5 min-w-13">
         <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-300 tabular-nums">
           {beginAt
             ? showAbsolute
@@ -582,7 +582,7 @@ function PlayerTableRow({ player }) {
   return (
     <tr className="border-b border-zinc-800 hover:bg-zinc-800/60 transition-colors">
       {/* PLAYER: wide hero portrait + hero name + steam name */}
-      <td className="px-2 py-1.5 min-w-[180px]">
+      <td className="px-2 py-1.5 min-w-45">
         <div className="flex items-center gap-2 min-w-0">
           <div className="w-16 h-9 shrink-0 rounded-sm overflow-hidden bg-zinc-800">
             {player.hero.img && (
@@ -719,7 +719,7 @@ function SmallPlayerRow({ player, tab }) {
   return (
     <tr className="border-b border-zinc-800 hover:bg-zinc-800/60 transition-colors">
       {/* Compact player cell: small hero portrait + name */}
-      <td className="px-2 py-1.5 max-w-[110px]">
+      <td className="px-2 py-1.5 max-w-27.5">
         <div className="flex items-center gap-1.5 min-w-0">
           <div className="w-9 h-6 shrink-0 rounded-sm overflow-hidden bg-zinc-800">
             {player.hero.img && (
@@ -866,7 +866,7 @@ function MatchDetailModal({ game, series, onClose }) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm"
+      className="fixed inset-0 z-60 flex items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
@@ -933,7 +933,7 @@ function MatchDetailModal({ game, series, onClose }) {
 
               {/* Large screens: full scrollable table */}
               <div className="hidden sm:block">
-                <div className="min-w-[700px]">
+                <div className="min-w-175">
                   <TeamTable players={radiantPlayers} team={radiantTeam} />
                   <div className="border-t-2 border-zinc-700" />
                   <TeamTable players={direPlayers} team={direTeam} />
@@ -968,7 +968,7 @@ function TeamModal({ teamId, teamName, teamLogo, onClose }) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-60 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
@@ -1257,7 +1257,7 @@ function TournamentModal({ tournament, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Banner ── */}
-        <div className="relative h-36 w-full shrink-0 bg-zinc-800 overflow-hidden">
+        <div className="relative h-44 w-full shrink-0 bg-zinc-800 overflow-hidden">
           <img
             src={`https://cdn.datdota.com/images/leagues/${leagueId}_big.png`}
             alt={name}
@@ -1317,9 +1317,33 @@ function TournamentModal({ tournament, onClose }) {
             </div>
           ) : (
             <>
+              {/* Participants — top */}
+              {teams.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                    Participants — {teams.length} teams
+                  </p>
+                  <div className={`grid gap-1 ${teams.length > 8 ? "grid-cols-3" : "grid-cols-2"}`}>
+                    {teams.map((team) => (
+                      <button
+                        key={team.teamId}
+                        type="button"
+                        onClick={() => setSelectedTeam(team)}
+                        className="flex items-center gap-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-2 py-1.5 min-w-0 transition-colors text-left"
+                      >
+                        <LogoBox src={team.logo} size="sm" />
+                        <span className={`font-medium text-zinc-700 dark:text-zinc-200 truncate leading-tight ${teams.length > 8 ? "text-[9px]" : "text-[10px]"}`}>
+                          {team.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Series results */}
               {series.length > 0 ? (
-                <div>
+                <div className="border-t border-zinc-200 dark:border-zinc-700 pt-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
                     Results — {series.length} series
                   </p>
@@ -1351,30 +1375,6 @@ function TournamentModal({ tournament, onClose }) {
                     No match data available
                   </div>
                 )
-              )}
-
-              {/* Participants — bottom */}
-              {teams.length > 0 && (
-                <div className="border-t border-zinc-200 dark:border-zinc-700 pt-3 mt-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
-                    Participants
-                  </p>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {teams.map((team) => (
-                      <button
-                        key={team.teamId}
-                        type="button"
-                        onClick={() => setSelectedTeam(team)}
-                        className="flex items-center gap-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-2 py-1.5 min-w-0 transition-colors text-left"
-                      >
-                        <LogoBox src={team.logo} size="md" />
-                        <span className="text-[9px] font-medium text-zinc-700 dark:text-zinc-200 truncate leading-tight">
-                          {team.name}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
               )}
             </>
           )}
