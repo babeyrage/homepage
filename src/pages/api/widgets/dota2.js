@@ -3,7 +3,7 @@ import { cachedRequest } from "utils/proxy/http";
 
 const logger = createLogger("dota2");
 
-const DATDOTA_BASE = "https://datdota.com/api";
+const DATDOTA_BASE = "https://api.datdota.com/api";
 const OPENDOTA_BASE = "https://api.opendota.com/api";
 
 // DatDota tier IDs: 1 = PREMIUM, 2 = PROFESSIONAL
