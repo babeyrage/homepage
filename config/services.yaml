@@ -75,7 +75,7 @@
                 type: dota2
                 key: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
 
-- ARR STACK:
+- MEDIA:
     - Radarr:
         icon: radarr.svg
         href: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
@@ -180,6 +180,29 @@
         proxmoxVMID: "{{HOMEPAGE_VAR_SOULSYNC_VMID}}"
         proxmoxType: lxc
 
+    - Immich:
+        icon: immich.svg
+        href: http://{{HOMEPAGE_VAR_IMMICH_URL}}:{{HOMEPAGE_VAR_IMMICH_PORT}}
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_IMMICH_VMID}}"
+        proxmoxType: lxc
+        widget:
+            type: immich
+            url: http://{{HOMEPAGE_VAR_IMMICH_URL}}:{{HOMEPAGE_VAR_IMMICH_PORT}}
+            key: adminapikeyadminapikeyadminapikey
+            version: 2
+
+    - RomM:
+        icon: romm.svg
+        href: http://{{HOMEPAGE_VAR_ROMM_URL}}:{{HOMEPAGE_VAR_ROMM_PORT}}
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_ROMM_VMID}}"
+        proxmoxType: lxc
+        widget:
+            type: romm
+            url: http://{{HOMEPAGE_VAR_ROMM_URL}}:{{HOMEPAGE_VAR_ROMM_PORT}}
+            fields: ["platforms", "totalRoms", "saves", "states"]
+
 - SERVERS:
     - Zues Proxmox:
         icon: proxmox.svg
@@ -224,7 +247,7 @@
             url: http://{{HOMEPAGE_VAR_BACKREST_URL}}:{{HOMEPAGE_VAR_BACKREST_PORT}}
             username: "{{HOMEPAGE_VAR_BACKREST_USER}}"
             password: "{{HOMEPAGE_VAR_BACKREST_PASSWORD}}"
-            
+
 - HOME NETWORK:
     - DOWNLOADS:
         - QBittorrent:
@@ -262,18 +285,6 @@
                 url: http://{{HOMEPAGE_VAR_PIHOLE_URL}}
                 version: 6
 
-        - Speedtest Tracker:
-            icon: speedtest-tracker.png
-            href: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
-            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
-            proxmoxVMID: "{{HOMEPAGE_VAR_SPEEDTEST_VMID}}"
-            proxmoxType: lxc
-            widget:
-                type: speedtest
-                url: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
-                version: 2
-                key: "{{HOMEPAGE_VAR_SPEEDTEST_API_KEY}}"
-
         - Traefik:
             icon: traefik.svg
             href: http://{{HOMEPAGE_VAR_TRAEFIK_URL}}:{{HOMEPAGE_VAR_TRAEFIK_PORT}}
@@ -286,6 +297,18 @@
                 username: "{{HOMEPAGE_VAR_TRAEFIK_USER}}"
                 password: "{{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}"
 
+        - Speedtest Tracker:
+            icon: speedtest-tracker.png
+            href: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_SPEEDTEST_VMID}}"
+            proxmoxType: lxc
+            widget:
+                type: speedtest
+                url: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
+                version: 2
+                key: "{{HOMEPAGE_VAR_SPEEDTEST_API_KEY}}"
+
         - Unifi:
             icon: unifi.svg
             href: http://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
@@ -297,6 +320,13 @@
             #     url: https://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
             #     site: Site Name
             #     key: "{{HOMEPAGE_VAR_UNIFI_API_KEY}}"
+
+        - Homelable:
+            icon: homelable.svg
+            href: http://{{HOMEPAGE_VAR_HOMELABLE_URL}}:{{HOMEPAGE_VAR_HOMELABLE_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_HOMELABLE_VMID}}"
+            proxmoxType: lxc
 
         - EdgeSwitch:
             icon: ubiquiti.svg
