@@ -195,10 +195,8 @@ iframe {
   font-variant-numeric: tabular-nums;
 }
 
-/* ─── Service Block — uniform sizing & background ─── */
+/* ─── Service Block — background & border ─── */
 .service-block {
-  min-height: 54px !important;
-  max-width: 80px !important;
   background: rgb(0 0 0 / 22%) !important;
   border-radius: 6px !important;
 }
