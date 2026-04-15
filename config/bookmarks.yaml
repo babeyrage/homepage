@@ -3,6 +3,10 @@
 # https://gethomepage.dev/configs/bookmarks
 
 - Developer:
+    - Semaphore:
+        - icon: sh-semaphore-ui.svg
+          href: http://{{HOMEPAGE_VAR_SEMAPHORE_URL}}:{{HOMEPAGE_VAR_SEMAPHORE_PORT}}
+
     - Github:
         - icon: si-github
           href: https://github.com/
@@ -15,9 +19,9 @@
         - icon: cloudflare.svg
           href: https://dash.cloudflare.com/
 
-    - ChatGPT:
-        - icon: si-openai
-          href: https://chatgpt.com/
+    - Claude:
+        - icon: si-claude
+          href: https://claude.ai/
 
     - IT Tools:
         - icon: it-tools.svg
@@ -32,25 +36,10 @@
         - icon: gmail.svg
           href: https://gmail.com/
 
-    - ProtonMail:
-        - icon: si-protonmail-#6D4AFF
-          href: https://mail.proton.me/u/0/inbox/
-
     - Outlook:
-        - icon: /icons/outlook.svg
+        - icon: sh-microsoft-outlook.svg
           href: https://outlook.office.com/mail/
-
-- Education:
-    - Blackboard:
-        - icon: /icons/tafe.png
-          href: https://blackboard.northmetrotafe.wa.edu.au/
     
-    - Student Portal:
-        - icon: /icons/tafe.png
-          href: https://nmtafe.t1cloud.com/T1Default/CiAnywhere/web/NMTAFE/LogOn/$S1_STU
-    
-    
-
 - Entertainment:
     - YouTube:
         - icon: si-youtube-#FF0000
@@ -60,14 +49,14 @@
         - icon: si-twitch-#9146FF
           href: https://www.twitch.tv/
 
+    - Reddit:
+        - icon: si-reddit
+          href: https://www.reddit.com/
+
 - Torrents/Indexers:
     - DrukenSlug:
         - icon: /icons/ds-icon.png
           href: https://drunkenslug.com/
-    
-    - MyAnonamouse:
-        - icon: /icons/myanon-icon.png
-          href: https://myanonamouse.net/index.php
 
     - NZB Geek:
         - icon: /icons/nzbgeek-icon.png
