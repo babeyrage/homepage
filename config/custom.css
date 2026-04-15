@@ -56,6 +56,11 @@ iframe {
   font-size: 0.8rem !important;
   font-weight: 500 !important;
   letter-spacing: 0.01em;
+  transition: color var(--ease);
+}
+
+.service-card:hover .service-name {
+  color: rgb(var(--accent) / 90%) !important;
 }
 
 /* ─── Service Description — slightly softer ─── */
@@ -490,6 +495,126 @@ iframe {
   background: rgb(255 255 255 / 4%) !important;
   border: 1px solid rgb(255 255 255 / 8%) !important;
   border-radius: 6px !important;
+}
+
+/* ─── Loading Shimmer — replaces opacity pulse on loading blocks ─── */
+@keyframes shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+.service-block.animate-pulse {
+  background: linear-gradient(
+    90deg,
+    rgb(0 0 0 / 22%) 0%,
+    rgb(255 255 255 / 6%) 50%,
+    rgb(0 0 0 / 22%) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  animation: shimmer 1.6s ease-in-out infinite !important;
+}
+
+/* ─── QuickLaunch Dialog — glassmorphism restyle ─── */
+dialog {
+  background: rgb(10 10 20 / 88%) !important;
+  border: 1px solid rgb(var(--card-border)) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(24px) !important;
+  box-shadow:
+    0 0 0 1px rgb(var(--accent) / 8%),
+    0 24px 48px rgb(0 0 0 / 50%) !important;
+}
+
+/* Search input */
+dialog input[type="text"] {
+  background: rgb(255 255 255 / 3%) !important;
+  color: rgb(255 255 255 / 90%) !important;
+  border-bottom-color: rgb(var(--card-border)) !important;
+  border-radius: 11px 11px 0 0 !important;
+}
+
+dialog input[type="text"]:focus {
+  border-bottom-color: rgb(var(--accent) / 50%) !important;
+  box-shadow: none !important;
+}
+
+dialog input[type="text"]::placeholder {
+  color: rgb(255 255 255 / 30%) !important;
+}
+
+/* Result rows */
+dialog ul button {
+  color: rgb(255 255 255 / 75%) !important;
+  border-radius: 8px !important;
+  transition: background var(--ease), color var(--ease) !important;
+}
+
+/* Active / hovered result row */
+dialog ul button.bg-theme-300\/50,
+dialog ul button.dark\:bg-theme-700\/50 {
+  background: rgb(var(--accent) / 10%) !important;
+  color: rgb(255 255 255 / 95%) !important;
+  outline: 1px solid rgb(var(--accent) / 20%) !important;
+}
+
+/* Result type badge (bookmark / service / search) */
+dialog ul button > div:last-child {
+  color: rgb(var(--accent) / 60%) !important;
+  font-size: 0.6rem !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* QuickLaunch backdrop — dark blur instead of flat grey */
+[role="dialog"] > div:first-child {
+  background: rgb(0 0 0 / 65%) !important;
+  opacity: 1 !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Search match highlight */
+dialog .bg-theme-300\/10 {
+  background: rgb(var(--accent) / 15%) !important;
+  color: rgb(var(--accent)) !important;
+  border-radius: 2px;
+}
+
+/* ─── Info Widget — primary & secondary text hierarchy ─── */
+.primary-text {
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+  color: rgb(255 255 255 / 92%) !important;
+}
+
+.secondary-text {
+  font-size: 0.7rem !important;
+  color: rgb(255 255 255 / 45%) !important;
+}
+
+/* ─── Info Widget Icon — accent tint ─── */
+.information-widget-icon {
+  color: rgb(var(--accent) / 70%) !important;
+}
+
+/* ─── Bookmark Abbreviation Badge ─── */
+.bookmark-icon {
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  color: rgb(var(--accent)) !important;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Proxmox Status Badge — orange tint to signal interactivity ─── */
+.service-proxmoxstatus {
+  background: rgb(234 88 12 / 10%) !important;
+  border: 1px solid rgb(234 88 12 / 25%) !important;
+  border-radius: 6px !important;
+  transition: background var(--ease), border-color var(--ease) !important;
+}
+
+.service-proxmoxstatus:hover {
+  background: rgb(234 88 12 / 20%) !important;
+  border-color: rgb(234 88 12 / 45%) !important;
 }
 
 /* ─── Reduced Motion — accessibility ─── */
