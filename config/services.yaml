@@ -60,16 +60,17 @@
                 timezone: Australia/Perth
                 integrations:
                     - type: sonarr
-                      service_group: ARR STACK
+                      service_group: MEDIA
                       service_name: Sonarr
                       color: teal
                     - type: radarr
-                      service_group: ARR STACK
+                      service_group: MEDIA
                       service_name: Radarr
                       color: amber
     
     - DOTA 2:
-        - Dota 2: 
+        - Dota 2:
+            icon: si-dota2-#BF2E1A
             href: https://www.dota2.com
             widget:
                 type: dota2
