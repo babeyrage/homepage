@@ -185,8 +185,12 @@ iframe {
   padding: 0.35rem 0.75rem !important;
 }
 
-/* ─── Stats / Metrics — tabular nums on container ─── */
-.service-container,
+/* ─── Stats / Metrics — tabular nums on container, centered blocks ─── */
+.service-container {
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
 .service-container * {
   font-variant-numeric: tabular-nums;
 }
