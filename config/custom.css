@@ -50,10 +50,18 @@ iframe {
   transform: none !important;
 }
 
+/* ─── Service Name — brightest text on the card ─── */
+.service-name {
+  color: rgb(255 255 255 / 88%) !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
+}
+
 /* ─── Service Description — slightly softer ─── */
 .service-description {
-  opacity: 0.55;
-  font-size: 0.72rem;
+  opacity: 0.45;
+  font-size: 0.68rem;
   letter-spacing: 0.01em;
 }
 
@@ -177,16 +185,55 @@ iframe {
   padding: 0.35rem 0.75rem !important;
 }
 
-/* ─── Stats / Metrics — monospace numbers ─── */
+/* ─── Stats / Metrics — tabular nums on container ─── */
 .service-container,
 .service-container * {
   font-variant-numeric: tabular-nums;
 }
 
-.service-container [class*="text-"] {
+/* ─── Service Block — uniform sizing & background ─── */
+.service-block {
+  min-height: 54px !important;
+  max-width: 80px !important;
+  background: rgb(0 0 0 / 22%) !important;
+  border-radius: 6px !important;
+}
+
+/* ─── Service Block Value — large, bright, monospace ─── */
+.service-block > div:first-child {
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  color: rgb(255 255 255 / 90%) !important;
   font-family: ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", monospace !important;
-  font-size: 0.7rem !important;
-  letter-spacing: -0.02em !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em !important;
+  line-height: 1.15 !important;
+}
+
+/* ─── Service Block Label — small, muted, uppercase ─── */
+.service-block > div:last-child {
+  font-size: 0.58rem !important;
+  font-weight: 700 !important;
+  color: rgb(255 255 255 / 35%) !important;
+  letter-spacing: 0.09em !important;
+  line-height: 1.4 !important;
+}
+
+/* ─── Highlight States — warning & critical thresholds ─── */
+[data-highlight-level="1"] {
+  background: rgb(234 179 8 / 12%) !important;
+  border: 1px solid rgb(234 179 8 / 30%) !important;
+}
+[data-highlight-level="1"] > div:first-child {
+  color: rgb(253 224 71 / 95%) !important;
+}
+
+[data-highlight-level="2"] {
+  background: rgb(244 63 94 / 12%) !important;
+  border: 1px solid rgb(244 63 94 / 30%) !important;
+}
+[data-highlight-level="2"] > div:first-child {
+  color: rgb(251 113 133 / 95%) !important;
 }
 
 /* ─── Ping Dot — pulse animation ─── */
@@ -352,6 +399,20 @@ iframe {
   font-family: ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", monospace !important;
   letter-spacing: -0.02em !important;
   font-variant-numeric: tabular-nums;
+}
+
+/* ─── Resources Widget — value vs label contrast ─── */
+.information-widget-resource .text-xs > div:first-child {
+  font-weight: 600;
+  color: rgb(255 255 255 / 85%);
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.information-widget-resource .text-xs > div:last-child {
+  color: rgb(255 255 255 / 40%);
+  font-size: 0.65rem;
 }
 
 /* ─── color-scheme ─── */
