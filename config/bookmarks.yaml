@@ -5,7 +5,7 @@
 - Developer:
     - Semaphore:
         - icon: sh-semaphore-ui.svg
-          href: http://{{HOMEPAGE_VAR_SEMAPHORE_URL}}:{{HOMEPAGE_VAR_SEMAPHORE_PORT}}
+          href: http://192.168.1.220:3000
 
     - Github:
         - icon: si-github
