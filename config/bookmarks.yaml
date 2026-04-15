@@ -20,7 +20,7 @@
           href: https://dash.cloudflare.com/
 
     - Claude:
-        - icon: si-claude
+        - icon: claude-ai.svg
           href: https://claude.ai/
 
     - IT Tools:
@@ -50,7 +50,7 @@
           href: https://www.twitch.tv/
 
     - Reddit:
-        - icon: si-reddit
+        - icon: si-reddit-#FF4500
           href: https://www.reddit.com/
 
 - Torrents/Indexers:
