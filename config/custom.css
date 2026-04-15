@@ -391,6 +391,12 @@ iframe {
   padding: 0.4rem 0.6rem !important;
 }
 
+/* Collapsed state — strip border & padding so the empty div adds no height */
+.service-stats.opacity-0 {
+  border: none !important;
+  padding: 0 !important;
+}
+
 /* ─── Tab Content Fade ─── */
 #services,
 #bookmarks,
