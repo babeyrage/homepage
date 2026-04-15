@@ -28,13 +28,18 @@ layout:
       style: row
       columns: 1
     
-  ARR STACK:
+  MEDIA:
     header: false
     tab: HOMELAB
     style: row
     columns: 4
 
   SERVERS:
+    tab: HOMELAB
+    style: row
+    columns: 3
+
+  BACKUPS:
     tab: HOMELAB
     style: row
     columns: 3
