@@ -197,6 +197,8 @@ iframe {
 
 /* ─── Service Block — background & border ─── */
 .service-block {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
   background: rgb(0 0 0 / 22%) !important;
   border-radius: 6px !important;
 }
