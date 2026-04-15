@@ -175,7 +175,7 @@
             expandOneStreamToTwoRows: false
 
     - Soulsync:
-        icon: tracearr.svg
+        icon: sh-soulsync.png
         href: http://{{HOMEPAGE_VAR_SOULSYNC_URL}}:{{HOMEPAGE_VAR_SOULSYNC_PORT}}
         proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
         proxmoxVMID: "{{HOMEPAGE_VAR_SOULSYNC_VMID}}"
