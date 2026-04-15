@@ -604,18 +604,6 @@ dialog .bg-theme-300\/10 {
   letter-spacing: 0.04em;
 }
 
-/* ─── Proxmox Status Badge — orange tint to signal interactivity ─── */
-.service-proxmoxstatus {
-  background: rgb(234 88 12 / 10%) !important;
-  border: 1px solid rgb(234 88 12 / 25%) !important;
-  border-radius: 6px !important;
-  transition: background var(--ease), border-color var(--ease) !important;
-}
-
-.service-proxmoxstatus:hover {
-  background: rgb(234 88 12 / 20%) !important;
-  border-color: rgb(234 88 12 / 45%) !important;
-}
 
 /* ─── Reduced Motion — accessibility ─── */
 @media (prefers-reduced-motion: reduce) {
