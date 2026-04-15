@@ -124,18 +124,15 @@
     #         expandOneStreamToTwoRows: true
 
     - Lidarr:
-        icon: tautulli.svg
-        href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
+        icon: lidarr.svg
+        href: http://{{HOMEPAGE_VAR_LIDARR_URL}}:{{HOMEPAGE_VAR_LIDARR_PORT}}
         proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_TAUTULLI_VMID}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_LIDARR_VMID}}"
         proxmoxType: lxc
         widget:
-            type: tautulli
-            url: http://{{HOMEPAGE_VAR_TAUTULLI_URL}}:{{HOMEPAGE_VAR_TAUTULLI_PORT}}
-            key: "{{HOMEPAGE_VAR_TAUTULLI_API_KEY}}"
-            enableUser: true
-            showEpisodeNumber: true
-            expandOneStreamToTwoRows: true
+            type: lidarr
+            url: http://{{HOMEPAGE_VAR_LIDARR_URL}}:{{HOMEPAGE_VAR_LIDARR_PORT}}
+            key: "{{HOMEPAGE_VAR_LIDARR_API_KEY}}"
 
     - Bazarr:
         icon: bazarr.svg
@@ -206,7 +203,28 @@
 
     - VPS:
         icon: sh-univention-corporate-server.svg
-        
+
+- BACKUPS:
+    - Zues PBS:
+        icon: proxmox.svg
+        href: https://pbs006.tuxis.nl:8007/
+    
+    - Mars PBS:
+        icon: proxmox.svg
+        href: https://dashboard.remote-backups.com/
+
+    - Backrest:
+        icon: backrest.svg
+        href: http://{{HOMEPAGE_VAR_BACKREST_URL}}:{{HOMEPAGE_VAR_BACKREST_PORT}}
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_BACKREST_VMID}}"
+        proxmoxType: lxc
+        widget:
+            type: backrest
+            url: http://{{HOMEPAGE_VAR_BACKREST_URL}}:{{HOMEPAGE_VAR_BACKREST_PORT}}
+            username: "{{HOMEPAGE_VAR_BACKREST_USER}}"
+            password: "{{HOMEPAGE_VAR_BACKREST_PASSWORD}}"
+            
 - HOME NETWORK:
     - DOWNLOADS:
         - QBittorrent:
