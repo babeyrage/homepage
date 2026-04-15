@@ -109,7 +109,21 @@
             url: http://{{HOMEPAGE_VAR_SEERR_URL}}:{{HOMEPAGE_VAR_SEERR_PORT}}
             key: "{{HOMEPAGE_VAR_SEERR_API_KEY}}"
 
-    - Tautulli:
+    # - Tautulli:
+    #     icon: tautulli.svg
+    #     href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
+    #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+    #     proxmoxVMID: "{{HOMEPAGE_VAR_TAUTULLI_VMID}}"
+    #     proxmoxType: lxc
+    #     widget:
+    #         type: tautulli
+    #         url: http://{{HOMEPAGE_VAR_TAUTULLI_URL}}:{{HOMEPAGE_VAR_TAUTULLI_PORT}}
+    #         key: "{{HOMEPAGE_VAR_TAUTULLI_API_KEY}}"
+    #         enableUser: true
+    #         showEpisodeNumber: true
+    #         expandOneStreamToTwoRows: true
+
+    - Lidarr:
         icon: tautulli.svg
         href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
         proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
@@ -146,6 +160,28 @@
             username: "{{HOMEPAGE_VAR_DISPATCHARR_USER}}"
             password: "{{HOMEPAGE_VAR_DISPATCHARR_PASSWORD}}"
             enableActiveStreams: true
+
+    - Tracearr:
+        icon: tracearr.svg
+        href: http://{{HOMEPAGE_VAR_TRACEARR_URL}}:{{HOMEPAGE_VAR_TRACEARR_PORT}}
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_TRACEARR_VMID}}"
+        proxmoxType: lxc
+        widget:
+            type: tracearr
+            url: http://{{HOMEPAGE_VAR_TRACEARR_URL}}:{{HOMEPAGE_VAR_TRACEARR_PORT}}
+            key: "{{HOMEPAGE_VAR_TRACEARR_API_KEY}}"
+            view: both
+            enableUser: true
+            showEpisodeNumber: true
+            expandOneStreamToTwoRows: false
+
+    - Soulsync:
+        icon: tracearr.svg
+        href: http://{{HOMEPAGE_VAR_SOULSYNC_URL}}:{{HOMEPAGE_VAR_SOULSYNC_PORT}}
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_SOULSYNC_VMID}}"
+        proxmoxType: lxc
 
 - SERVERS:
     - Zues Proxmox:
@@ -226,11 +262,11 @@
             proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
             proxmoxVMID: "{{HOMEPAGE_VAR_TRAEFIK_VMID}}"
             proxmoxType: lxc
-            # widget:
-            #     type: traefik
-            #     url: http://{{HOMEPAGE_VAR_TRAEFIK_URL}}:{{HOMEPAGE_VAR_TRAEFIK_PORT}}
-            #     username: "{{HOMEPAGE_VAR_TRAEFIK_USER}}"
-            #     password: "{{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}"
+            widget:
+                type: traefik
+                url: http://{{HOMEPAGE_VAR_TRAEFIK_URL}}:{{HOMEPAGE_VAR_TRAEFIK_PORT}}
+                username: "{{HOMEPAGE_VAR_TRAEFIK_USER}}"
+                password: "{{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}"
 
         - Unifi:
             icon: unifi.svg
@@ -244,9 +280,9 @@
             #     site: Site Name
             #     key: "{{HOMEPAGE_VAR_UNIFI_API_KEY}}"
 
-    #     - EdgeSwitch:
-    #         icon: ubiquiti.svg
-    #         href: https://{{HOMEPAGE_VAR_SWITCH_URL}}:{{HOMEPAGE_VAR_SWITCH_PORT}}
+        - EdgeSwitch:
+            icon: ubiquiti.svg
+            href: https://{{HOMEPAGE_VAR_SWITCH_URL}}:{{HOMEPAGE_VAR_SWITCH_PORT}}
 
     - MONITORING:
         - Notifiarr:
@@ -291,4 +327,11 @@
             href: https://{{HOMEPAGE_VAR_WAZUH_URL}}:{{HOMEPAGE_VAR_WAZUH_PORT}}
             proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
             proxmoxVMID: "{{HOMEPAGE_VAR_WAZUH_VMID}}"
+            proxmoxType: lxc
+
+        - Web-Check:
+            icon: web-check.svg
+            href: https://{{HOMEPAGE_VAR_WEBCHECK_URL}}:{{HOMEPAGE_VAR_WEBCHECK_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_WEBCHECK_VMID}}"
             proxmoxType: lxc
