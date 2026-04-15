@@ -189,7 +189,7 @@
         widget:
             type: immich
             url: http://{{HOMEPAGE_VAR_IMMICH_URL}}:{{HOMEPAGE_VAR_IMMICH_PORT}}
-            key: adminapikeyadminapikeyadminapikey
+            key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
             version: 2
 
     - RomM:
