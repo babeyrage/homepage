@@ -173,8 +173,7 @@ iframe {
 }
 
 .bookmark-description {
-  font-size: 0.65rem !important;
-  opacity: 0.45 !important;
+  display: none !important;
 }
 
 .bookmark-icon {
