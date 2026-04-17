@@ -312,15 +312,14 @@
 
         - Unifi:
             icon: unifi.svg
-            href: http://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
+            href: https://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
             proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
             proxmoxVMID: "{{HOMEPAGE_VAR_UNIFI_VMID}}"
             proxmoxType: lxc
-            # widget:
-            #     type: unifi
-            #     url: https://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
-            #     site: Site Name
-            #     key: "{{HOMEPAGE_VAR_UNIFI_API_KEY}}"
+            widget:
+                type: unifi
+                url: https://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
+                key: "{{HOMEPAGE_VAR_UNIFI_API_KEY}}"
 
         - Homelable:
             icon: homelable.svg
