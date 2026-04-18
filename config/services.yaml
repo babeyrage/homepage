@@ -207,7 +207,7 @@
     - Prowlarr:
         icon: prowlarr.svg
         href: http://{{HOMEPAGE_VAR_PROWLARR_URL}}:{{HOMEPAGE_VAR_PROWLARR_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
         proxmoxVMID: "{{HOMEPAGE_VAR_PROWLARR_VMID}}"
         proxmoxType: lxc
         widget:
