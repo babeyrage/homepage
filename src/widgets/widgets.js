@@ -95,6 +95,7 @@ import openwrt from "./openwrt/widget";
 import opnsense from "./opnsense/widget";
 import pangolin from "./pangolin/widget";
 import paperlessngx from "./paperlessngx/widget";
+import patchmon from "./patchmon/widget";
 import peanut from "./peanut/widget";
 import pfsense from "./pfsense/widget";
 import photoprism from "./photoprism/widget";
@@ -257,6 +258,7 @@ const widgets = {
   openwrt,
   paperlessngx,
   pangolin,
+  patchmon,
   peanut,
   pfsense,
   photoprism,
