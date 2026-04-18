@@ -306,8 +306,8 @@
             widget:
                 type: traefik
                 url: http://{{HOMEPAGE_VAR_TRAEFIK_URL}}:{{HOMEPAGE_VAR_TRAEFIK_PORT}}
-                username: "{{HOMEPAGE_VAR_TRAEFIK_USER}}"
-                password: "{{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}"
+                # username: "{{HOMEPAGE_VAR_TRAEFIK_USER}}"
+                # password: "{{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}"
 
         - Speedtest Tracker:
             icon: speedtest-tracker.png
