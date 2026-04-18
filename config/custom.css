@@ -228,19 +228,19 @@ iframe {
 }
 
 /* ─── Highlight States — warning & critical thresholds ─── */
-[data-highlight-level="1"] {
+[data-highlight-level="warn"] {
   background: rgb(234 179 8 / 12%) !important;
   border: 1px solid rgb(234 179 8 / 30%) !important;
 }
-[data-highlight-level="1"] > div:first-child {
+[data-highlight-level="warn"] > div:first-child {
   color: rgb(253 224 71 / 95%) !important;
 }
 
-[data-highlight-level="2"] {
+[data-highlight-level="danger"] {
   background: rgb(244 63 94 / 12%) !important;
   border: 1px solid rgb(244 63 94 / 30%) !important;
 }
-[data-highlight-level="2"] > div:first-child {
+[data-highlight-level="danger"] > div:first-child {
   color: rgb(251 113 133 / 95%) !important;
 }
 

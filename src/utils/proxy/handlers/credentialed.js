@@ -102,6 +102,8 @@ export default async function credentialedProxyHandler(req, res, map) {
         }
       } else if (widget.type === "azuredevops") {
         headers.Authorization = `Basic ${Buffer.from(`$:${widget.key}`).toString("base64")}`;
+      } else if (widget.type === "patchmon") {
+        headers.Authorization = basicAuthHeader(widget);
       } else if (widget.type === "glances") {
         headers.Authorization = basicAuthHeader(widget);
       } else if (widget.type === "plantit") {

@@ -618,6 +618,12 @@
         "inbox": "Inbox",
         "total": "Total"
     },
+    "patchmon": {
+        "totalHosts": "Total Hosts",
+        "outdated": "Outdated",
+        "needsReboot": "Need Reboot",
+        "securityUpdates": "Security Updates"
+    },
     "pangolin": {
         "orgs": "Orgs",
         "sites": "Sites",

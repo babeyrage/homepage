@@ -364,6 +364,22 @@
             proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
             proxmoxVMID: "{{HOMEPAGE_VAR_PATCHMON_VMID}}"
             proxmoxType: lxc
+            widget:
+                type: patchmon
+                url: http://{{HOMEPAGE_VAR_PATCHMON_URL}}:{{HOMEPAGE_VAR_PATCHMON_PORT}}
+                username: "{{HOMEPAGE_VAR_PATCHMON_TOKEN_KEY}}"
+                password: "{{HOMEPAGE_VAR_PATCHMON_TOKEN_SECRET}}"
+                highlight:
+                    outdated:
+                        numeric:
+                            - { when: gt, value: 0, level: warn }
+                            - { when: gt, value: 5, level: danger }
+                    needsReboot:
+                        numeric:
+                            - { when: gt, value: 0, level: warn }
+                    securityUpdates:
+                        numeric:
+                            - { when: gt, value: 0, level: danger }
 
         - Domain Monitor:
             icon: sh-domain-monitor.svg
