@@ -116,6 +116,73 @@ Current widgets in use:
 
 ---
 
+## Dota 2 Widget (`/src/widgets/dota2/`)
+
+A custom esports dashboard widget displaying live and upcoming professional Dota 2 matches and tournaments. It is **not** part of the upstream Homepage project — it is a fully custom widget built for this fork.
+
+### Layout
+
+Two-column panel layout rendered inside the standard Homepage widget card:
+- **Left panel** — Live matches + upcoming matches grouped by day (Today, Tomorrow, specific dates)
+- **Right panel** — Ongoing tournaments + upcoming tournaments + a collapsible list of recently completed tournaments (8 preview, expandable via modal)
+
+### APIs Used
+
+| API | Base URL | Purpose |
+|---|---|---|
+| PandaScore | `https://api.pandascore.co/dota2/` | Live/upcoming matches and upcoming tournaments. Requires `HOMEPAGE_VAR_PANDASCORE_API_KEY`. Filters Tier S and A only. |
+| DatDota | `https://api.datdota.com/api` | Current and recently completed tournament listing. PREMIUM (Tier 1) and PROFESSIONAL (Tier 2) only. |
+| OpenDota | `https://api.opendota.com/api` | Detailed match data, player stats, hero picks/bans, team rosters, most-played heroes. No API key required. |
+
+PandaScore data is fetched via the standard Homepage proxy layer (`widget.js` mappings). DatDota and OpenDota calls are handled in the custom backend route `pages/api/widgets/dota2.js`.
+
+### File Structure
+
+```
+src/widgets/dota2/
+├── component.jsx                        # Root widget component, two-panel layout
+├── widget.js                            # Widget config, API endpoint mappings, data transforms
+├── matches/
+│   ├── MatchRow.jsx                     # Live/upcoming match row (team logos, time, stream link)
+│   ├── SeriesRow.jsx                    # Tournament series row with expandable individual games
+│   └── MatchDetailModal.jsx             # Full 5v5 match stats modal (desktop table + mobile tabs)
+├── tournaments/
+│   ├── TournamentRow.jsx                # DatDota tournament row (ongoing/past)
+│   ├── TournamentModal.jsx              # Tournament detail: teams grid + series results
+│   ├── UpcomingTournamentRow.jsx        # PandaScore upcoming tournament row
+│   └── UpcomingTournamentModal.jsx      # Upcoming tournament: schedule + participants
+├── modals/
+│   ├── TeamModal.jsx                    # Team profile: roster, win rate, most-played heroes, recent matches
+│   ├── CompletedTournamentsModal.jsx    # Scrollable list of all recently completed tournaments
+│   └── UpcomingMatchesModal.jsx         # Full upcoming match list with day grouping
+├── ui/
+│   ├── primitives.jsx                   # Shared UI: SectionLabel, PulseRow, LogoBox, ItemSlot, LevelRing
+│   └── utils.js                         # shortRelative() countdown formatter, fmtK() number formatter
+pages/api/widgets/
+└── dota2.js                             # Backend handler for DatDota and OpenDota proxied requests
+```
+
+### Key Architecture Decisions
+
+- **Portal-based modals** — all modals use `ReactDOM.createPortal` to escape the widget container, ensuring correct z-index and overflow. Body scroll is locked when a modal is open.
+- **Lazy match fetching** — individual game details inside a series are only fetched when the row is expanded, avoiding unnecessary OpenDota calls.
+- **Series reconstruction** — the backend reconstructs BO series from individual match entries by `series_id`. `series_id === 0` is treated as standalone BO1 matches.
+- **Differentiated cache TTLs** — current tournament data: 5 s; past tournaments: 30 s; hero/item static data: 24 h; match detail data: 60 min.
+- **Stream URL priority** — official English stream → any official stream → main stream → first available.
+- **Time display toggle** — main widget lets the user switch between relative countdown ("in 2h") and absolute time ("14:32") for upcoming matches.
+- **Subgrid layout** — `SeriesRow` uses CSS Grid with `subgrid` for precise column alignment across header and game rows.
+- **Responsive** — Tailwind CSS throughout; compact team tags on mobile, full names on desktop; match detail modal switches from a full table to a tabbed interface on small screens.
+
+### Config Entry (YAML)
+
+```yaml
+- widget:
+    type: dota2
+    pandascoreApiKey: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
+```
+
+---
+
 ## Git Commit Conventions
 
 Write commit messages that describe **what changed and why**, not just what files were touched. Use the following prefixes:
