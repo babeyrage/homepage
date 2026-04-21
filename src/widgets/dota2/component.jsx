@@ -62,9 +62,9 @@ export default function Component({ service }) {
         <div className="flex flex-col flex-1 min-w-0">
           {matchesLoading ? (
             <>
-              <SectionLabel>{t("dota2.live", "Live")}</SectionLabel>
+              <SectionLabel>{t("dota2.live", "Live Matches")}</SectionLabel>
               <PulseRow />
-              <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
+              <SectionLabel>{t("dota2.upcoming", "Upcoming Matches")}</SectionLabel>
               <PulseRow />
               <PulseRow />
             </>
@@ -72,7 +72,7 @@ export default function Component({ service }) {
             <>
               {liveMatches.length > 0 && (
                 <>
-                  <SectionLabel>{t("dota2.live", "Live")}</SectionLabel>
+                  <SectionLabel>{t("dota2.live", "Live Matches")}</SectionLabel>
                   {liveMatches.map((match) => (
                     <MatchRow key={match.id} match={match} live showAbsolute={false} />
                   ))}
@@ -82,7 +82,7 @@ export default function Component({ service }) {
               {/* Upcoming header with countdown/time toggle */}
               <div className="flex items-center justify-between mb-0.5 mt-1.5 first:mt-0">
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-theme-500 dark:text-theme-400">
-                  {t("dota2.upcoming", "Upcoming")}
+                  {t("dota2.upcoming", "Upcoming Matches")}
                 </span>
                 {upcomingMatches.length > 0 && (
                   <button
@@ -155,10 +155,10 @@ export default function Component({ service }) {
         <div className="flex flex-col flex-1 min-w-0">
           {tournamentsLoading ? (
             <>
-              <SectionLabel>{t("dota2.ongoing", "Ongoing")}</SectionLabel>
+              <SectionLabel>{t("dota2.ongoing", "Ongoing Tournaments")}</SectionLabel>
               <PulseRow />
               <PulseRow />
-              <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
+              <SectionLabel>{t("dota2.upcoming", "Upcoming Tournaments")}</SectionLabel>
               <PulseRow />
             </>
           ) : (
@@ -166,7 +166,7 @@ export default function Component({ service }) {
               {/* DatDota current (ongoing) tournaments */}
               {currentTournaments.length > 0 && (
                 <>
-                  <SectionLabel>{t("dota2.ongoing", "Ongoing")}</SectionLabel>
+                  <SectionLabel>{t("dota2.ongoing", "Ongoing Tournaments")}</SectionLabel>
                   {currentTournaments.map((tournament) => (
                     <TournamentRow
                       key={tournament.leagueId}
@@ -180,7 +180,7 @@ export default function Component({ service }) {
               {/* PandaScore upcoming tournaments */}
               {upcomingTournaments.length > 0 && (
                 <>
-                  <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
+                  <SectionLabel>{t("dota2.upcoming", "Upcoming Tournaments")}</SectionLabel>
                   {upcomingTournaments.map((tournament) => (
                     <UpcomingTournamentRow
                       key={tournament.id}
