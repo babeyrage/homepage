@@ -9,15 +9,17 @@
     expanded: true
     refresh: 5000
 
-# - resources:
-#     expanded: true
-#     refresh: 5000
-#     label: Disks
-#     disk:
-#       - /mnt/disk1
-#       - /mnt/disk2
-#       - /mnt/disk3
-#       - /mnt/disk4
+- glances:
+    url: http://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_ZUES_GLANCES_PORT}}
+    disk:
+        - /mnt/hdd-media-1
+        - /mnt/hdd-media-2
+        - /mnt/hdd-media-3
+        - /mnt/hdd-media-4
+        - /mnt/hdd-media-5
+        - /mnt/hdd-media-6
+        - /mnt/hdd-media-7
+        - /mnt/hdd-media-8
 
 # - openweathermap:
     # label: Calgary, AB
