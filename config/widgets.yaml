@@ -11,6 +11,7 @@
 
 - glances:
     url: http://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_ZUES_GLANCES_PORT}}
+    version: 4
     disk:
         - /mnt/hdd-media-1
         - /mnt/hdd-media-2
