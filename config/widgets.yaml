@@ -12,15 +12,9 @@
 - glances:
     url: http://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_ZUES_GLANCES_PORT}}
     version: 4
-    disk:
-        - /mnt/hdd-media-1
-        - /mnt/hdd-media-2
-        - /mnt/hdd-media-3
-        - /mnt/hdd-media-4
-        - /mnt/hdd-media-5
-        - /mnt/hdd-media-6
-        - /mnt/hdd-media-7
-        - /mnt/hdd-media-8
+    cpu: false
+    mem: false
+    disk: /mnt/media
 
 # - openweathermap:
     # label: Calgary, AB
