@@ -2,7 +2,7 @@
 
 export function SectionLabel({ children }) {
   return (
-    <div className="text-[10px] font-semibold uppercase tracking-wide text-theme-500 dark:text-theme-400 mb-0.5 mt-1.5 first:mt-0">
+    <div className="text-[10px] font-semibold uppercase tracking-wide text-theme-500 dark:text-theme-400 mb-0.5 mt-1.5 first:mt-0 border-l-2 border-theme-400 dark:border-theme-500 pl-1.5">
       {children}
     </div>
   );
@@ -10,6 +10,38 @@ export function SectionLabel({ children }) {
 
 export function PulseRow() {
   return <div className="h-7 w-full rounded-sm bg-theme-200/50 dark:bg-theme-900/20 mb-0.5 animate-pulse" />;
+}
+
+export function MatchPulseRow() {
+  return (
+    <div className="flex flex-col rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-1 mb-0.5 gap-0.5 animate-pulse">
+      <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 flex-1">
+          <div className="h-5 w-5 rounded-sm bg-theme-300/50 dark:bg-theme-800/30 shrink-0" />
+          <div className="h-2.5 w-16 rounded-sm bg-theme-300/50 dark:bg-theme-800/30" />
+        </div>
+        <div className="h-2 w-4 rounded-sm bg-theme-300/50 dark:bg-theme-800/30 shrink-0" />
+        <div className="flex items-center gap-1 flex-1 justify-end">
+          <div className="h-2.5 w-16 rounded-sm bg-theme-300/50 dark:bg-theme-800/30" />
+          <div className="h-5 w-5 rounded-sm bg-theme-300/50 dark:bg-theme-800/30 shrink-0" />
+        </div>
+        <div className="h-2.5 w-8 rounded-sm bg-theme-300/50 dark:bg-theme-800/30 shrink-0 ml-1" />
+      </div>
+      <div className="h-2 w-24 rounded-sm bg-theme-300/50 dark:bg-theme-800/30" />
+    </div>
+  );
+}
+
+export function TournamentPulseRow() {
+  return (
+    <div className="flex items-center justify-between rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-0.5 mb-0.5 animate-pulse gap-1">
+      <div className="flex flex-col gap-1 flex-1 min-w-0">
+        <div className="h-2.5 w-3/4 rounded-sm bg-theme-300/50 dark:bg-theme-800/30" />
+        <div className="h-2 w-1/3 rounded-sm bg-theme-300/50 dark:bg-theme-800/30" />
+      </div>
+      <div className="h-3 w-8 rounded-sm bg-theme-300/50 dark:bg-theme-800/30 shrink-0" />
+    </div>
+  );
 }
 
 // Static size map — all strings are literals so Tailwind JIT picks them up

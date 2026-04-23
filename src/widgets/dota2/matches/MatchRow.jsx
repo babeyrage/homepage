@@ -31,7 +31,13 @@ export function MatchRow({ match, live, showAbsolute }) {
         {/* Status */}
         <div className="shrink-0 pl-1">
           {live ? (
-            <span className="text-[9px] font-bold text-red-500">● LIVE</span>
+            <span className="flex items-center gap-1">
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+              </span>
+              <span className="text-[9px] font-bold text-red-500">LIVE</span>
+            </span>
           ) : (
             <span className="text-[10px] text-theme-400 dark:text-theme-500 tabular-nums">
               {beginAt

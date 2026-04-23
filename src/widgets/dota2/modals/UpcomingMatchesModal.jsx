@@ -44,7 +44,7 @@ export function UpcomingMatchesModal({ matches, showAbsolute, onToggleTime, onCl
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg max-h-[95vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
+        className="relative w-full max-w-lg max-h-[95vh] flex flex-col rounded-none sm:rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

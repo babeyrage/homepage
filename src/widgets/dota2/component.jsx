@@ -6,7 +6,7 @@ import useSWR from "swr";
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 
-import { SectionLabel, PulseRow } from "./ui/primitives";
+import { SectionLabel, MatchPulseRow, TournamentPulseRow } from "./ui/primitives";
 import { MatchRow } from "./matches/MatchRow";
 import { TournamentRow } from "./tournaments/TournamentRow";
 import { TournamentModal } from "./tournaments/TournamentModal";
@@ -63,10 +63,10 @@ export default function Component({ service }) {
           {matchesLoading ? (
             <>
               <SectionLabel>{t("dota2.live", "Live Matches")}</SectionLabel>
-              <PulseRow />
+              <MatchPulseRow />
               <SectionLabel>{t("dota2.upcoming", "Upcoming Matches")}</SectionLabel>
-              <PulseRow />
-              <PulseRow />
+              <MatchPulseRow />
+              <MatchPulseRow />
             </>
           ) : (
             <>
@@ -139,7 +139,7 @@ export default function Component({ service }) {
                       <button
                         type="button"
                         onClick={() => setShowUpcomingModal(true)}
-                        className="w-full text-[9px] text-theme-400 dark:text-theme-500 hover:text-theme-600 dark:hover:text-theme-300 transition-colors text-center py-0.5 mt-0.5"
+                        className="w-full text-[9px] font-medium text-theme-400 dark:text-theme-500 hover:text-theme-600 dark:hover:text-theme-300 bg-theme-200/50 dark:bg-theme-900/20 hover:bg-theme-200/80 dark:hover:bg-theme-900/40 border border-theme-300/30 dark:border-theme-700/30 transition-colors text-center py-1 mt-0.5 rounded-sm"
                       >
                         Show more ▾
                       </button>
@@ -156,10 +156,10 @@ export default function Component({ service }) {
           {tournamentsLoading ? (
             <>
               <SectionLabel>{t("dota2.ongoing", "Ongoing Tournaments")}</SectionLabel>
-              <PulseRow />
-              <PulseRow />
+              <TournamentPulseRow />
+              <TournamentPulseRow />
               <SectionLabel>{t("dota2.upcoming", "Upcoming Tournaments")}</SectionLabel>
-              <PulseRow />
+              <TournamentPulseRow />
             </>
           ) : (
             <>
