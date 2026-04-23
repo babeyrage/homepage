@@ -116,6 +116,31 @@ Current widgets in use:
 
 ---
 
+## Pending Work
+
+### Glances Server Monitoring
+
+Install Glances (via pipx) on each host and expose port `61208` via Twingate. Then add widgets to the `SERVERS` group in `services.yaml`.
+
+Add env vars to `.env` for each host IP:
+- `HOMEPAGE_VAR_ZUES_GLANCES_URL`
+- `HOMEPAGE_VAR_MARS_GLANCES_URL`
+- `HOMEPAGE_VAR_VPS_GLANCES_URL`
+
+**Per-server plan:**
+
+- [ ] **Zues (Proxmox Node 1)** — Proxmox widget already covers CPU/RAM. Add `fs` widget for disk visibility.
+- [ ] **Mars (Proxmox Node 2)** — Same as Zues.
+- [ ] **VPS** — No existing monitoring. Add `cpu`, `memory`, and `fs` widgets.
+
+**Notes:**
+- Use `version: 4` (pipx installs Glances v4+)
+- Use `chart: false` for compact cards; remove to show sparkline graphs
+- `metric: fs` shows all mount points; use `metric: fs:/mnt/pool` to target a specific one
+- Glances must be running as a systemd service on each host (`glances -w --disable-webui --bind 0.0.0.0 --port 61208`)
+
+---
+
 ## Git Commit Conventions
 
 Write commit messages that describe **what changed and why**, not just what files were touched. Use the following prefixes:
