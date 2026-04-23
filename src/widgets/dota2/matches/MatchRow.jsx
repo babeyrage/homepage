@@ -77,23 +77,23 @@ export function ModalMatchRow({ match, showAbsolute }) {
   const beginAt = match.beginAt ? DateTime.fromISO(match.beginAt) : null;
 
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-zinc-100 dark:bg-zinc-800 px-3 py-2.5 mb-1.5">
+    <div className="flex items-center gap-3 rounded-lg bg-theme-100 dark:bg-theme-800 px-3 py-2.5 mb-1.5">
       {/* Team 1 */}
       <div className="flex items-center gap-2 flex-1 min-w-0">
         <LogoBox src={match.team1Logo} size="md" />
-        <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate">{match.team1}</span>
+        <span className="text-sm font-semibold text-theme-800 dark:text-theme-100 truncate">{match.team1}</span>
       </div>
 
       {/* Centre: time */}
       <div className="shrink-0 flex flex-col items-center gap-0.5 min-w-13">
-        <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-300 tabular-nums">
+        <span className="text-xs font-semibold text-theme-600 dark:text-theme-300 tabular-nums">
           {beginAt
             ? showAbsolute
               ? beginAt.toFormat("HH:mm")
               : beginAt.toRelative()
             : ""}
         </span>
-        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">vs</span>
+        <span className="text-[10px] font-bold text-theme-500 dark:text-theme-400 uppercase tracking-wide">vs</span>
         {match.streamUrl && (
           <a
             href={match.streamUrl}
@@ -109,7 +109,7 @@ export function ModalMatchRow({ match, showAbsolute }) {
 
       {/* Team 2 */}
       <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
-        <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate text-right">{match.team2}</span>
+        <span className="text-sm font-semibold text-theme-800 dark:text-theme-100 truncate text-right">{match.team2}</span>
         <LogoBox src={match.team2Logo} size="md" />
       </div>
     </div>
