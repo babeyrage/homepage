@@ -27,11 +27,11 @@ export function CompletedTournamentsModal({ tournaments, onSelect, onClose }) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md max-h-[95vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
+        className="relative w-full max-w-md max-h-[95vh] flex flex-col rounded-none sm:rounded-xl bg-theme-100 dark:bg-theme-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-700 shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-theme-200 dark:border-theme-700 shrink-0">
           <span className="text-sm font-semibold text-theme-700 dark:text-theme-200">
             {t("dota2.completed", "Completed")}
           </span>

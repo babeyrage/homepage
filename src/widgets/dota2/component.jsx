@@ -6,7 +6,7 @@ import useSWR from "swr";
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 
-import { SectionLabel, PulseRow } from "./ui/primitives";
+import { SectionLabel, MatchPulseRow, TournamentPulseRow } from "./ui/primitives";
 import { MatchRow } from "./matches/MatchRow";
 import { TournamentRow } from "./tournaments/TournamentRow";
 import { TournamentModal } from "./tournaments/TournamentModal";
@@ -62,17 +62,17 @@ export default function Component({ service }) {
         <div className="flex flex-col flex-1 min-w-0">
           {matchesLoading ? (
             <>
-              <SectionLabel>{t("dota2.live", "Live")}</SectionLabel>
-              <PulseRow />
-              <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
-              <PulseRow />
-              <PulseRow />
+              <SectionLabel>{t("dota2.live", "Live Matches")}</SectionLabel>
+              <MatchPulseRow />
+              <SectionLabel>{t("dota2.upcoming", "Upcoming Matches")}</SectionLabel>
+              <MatchPulseRow />
+              <MatchPulseRow />
             </>
           ) : (
             <>
               {liveMatches.length > 0 && (
                 <>
-                  <SectionLabel>{t("dota2.live", "Live")}</SectionLabel>
+                  <SectionLabel>{t("dota2.live", "Live Matches")}</SectionLabel>
                   {liveMatches.map((match) => (
                     <MatchRow key={match.id} match={match} live showAbsolute={false} />
                   ))}
@@ -82,7 +82,7 @@ export default function Component({ service }) {
               {/* Upcoming header with countdown/time toggle */}
               <div className="flex items-center justify-between mb-0.5 mt-1.5 first:mt-0">
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-theme-500 dark:text-theme-400">
-                  {t("dota2.upcoming", "Upcoming")}
+                  {t("dota2.upcoming", "Upcoming Matches")}
                 </span>
                 {upcomingMatches.length > 0 && (
                   <button
@@ -139,7 +139,7 @@ export default function Component({ service }) {
                       <button
                         type="button"
                         onClick={() => setShowUpcomingModal(true)}
-                        className="w-full text-[9px] text-theme-400 dark:text-theme-500 hover:text-theme-600 dark:hover:text-theme-300 transition-colors text-center py-0.5 mt-0.5"
+                        className="w-full text-[9px] font-medium text-theme-400 dark:text-theme-500 hover:text-theme-600 dark:hover:text-theme-300 bg-theme-200/50 dark:bg-theme-900/20 hover:bg-theme-200/80 dark:hover:bg-theme-900/40 border border-theme-300/30 dark:border-theme-700/30 transition-colors text-center py-1 mt-0.5 rounded-sm"
                       >
                         Show more ▾
                       </button>
@@ -155,18 +155,18 @@ export default function Component({ service }) {
         <div className="flex flex-col flex-1 min-w-0">
           {tournamentsLoading ? (
             <>
-              <SectionLabel>{t("dota2.ongoing", "Ongoing")}</SectionLabel>
-              <PulseRow />
-              <PulseRow />
-              <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
-              <PulseRow />
+              <SectionLabel>{t("dota2.ongoing", "Ongoing Tournaments")}</SectionLabel>
+              <TournamentPulseRow />
+              <TournamentPulseRow />
+              <SectionLabel>{t("dota2.upcoming", "Upcoming Tournaments")}</SectionLabel>
+              <TournamentPulseRow />
             </>
           ) : (
             <>
               {/* DatDota current (ongoing) tournaments */}
               {currentTournaments.length > 0 && (
                 <>
-                  <SectionLabel>{t("dota2.ongoing", "Ongoing")}</SectionLabel>
+                  <SectionLabel>{t("dota2.ongoing", "Ongoing Tournaments")}</SectionLabel>
                   {currentTournaments.map((tournament) => (
                     <TournamentRow
                       key={tournament.leagueId}
@@ -180,7 +180,7 @@ export default function Component({ service }) {
               {/* PandaScore upcoming tournaments */}
               {upcomingTournaments.length > 0 && (
                 <>
-                  <SectionLabel>{t("dota2.upcoming", "Upcoming")}</SectionLabel>
+                  <SectionLabel>{t("dota2.upcoming", "Upcoming Tournaments")}</SectionLabel>
                   {upcomingTournaments.map((tournament) => (
                     <UpcomingTournamentRow
                       key={tournament.id}

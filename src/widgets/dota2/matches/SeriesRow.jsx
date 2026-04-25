@@ -36,7 +36,7 @@ export function HeroGroup({ isRadiant, children }) {
 // First-pick badge — shown only for the team that received the first pick
 export function FirstPickBadge() {
   return (
-    <span className="shrink-0 text-[7px] font-bold text-amber-400 uppercase tracking-wide bg-amber-400/10 ring-1 ring-amber-400/30 px-1 py-px rounded-sm leading-none whitespace-nowrap">
+    <span className="shrink-0 text-[9px] font-bold text-amber-400 uppercase tracking-wide bg-amber-400/10 ring-1 ring-amber-400/30 px-1 py-px rounded-sm leading-none whitespace-nowrap">
       FP
     </span>
   );

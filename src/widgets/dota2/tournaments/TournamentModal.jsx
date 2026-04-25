@@ -52,11 +52,11 @@ export function TournamentModal({ tournament, onClose }) {
     >
       {/* Modal panel */}
       <div
-        className="relative w-full max-w-2xl max-h-[95vh] flex flex-col rounded-xl bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
+        className="relative w-full max-w-2xl max-h-[95vh] flex flex-col rounded-none sm:rounded-xl bg-theme-100 dark:bg-theme-900 shadow-2xl overflow-hidden mx-0 sm:mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Banner ── */}
-        <div className="relative h-44 w-full shrink-0 bg-zinc-800 overflow-hidden">
+        <div className="relative h-44 w-full shrink-0 bg-theme-800 overflow-hidden">
           <img
             src={`https://cdn.datdota.com/images/leagues/${leagueId}_big.png`}
             alt={name}
@@ -119,7 +119,7 @@ export function TournamentModal({ tournament, onClose }) {
               {/* Participants — top */}
               {teams.length > 0 && (
                 <div className="mb-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-theme-400 dark:text-theme-500 mb-1.5">
                     Participants — {teams.length} teams
                   </p>
                   <div className={`grid gap-1 ${teams.length > 8 ? "grid-cols-3" : "grid-cols-2"}`}>
@@ -128,10 +128,10 @@ export function TournamentModal({ tournament, onClose }) {
                         key={team.teamId}
                         type="button"
                         onClick={() => setSelectedTeam(team)}
-                        className="flex items-center gap-1.5 rounded-md bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-2 py-1.5 min-w-0 transition-colors text-left"
+                        className="flex items-center gap-1.5 rounded-md bg-theme-100 dark:bg-theme-800 hover:bg-theme-200 dark:hover:bg-theme-700 px-2 py-1.5 min-w-0 transition-colors text-left"
                       >
                         <LogoBox src={team.logo} size="sm" />
-                        <span className={`font-medium text-zinc-700 dark:text-zinc-200 truncate leading-tight ${teams.length > 8 ? "text-[9px]" : "text-[10px]"}`}>
+                        <span className={`font-medium text-theme-700 dark:text-theme-200 truncate leading-tight ${teams.length > 8 ? "text-[9px]" : "text-[10px]"}`}>
                           {team.name}
                         </span>
                       </button>
@@ -142,8 +142,8 @@ export function TournamentModal({ tournament, onClose }) {
 
               {/* Series results */}
               {series.length > 0 ? (
-                <div className="border-t border-zinc-200 dark:border-zinc-700 pt-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500 mb-1.5">
+                <div className="border-t border-theme-200 dark:border-theme-700 pt-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-theme-400 dark:text-theme-500 mb-1.5">
                     Results — {series.length} series
                   </p>
                   {visibleSeries.map((s) => (
@@ -153,7 +153,7 @@ export function TournamentModal({ tournament, onClose }) {
                     <button
                       type="button"
                       onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-                      className="w-full mt-1 py-1.5 text-[10px] text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors text-center rounded-md bg-zinc-100 dark:bg-zinc-800"
+                      className="w-full mt-1 py-1.5 text-[10px] text-theme-500 dark:text-theme-400 hover:text-theme-700 dark:hover:text-theme-200 transition-colors text-center rounded-md bg-theme-100 dark:bg-theme-800"
                     >
                       Show {Math.min(remaining, PAGE_SIZE)} more · {remaining} remaining
                     </button>
@@ -162,7 +162,7 @@ export function TournamentModal({ tournament, onClose }) {
                     <button
                       type="button"
                       onClick={() => setVisibleCount(PAGE_SIZE)}
-                      className="w-full mt-0.5 py-1 text-[10px] text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors text-center"
+                      className="w-full mt-0.5 py-1 text-[10px] text-theme-400 dark:text-theme-500 hover:text-theme-700 dark:hover:text-theme-200 transition-colors text-center"
                     >
                       Show less
                     </button>
@@ -170,7 +170,7 @@ export function TournamentModal({ tournament, onClose }) {
                 </div>
               ) : (
                 !isLoading && (
-                  <div className="text-[11px] text-zinc-400 dark:text-zinc-500 py-4 text-center">
+                  <div className="text-[11px] text-theme-400 dark:text-theme-500 py-4 text-center">
                     No match data available
                   </div>
                 )

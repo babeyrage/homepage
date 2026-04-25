@@ -28,7 +28,10 @@ export function TournamentRow({ tournament, onClick }) {
       </div>
       <div className="flex shrink-0 items-center gap-1.5">
         {tournament.tierId === 1 && (
-          <span className="text-[9px] font-semibold text-amber-500 uppercase tracking-wide">Prem</span>
+          <span className="text-[9px] font-semibold text-amber-500 uppercase tracking-wide bg-amber-500/10 px-1 py-px rounded-sm">Prem</span>
+        )}
+        {tournament.tierId === 2 && (
+          <span className="text-[9px] font-semibold text-sky-500 uppercase tracking-wide bg-sky-500/10 px-1 py-px rounded-sm">Pro</span>
         )}
         <span className="text-[10px] text-theme-400 dark:text-theme-500 select-none">▸</span>
       </div>
