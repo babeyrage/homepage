@@ -181,19 +181,6 @@ pages/api/widgets/
     pandascoreApiKey: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
 ```
 
-### Stylistic Improvements Backlog
-
-Identified improvements to the widget's visual design, in rough priority order:
-
-- [x] **Pulsing live dot** — Replace the static `● LIVE` text in `matches/MatchRow.jsx` with an `animate-ping` or `animate-pulse` dot for a proper live indicator.
-- [x] **Section label accent** — Add a left border accent to `SectionLabel` in `ui/primitives.jsx` (e.g. `border-l-2 border-theme-400 pl-1.5`) to give panel sections stronger visual hierarchy.
-- [x] **Tier badge consistency** — `tournaments/TournamentRow.jsx` only renders the badge for Premium; Professional rows show nothing. Show both badges consistently (amber = Premium, sky = Professional).
-- [x] **"Show more" button styling** — The `Show more ▾` overflow links in `component.jsx` are `text-[9px]` and easy to miss. Upgrade to a subtle full-width button with a faint background or border.
-- [x] **Modal color system alignment** — Modals use hardcoded `zinc-*` colors instead of `theme-*` CSS variables, so they don't respond to Homepage theme changes. Align modal backgrounds, borders, and text to use `theme-*` variables.
-- [x] **Shaped loading skeletons** — `PulseRow` in `ui/primitives.jsx` is a generic full-width bar. Replace with shaped skeletons that mirror the two-team / name+date layout of actual rows to reduce perceived layout shift.
-- [x] **FP badge legibility** — First Pick badge in `matches/SeriesRow.jsx` uses `text-[7px]`, which is below readable threshold. Bump to `text-[9px]` with adjusted padding.
-- [x] **Modal border radius on mobile** — Modals use `rounded-xl` but `mx-0` on mobile, clipping corners against the viewport edge. Apply `rounded-none sm:rounded-xl` (or add a small margin) to all modal panels.
-
 ---
 
 ## Git Commit Conventions
