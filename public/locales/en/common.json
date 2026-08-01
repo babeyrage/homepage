@@ -71,6 +71,15 @@
         "degraded": "Degraded",
         "no_data": "No storage data available"
     },
+    "duplicati": {
+        "jobs": "Jobs",
+        "stored": "Stored",
+        "lastBackup": "Last Run",
+        "nextRun": "Next Run",
+        "running": "Running",
+        "warnings": "Warnings",
+        "errors": "Errors"
+    },
     "docker": {
         "rx": "RX",
         "tx": "TX",
@@ -344,6 +353,16 @@
         "address": "Address",
         "expires": "Expires",
         "never": "Never",
+        "user": "User",
+        "hostname": "Hostname",
+        "name": "Name",
+        "client_version": "Client Version",
+        "os": "OS",
+        "created": "Created",
+        "authorized": "Authorized",
+        "is_external": "Is External",
+        "update_available": "Update Available",
+        "tags": "Tags",
         "last_seen": "Last Seen",
         "now": "Now",
         "years": "{{number}}y",
@@ -352,7 +371,9 @@
         "hours": "{{number}}h",
         "minutes": "{{number}}m",
         "seconds": "{{number}}s",
-        "ago": "{{value}} Ago"
+        "ago": "{{value}} Ago",
+        "true": "Yes",
+        "false": "No"
     },
     "technitium": {
         "totalQueries": "Queries",
@@ -453,6 +474,11 @@
         "cpu": "CPU",
         "lxc": "LXC",
         "vms": "VMs"
+    },
+    "pulse": {
+        "nodes": "Nodes",
+        "vms": "VMs",
+        "lxcs": "LXCs"
     },
     "glances": {
         "cpu": "CPU",
@@ -617,12 +643,6 @@
     "paperlessngx": {
         "inbox": "Inbox",
         "total": "Total"
-    },
-    "patchmon": {
-        "totalHosts": "Total Hosts",
-        "outdated": "Outdated",
-        "needsReboot": "Need Reboot",
-        "securityUpdates": "Security Updates"
     },
     "pangolin": {
         "orgs": "Orgs",
@@ -926,9 +946,33 @@
       "mails": "Mails",
       "storage": "Storage"
     },
+    "maintainerr": {
+      "itemsHandled": "Items Handled",
+      "episodesHandled": "Episodes Handled",
+      "moviesHandled": "Movies Handled",
+      "showsHandled": "Shows Handled",
+      "seasonsHandled": "Seasons Handled",
+      "reclaimable": "Reclaimable",
+      "movieReclaimable": "Movie Reclaimable",
+      "showReclaimable": "Show Reclaimable",
+      "totalCapacity": "Total Capacity"
+    },
     "netdata": {
       "warnings": "Warnings",
       "criticals": "Criticals"
+    },
+    "ntfy": {
+      "title": "Title",
+      "priority": "Priority",
+      "lastReceived": "Last Received",
+      "message": "Message",
+      "tags": "Tags",
+      "none": "None",
+      "min": "Min",
+      "low": "Low",
+      "default": "Default",
+      "high": "High",
+      "urgent": "Urgent"
     },
     "plantit": {
         "events": "Events",
@@ -1192,13 +1236,15 @@
         "remaining": "Remaining",
         "steps": "Steps"
     },
-    "cisa": {
-        "loading": "Loading",
-        "total": "Known Exploited"
+    "syncthing": {
+        "connected": "Connected",
+        "synced": "Synced",
+        "errors": "Errors",
+        "storage": "Storage"
     },
-    "nvd": {
-        "loading": "Loading",
-        "total": "Total CVEs",
-        "severity": "Severity"
+    "sportarr": {
+        "wanted": "Wanted",
+        "queued": "Queued",
+        "leagues": "Leagues"
     }
 }

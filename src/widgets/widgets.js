@@ -29,6 +29,7 @@ import dispatcharr from "./dispatcharr/widget";
 import dockhand from "./dockhand/widget";
 import dota2 from "./dota2/widget";
 import downloadstation from "./downloadstation/widget";
+import duplicati from "./duplicati/widget";
 import emby from "./emby/widget";
 import esphome from "./esphome/widget";
 import evcc from "./evcc/widget";
@@ -68,6 +69,7 @@ import lidarr from "./lidarr/widget";
 import linkwarden from "./linkwarden/widget";
 import lubelogger from "./lubelogger/widget";
 import mailcow from "./mailcow/widget";
+import maintainerr from "./maintainerr/widget";
 import mastodon from "./mastodon/widget";
 import mealie from "./mealie/widget";
 import medusa from "./medusa/widget";
@@ -84,7 +86,7 @@ import netdata from "./netdata/widget";
 import nextcloud from "./nextcloud/widget";
 import nextdns from "./nextdns/widget";
 import npm from "./npm/widget";
-import nvd from "./nvd/widget";
+import ntfy from "./ntfy/widget";
 import nzbget from "./nzbget/widget";
 import octoprint from "./octoprint/widget";
 import omada from "./omada/widget";
@@ -110,6 +112,7 @@ import prowlarr from "./prowlarr/widget";
 import proxmox from "./proxmox/widget";
 import proxmoxbackupserver from "./proxmoxbackupserver/widget";
 import pterodactyl from "./pterodactyl/widget";
+import pulse from "./pulse/widget";
 import pyload from "./pyload/widget";
 import qbittorrent from "./qbittorrent/widget";
 import qnap from "./qnap/widget";
@@ -125,11 +128,13 @@ import sonarr from "./sonarr/widget";
 import sparkyfitness from "./sparkyfitness/widget";
 import speedtest from "./speedtest/widget";
 import spoolman from "./spoolman/widget";
+import sportarr from "./sportarr/widget";
 import stash from "./stash/widget";
 import stocks from "./stocks/widget";
 import strelaysrv from "./strelaysrv/widget";
 import suwayomi from "./suwayomi/widget";
 import swagdashboard from "./swagdashboard/widget";
+import syncthing from "./syncthing/widget";
 import tailscale from "./tailscale/widget";
 import tandoor from "./tandoor/widget";
 import tautulli from "./tautulli/widget";
@@ -184,6 +189,7 @@ const widgets = {
   deluge,
   develancacheui,
   diskstation,
+  duplicati,
   dispatcharr,
   dockhand,
   dota2,
@@ -230,6 +236,7 @@ const widgets = {
   linkwarden,
   lubelogger,
   mailcow,
+  maintainerr,
   mastodon,
   mealie,
   medusa,
@@ -246,7 +253,7 @@ const widgets = {
   nextcloud,
   nextdns,
   npm,
-  nvd,
+  ntfy,
   nzbget,
   octoprint,
   omada,
@@ -274,6 +281,7 @@ const widgets = {
   prowlarr,
   proxmox,
   pterodactyl,
+  pulse,
   pyload,
   qbittorrent,
   qnap,
@@ -289,11 +297,13 @@ const widgets = {
   sparkyfitness,
   speedtest,
   spoolman,
+  sportarr,
   stash,
   stocks,
   strelaysrv,
   swagdashboard,
   suwayomi,
+  syncthing,
   tailscale,
   tandoor,
   tautulli,
