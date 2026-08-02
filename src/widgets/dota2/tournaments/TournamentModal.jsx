@@ -1,9 +1,10 @@
 import { DateTime } from "luxon";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createPortal } from "react-dom";
 import useSWR from "swr";
 
-import { LogoBox, PulseRow } from "../ui/primitives";
+import { ErrorState, LogoBox, PulseRow } from "../ui/primitives";
+import { useBodyScrollLock, useEscapeToClose } from "../ui/utils";
 import { TeamModal } from "../modals/TeamModal";
 import { SeriesRow } from "../matches/SeriesRow";
 
@@ -20,7 +21,7 @@ export function TournamentModal({ tournament, onClose }) {
     begin && end ? `${begin.toFormat("d MMM")} – ${end.toFormat("d MMM yyyy")}` : "";
 
   const url = `/api/widgets/dota2?mode=tournament&leagueId=${leagueId}&isCurrent=${isCurrent}`;
-  const { data, isLoading } = useSWR(url, { revalidateOnFocus: false });
+  const { data, error, isLoading, mutate } = useSWR(url, { revalidateOnFocus: false });
 
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [selectedTeam, setSelectedTeam] = useState(null);
@@ -30,19 +31,8 @@ export function TournamentModal({ tournament, onClose }) {
   const hasMore = series.length > visibleCount;
   const remaining = series.length - visibleCount;
 
-  // Close on Escape
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
-
-  // Lock body scroll
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
-  }, []);
+  useEscapeToClose(onClose);
+  useBodyScrollLock();
 
   const modal = createPortal(
     // Backdrop — click outside to close
@@ -67,6 +57,7 @@ export function TournamentModal({ tournament, onClose }) {
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close"
             className="absolute top-2 right-2 text-white/70 hover:text-white transition-colors leading-none text-base bg-black/40 rounded-full w-6 h-6 flex items-center justify-center"
           >
             ✕
@@ -114,6 +105,8 @@ export function TournamentModal({ tournament, onClose }) {
               <PulseRow />
               <PulseRow />
             </div>
+          ) : error ? (
+            <ErrorState message="Failed to load tournament data" onRetry={() => mutate()} />
           ) : (
             <>
               {/* Participants — top */}

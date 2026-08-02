@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createPortal } from "react-dom";
 import { GiBackpack } from "react-icons/gi";
 import useSWR from "swr";
 
-import { ItemSlot, LevelRing, LogoBox, PulseRow } from "../ui/primitives";
-import { fmtK } from "../ui/utils";
+import { ErrorState, ItemSlot, LevelRing, LogoBox, PulseRow } from "../ui/primitives";
+import { fmtDuration, fmtK, useBodyScrollLock, useEscapeToClose } from "../ui/utils";
 
 // ── Match detail modal ────────────────────────────────────────────────────────
 
@@ -264,25 +264,20 @@ export function SmallTeamTable({ players, team, tab }) {
 }
 
 export function MatchDetailModal({ game, series, onClose }) {
-  const { data, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     `/api/widgets/dota2?mode=match&matchId=${game.id}`,
     { revalidateOnFocus: false },
   );
 
   const [activeTab, setActiveTab] = useState("KDA");
 
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
+  useBodyScrollLock();
 
   const { team1Id, team1Name, team1Logo, team2Name, team2Logo } = series;
   const t1Won      = game.winnerId === team1Id;
   const t1IsRadiant = game.team1IsRadiant ?? true;
-  const duration   = game.length
-    ? `${Math.floor(game.length / 60)}:${String(game.length % 60).padStart(2, "0")}`
-    : null;
+  const duration   = fmtDuration(game.length);
 
   const radiantPlayers = data?.radiantPlayers ?? [];
   const direPlayers    = data?.direPlayers    ?? [];
@@ -324,6 +319,7 @@ export function MatchDetailModal({ game, series, onClose }) {
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close"
             className="shrink-0 ml-2 text-theme-500 hover:text-theme-200 transition-colors text-base leading-none"
           >
             ✕
@@ -336,6 +332,8 @@ export function MatchDetailModal({ game, series, onClose }) {
             <div className="flex flex-col gap-1.5 p-4">
               {Array.from({ length: 10 }).map((_, i) => <PulseRow key={i} />)}
             </div>
+          ) : error ? (
+            <ErrorState message="Failed to load match details" onRetry={() => mutate()} />
           ) : (
             <>
               {/* Small screens: tab bar + compact tables */}

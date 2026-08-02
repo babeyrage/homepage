@@ -3,6 +3,7 @@ import { useState } from "react";
 import useSWR from "swr";
 
 import { LogoBox } from "../ui/primitives";
+import { fmtDuration } from "../ui/utils";
 
 import { MatchDetailModal } from "./MatchDetailModal";
 
@@ -54,21 +55,46 @@ export function FirstPickBadge() {
 //  col 7: meta          3.5rem  — "Bo3 +/-" / duration
 const SERIES_GRID = "4.5rem 1fr 6px 3rem 6px 1fr 3.5rem";
 
-// ── Individual game row — single button spanning all columns via subgrid ───────
-// Clicking anywhere on the row opens the match detail modal.
+// ── Shared per-game data + derived state, used by both GameRow and MobileGameRow ──
 
-export function GameRow({ game, idx, team1Id, onGameClick }) {
+function useGameDetail(game, team1Id) {
   const { data, isLoading } = useSWR(
     `/api/widgets/dota2?mode=match&matchId=${game.id}`,
     { revalidateOnFocus: false },
   );
 
   const t1Won = game.winnerId === team1Id;
-  const duration = game.length
-    ? `${Math.floor(game.length / 60)}:${String(game.length % 60).padStart(2, "0")}`
-    : null;
+  const duration = fmtDuration(game.length);
+  const t1IsRadiant = game.team1IsRadiant ?? true;
 
-  if (isLoading || !data) {
+  const { radiantPicks, direPicks, firstPickIsRadiant } = data ?? {};
+  const leftPicks  = (t1IsRadiant ? radiantPicks : direPicks) ?? [];
+  const rightPicks = (t1IsRadiant ? direPicks    : radiantPicks) ?? [];
+
+  const showFirstPick = firstPickIsRadiant !== null && firstPickIsRadiant !== undefined;
+  const leftHasFirstPick  = showFirstPick && (t1IsRadiant === firstPickIsRadiant);
+  const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
+
+  return {
+    isLoading: isLoading || !data,
+    t1Won,
+    duration,
+    t1IsRadiant,
+    leftPicks,
+    rightPicks,
+    leftHasFirstPick,
+    rightHasFirstPick,
+  };
+}
+
+// ── Individual game row — single button spanning all columns via subgrid ───────
+// Clicking anywhere on the row opens the match detail modal.
+
+export function GameRow({ game, idx, team1Id, onGameClick }) {
+  const { isLoading, t1Won, duration, t1IsRadiant, leftPicks, rightPicks, leftHasFirstPick, rightHasFirstPick } =
+    useGameDetail(game, team1Id);
+
+  if (isLoading) {
     return (
       <div
         style={{ gridColumn: "1 / -1" }}
@@ -76,16 +102,6 @@ export function GameRow({ game, idx, team1Id, onGameClick }) {
       />
     );
   }
-
-  const { radiantPicks, direPicks, firstPickIsRadiant } = data;
-  const t1IsRadiant = game.team1IsRadiant ?? true;
-
-  const leftPicks  = t1IsRadiant ? radiantPicks : direPicks;
-  const rightPicks = t1IsRadiant ? direPicks    : radiantPicks;
-
-  const showFirstPick = firstPickIsRadiant !== null && firstPickIsRadiant !== undefined;
-  const leftHasFirstPick  = showFirstPick && (t1IsRadiant === firstPickIsRadiant);
-  const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
 
   return (
     <button
@@ -148,17 +164,10 @@ export function GameRow({ game, idx, team1Id, onGameClick }) {
 // Clicking anywhere on the row opens the match detail modal.
 
 export function MobileGameRow({ game, idx, team1Id, onGameClick }) {
-  const { data, isLoading } = useSWR(
-    `/api/widgets/dota2?mode=match&matchId=${game.id}`,
-    { revalidateOnFocus: false },
-  );
+  const { isLoading, t1Won, duration, t1IsRadiant, leftPicks, rightPicks, leftHasFirstPick, rightHasFirstPick } =
+    useGameDetail(game, team1Id);
 
-  const t1Won = game.winnerId === team1Id;
-  const duration = game.length
-    ? `${Math.floor(game.length / 60)}:${String(game.length % 60).padStart(2, "0")}`
-    : null;
-
-  if (isLoading || !data) {
+  if (isLoading) {
     return (
       <div
         style={{ gridColumn: "1 / -1" }}
@@ -166,14 +175,6 @@ export function MobileGameRow({ game, idx, team1Id, onGameClick }) {
       />
     );
   }
-
-  const { radiantPicks, direPicks, firstPickIsRadiant } = data;
-  const t1IsRadiant = game.team1IsRadiant ?? true;
-  const leftPicks  = t1IsRadiant ? radiantPicks : direPicks;
-  const rightPicks = t1IsRadiant ? direPicks    : radiantPicks;
-  const showFirstPick = firstPickIsRadiant !== null && firstPickIsRadiant !== undefined;
-  const leftHasFirstPick  = showFirstPick && (t1IsRadiant === firstPickIsRadiant);
-  const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
 
   return (
     <button

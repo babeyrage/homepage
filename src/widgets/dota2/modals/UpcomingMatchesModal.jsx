@@ -1,42 +1,15 @@
-import { DateTime } from "luxon";
-import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useTranslation } from "next-i18next/pages";
 
 import { ModalMatchRow } from "../matches/MatchRow";
+import { formatDayLabel, groupMatchesByDay, useBodyScrollLock, useEscapeToClose } from "../ui/utils";
 
 // ── Upcoming matches modal ────────────────────────────────────────────────────
 
 export function UpcomingMatchesModal({ matches, showAbsolute, onToggleTime, onClose }) {
-  const { t } = useTranslation();
+  useEscapeToClose(onClose);
+  useBodyScrollLock();
 
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
-
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
-  }, []);
-
-  const today = DateTime.now().startOf("day");
-  const formatDayLabel = (isoDate) => {
-    const dt = DateTime.fromISO(isoDate).startOf("day");
-    const diff = Math.round(dt.diff(today, "days").days);
-    if (diff === 0) return "Today";
-    if (diff === 1) return "Tomorrow";
-    return dt.toFormat("cccc, d MMM");
-  };
-
-  const grouped = matches.reduce((acc, match) => {
-    const day = match.beginAt ? DateTime.fromISO(match.beginAt).toISODate() : "unknown";
-    if (!acc[day]) acc[day] = [];
-    acc[day].push(match);
-    return acc;
-  }, {});
+  const grouped = groupMatchesByDay(matches);
 
   return createPortal(
     <div
@@ -50,7 +23,7 @@ export function UpcomingMatchesModal({ matches, showAbsolute, onToggleTime, onCl
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-theme-200 dark:border-theme-700 shrink-0">
           <span className="text-base font-bold text-theme-800 dark:text-theme-100">
-            {t("dota2.upcoming", "Upcoming Matches")}
+            Upcoming Matches
           </span>
           <div className="flex items-center gap-3">
             <button
@@ -63,6 +36,7 @@ export function UpcomingMatchesModal({ matches, showAbsolute, onToggleTime, onCl
             <button
               type="button"
               onClick={onClose}
+              aria-label="Close"
               className="text-theme-400 hover:text-theme-600 dark:text-theme-500 dark:hover:text-theme-300 transition-colors leading-none text-lg"
             >
               ✕

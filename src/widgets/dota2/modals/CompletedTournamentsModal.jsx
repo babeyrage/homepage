@@ -1,25 +1,13 @@
-import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useTranslation } from "next-i18next/pages";
 
 import { TournamentRow } from "../tournaments/TournamentRow";
+import { useBodyScrollLock, useEscapeToClose } from "../ui/utils";
 
 // ── Completed tournaments modal ───────────────────────────────────────────────
 
 export function CompletedTournamentsModal({ tournaments, onSelect, onClose }) {
-  const { t } = useTranslation();
-
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
-
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
-  }, []);
+  useEscapeToClose(onClose);
+  useBodyScrollLock();
 
   return createPortal(
     <div
@@ -33,11 +21,12 @@ export function CompletedTournamentsModal({ tournaments, onSelect, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-theme-200 dark:border-theme-700 shrink-0">
           <span className="text-sm font-semibold text-theme-700 dark:text-theme-200">
-            {t("dota2.completed", "Completed")}
+            Completed
           </span>
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close"
             className="text-theme-400 hover:text-theme-600 dark:text-theme-500 dark:hover:text-theme-300 transition-colors leading-none text-base"
           >
             ✕

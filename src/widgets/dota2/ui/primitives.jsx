@@ -32,6 +32,23 @@ export function MatchPulseRow() {
   );
 }
 
+export function ErrorState({ message = "Failed to load", onRetry }) {
+  return (
+    <div className="flex flex-col items-center gap-1.5 py-8 text-center text-[11px] text-theme-400 dark:text-theme-500">
+      <span>{message}</span>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="text-[10px] font-semibold text-theme-600 dark:text-theme-300 hover:text-theme-800 dark:hover:text-theme-100 underline underline-offset-2"
+        >
+          Retry
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function TournamentPulseRow() {
   return (
     <div className="flex items-center justify-between rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-0.5 mb-0.5 animate-pulse gap-1">

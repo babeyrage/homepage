@@ -1,8 +1,9 @@
 import { DateTime } from "luxon";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createPortal } from "react-dom";
 
-import { LogoBox, PulseRow } from "../ui/primitives";
+import { ErrorState, LogoBox, PulseRow } from "../ui/primitives";
+import { formatDayLabel, groupMatchesByDay, useBodyScrollLock, useEscapeToClose } from "../ui/utils";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 import { TeamModal } from "../modals/TeamModal";
 
@@ -63,45 +64,27 @@ export function UpcomingTournamentModal({ tournament, widget, onClose }) {
         ? `From ${begin.toFormat("d MMM yyyy")}`
         : "";
 
-  const { data: matchesRaw, isLoading } = useWidgetAPI(widget, "tournament_matches", {
+  const { data: matchesRaw, error, mutate } = useWidgetAPI(widget, "tournament_matches", {
     "filter[tournament_id]": tournament.id,
     "page[size]": 50,
     sort: "begin_at",
   });
+  const isLoading = !matchesRaw && !error;
 
   const matches = Array.isArray(matchesRaw) ? matchesRaw : [];
 
   const [visibleDays, setVisibleDays] = useState(2);
 
-  // Group matches by local date
-  const matchesByDate = matches.reduce((groups, match) => {
-    const dateKey = match.beginAt
-      ? DateTime.fromISO(match.beginAt).toFormat("cccc, d MMM yyyy")
-      : "TBD";
-    if (!groups[dateKey]) groups[dateKey] = [];
-    groups[dateKey].push(match);
-    return groups;
-  }, {});
-
+  // Group matches by local date, preserving API sort order (already sorted by begin_at)
+  const matchesByDate = groupMatchesByDay(matches);
   const dateEntries = Object.entries(matchesByDate);
   const visibleEntries = dateEntries.slice(0, visibleDays);
   const hiddenDays = dateEntries.length - visibleDays;
 
   const [selectedTeam, setSelectedTeam] = useState(null);
 
-  // Close on Escape
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
-
-  // Lock body scroll
-  useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
-  }, []);
+  useEscapeToClose(onClose);
+  useBodyScrollLock();
 
   const modal = createPortal(
     <div
@@ -142,6 +125,7 @@ export function UpcomingTournamentModal({ tournament, widget, onClose }) {
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close"
             className="shrink-0 text-theme-400 hover:text-theme-700 dark:text-theme-500 dark:hover:text-theme-200 transition-colors leading-none text-base mt-0.5"
           >
             ✕
@@ -155,6 +139,8 @@ export function UpcomingTournamentModal({ tournament, widget, onClose }) {
             <div className="flex flex-col gap-1.5">
               <PulseRow /><PulseRow /><PulseRow />
             </div>
+          ) : error ? (
+            <ErrorState message="Failed to load scheduled matches" onRetry={() => mutate()} />
           ) : matches.length > 0 ? (
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-wide text-theme-400 dark:text-theme-500 mb-1.5">
@@ -163,7 +149,7 @@ export function UpcomingTournamentModal({ tournament, widget, onClose }) {
               {visibleEntries.map(([dateKey, dayMatches]) => (
                 <div key={dateKey} className="mb-3 last:mb-0">
                   <p className="text-[10px] font-semibold text-theme-500 dark:text-theme-400 mb-1 px-1">
-                    {dateKey}
+                    {formatDayLabel(dateKey, { relative: false, includeYear: true })}
                   </p>
                   {dayMatches.map((match) => (
                     <ScheduledMatchRow key={match.id} match={match} />
@@ -181,11 +167,9 @@ export function UpcomingTournamentModal({ tournament, widget, onClose }) {
               )}
             </div>
           ) : (
-            !isLoading && (
-              <div className="text-[11px] text-theme-400 dark:text-theme-500 py-4 text-center">
-                No matches scheduled yet
-              </div>
-            )
+            <div className="text-[11px] text-theme-400 dark:text-theme-500 py-4 text-center">
+              No matches scheduled yet
+            </div>
           )}
 
           {/* Participating teams — bottom */}

@@ -1,23 +1,21 @@
 import { DateTime } from "luxon";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createPortal } from "react-dom";
 import useSWR from "swr";
 
-import { LogoBox, PulseRow } from "../ui/primitives";
+import { ErrorState, LogoBox, PulseRow } from "../ui/primitives";
+import { fmtDuration, useBodyScrollLock, useEscapeToClose } from "../ui/utils";
 
 // ── Team detail modal ─────────────────────────────────────────────────────────
 
 export function TeamModal({ teamId, teamName, teamLogo, onClose }) {
-  const { data, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     `/api/widgets/dota2?mode=team&teamId=${teamId}`,
     { revalidateOnFocus: false },
   );
 
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
+  useBodyScrollLock();
 
   const [expandedMatchId, setExpandedMatchId] = useState(null);
   const totalGames = data ? (data.wins ?? 0) + (data.losses ?? 0) : 0;
@@ -46,6 +44,7 @@ export function TeamModal({ teamId, teamName, teamLogo, onClose }) {
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close"
             className="shrink-0 text-theme-400 hover:text-theme-700 dark:hover:text-theme-200 transition-colors text-base leading-none"
           >
             ✕
@@ -80,6 +79,8 @@ export function TeamModal({ teamId, teamName, teamLogo, onClose }) {
             <div className="flex flex-col gap-1.5">
               {Array.from({ length: 8 }).map((_, i) => <PulseRow key={i} />)}
             </div>
+          ) : error ? (
+            <ErrorState message="Failed to load team stats" onRetry={() => mutate()} />
           ) : !data || (!data.players?.length && !data.heroes?.length && !data.recentMatches?.length) ? (
             <div className="py-8 text-center text-[11px] text-theme-400 dark:text-theme-500">
               No stats available for this team
@@ -129,9 +130,6 @@ export function TeamModal({ teamId, teamName, teamLogo, onClose }) {
                   <div className="flex flex-col gap-0.5">
                     {data.recentMatches.map((match) => {
                       const isOpen = expandedMatchId === match.matchId;
-                      const dur = match.duration
-                        ? `${Math.floor(match.duration / 60)}:${String(match.duration % 60).padStart(2, "0")}`
-                        : null;
                       const date = match.startTime
                         ? DateTime.fromSeconds(match.startTime).toFormat("d MMM yyyy")
                         : null;

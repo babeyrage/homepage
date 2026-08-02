@@ -1,4 +1,3 @@
-import { DateTime } from "luxon";
 import { useTranslation } from "next-i18next/pages";
 import { useState } from "react";
 import useSWR from "swr";
@@ -7,6 +6,7 @@ import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 
 import { SectionLabel, MatchPulseRow, TournamentPulseRow } from "./ui/primitives";
+import { formatDayLabel, groupMatchesByDay } from "./ui/utils";
 import { MatchRow } from "./matches/MatchRow";
 import { TournamentRow } from "./tournaments/TournamentRow";
 import { TournamentModal } from "./tournaments/TournamentModal";
@@ -103,25 +103,7 @@ export default function Component({ service }) {
                 const preview = upcomingMatches.slice(0, PREVIEW_COUNT);
                 const hasMore = upcomingMatches.length > PREVIEW_COUNT;
 
-                const today = DateTime.now().startOf("day");
-                const formatDayLabel = (isoDate) => {
-                  const dt = DateTime.fromISO(isoDate).startOf("day");
-                  const diff = Math.round(dt.diff(today, "days").days);
-                  if (diff === 0) return "Today";
-                  if (diff === 1) return "Tomorrow";
-                  return dt.toFormat("cccc, d MMM");
-                };
-
-                // Group a list of matches by calendar day, preserving sort order
-                const groupByDay = (matches) =>
-                  matches.reduce((acc, match) => {
-                    const day = match.beginAt ? DateTime.fromISO(match.beginAt).toISODate() : "unknown";
-                    if (!acc[day]) acc[day] = [];
-                    acc[day].push(match);
-                    return acc;
-                  }, {});
-
-                const grouped = groupByDay(preview);
+                const grouped = groupMatchesByDay(preview);
 
                 return (
                   <>
