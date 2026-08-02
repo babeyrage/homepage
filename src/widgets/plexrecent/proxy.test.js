@@ -15,7 +15,7 @@ const { httpProxy, getServiceWidget, cache, xml2json, logger } = vi.hoisted(() =
     },
     xml2json: vi.fn((xml) => {
       if (xml === "sessions") return JSON.stringify({ MediaContainer: { _attributes: { size: "2" } } });
-      if (xml === "libraries")
+      if (xml === "libraries") {
         return JSON.stringify({
           MediaContainer: {
             Directory: [
@@ -25,12 +25,51 @@ const { httpProxy, getServiceWidget, cache, xml2json, logger } = vi.hoisted(() =
             ],
           },
         });
-      if (xml === "movies") return JSON.stringify({ MediaContainer: { _attributes: { size: "10" } } });
-      if (xml === "tv") return JSON.stringify({ MediaContainer: { _attributes: { totalSize: "20" } } });
-      if (xml === "albums") return JSON.stringify({ MediaContainer: { _attributes: { size: "30" } } });
+      }
+      if (xml === "movies_count") return JSON.stringify({ MediaContainer: { _attributes: { totalSize: "10" } } });
+      if (xml === "tv_count") return JSON.stringify({ MediaContainer: { _attributes: { totalSize: "20" } } });
+      if (xml === "movies_recent") {
+        return JSON.stringify({
+          MediaContainer: {
+            Video: [
+              {
+                _attributes: {
+                  ratingKey: "201",
+                  addedAt: "1700000000",
+                  type: "movie",
+                  title: "Movie A",
+                  year: "2023",
+                  thumb: "/library/metadata/201/thumb",
+                },
+              },
+            ],
+          },
+        });
+      }
+      if (xml === "tv_recent") {
+        return JSON.stringify({
+          MediaContainer: {
+            Video: [
+              {
+                _attributes: {
+                  ratingKey: "301",
+                  addedAt: "1700000100",
+                  type: "episode",
+                  title: "Pilot",
+                  grandparentTitle: "Show A",
+                  grandparentRatingKey: "9001",
+                  grandparentThumb: "/library/metadata/9001/thumb",
+                  parentIndex: "1",
+                  index: "1",
+                },
+              },
+            ],
+          },
+        });
+      }
       return JSON.stringify({ MediaContainer: { _attributes: { size: "0" } } });
     }),
-    logger: { debug: vi.fn(), error: vi.fn() },
+    logger: { debug: vi.fn(), warn: vi.fn(), error: vi.fn() },
   };
 });
 
@@ -45,49 +84,122 @@ vi.mock("utils/proxy/http", () => ({
 }));
 vi.mock("memory-cache", () => ({
   default: cache,
-  ...cache,
 }));
 vi.mock("xml-js", () => ({
   xml2json,
 }));
 vi.mock("widgets/widgets", () => ({
-  default: {
-    plex: {
-      api: "{url}{endpoint}",
-    },
-  },
+  default: { plexrecent: { api: "{url}{endpoint}" } },
 }));
 
-import plexProxyHandler from "./proxy";
+const { default: plexProxyHandler } = await import("./proxy");
 
-describe("widgets/plex/proxy", () => {
+const widget = { type: "plexrecent", url: "http://plex.local:32400", key: "tok123" };
+const req = { query: { group: "g", service: "svc", index: "0" } };
+
+function buf(marker) {
+  return Buffer.from(marker);
+}
+
+describe("widgets/plexrecent/proxy", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     cache._reset();
+    getServiceWidget.mockResolvedValue(widget);
   });
 
-  it("fetches sessions and library counts, caching intermediate results", async () => {
-    getServiceWidget.mockResolvedValue({ type: "plex", url: "http://plex" });
-
+  it("fetches streams, library counts and recently-added items, caching the results", async () => {
     httpProxy
-      // sessions
-      .mockResolvedValueOnce([200, "application/xml", Buffer.from("sessions")])
-      // libraries
-      .mockResolvedValueOnce([200, "application/xml", Buffer.from("libraries")])
-      // movies
-      .mockResolvedValueOnce([200, "application/xml", Buffer.from("movies")])
-      // tv
-      .mockResolvedValueOnce([200, "application/xml", Buffer.from("tv")])
-      // albums
-      .mockResolvedValueOnce([200, "application/xml", Buffer.from("albums")]);
+      .mockResolvedValueOnce([200, "application/xml", buf("sessions")]) // sessions
+      .mockResolvedValueOnce([200, "application/xml", buf("libraries")]) // libraries
+      .mockResolvedValueOnce([200, "application/xml", buf("movies_count")]) // movie lib total
+      .mockResolvedValueOnce([200, "application/xml", buf("tv_count")]) // show lib total
+      .mockResolvedValueOnce([200, "application/xml", buf("movies_recent")]) // movie lib recentlyAdded
+      .mockResolvedValueOnce([200, "application/xml", buf("tv_recent")]); // show lib recentlyAdded
 
-    const req = { query: { group: "g", service: "svc", index: "0" } };
     const res = createMockRes();
-
     await plexProxyHandler(req, res);
 
     expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual({ streams: "2", albums: 30, movies: 10, tv: 20 });
+    expect(res.body.streams).toBe(2);
+    expect(res.body.totalMovies).toBe(10);
+    expect(res.body.totalShows).toBe(20);
+
+    expect(res.body.recentMovies).toHaveLength(1);
+    expect(res.body.recentMovies[0]).toMatchObject({ id: "201", title: "Movie A" });
+
+    expect(res.body.recentTV).toHaveLength(1);
+    expect(res.body.recentTV[0]).toMatchObject({ id: "9001", showTitle: "Show A" });
+    expect(res.body.recentTV[0].episodes).toHaveLength(1);
+    expect(res.body.recentTV[0].episodes[0]).toMatchObject({ id: "301", title: "Pilot" });
+
     expect(cache.put).toHaveBeenCalled();
+
+    // Token is sent as a header, never in the URL.
+    for (const [, options] of httpProxy.mock.calls) {
+      expect(options?.headers?.["X-Plex-Token"]).toBe("tok123");
+    }
+    for (const [url] of httpProxy.mock.calls) {
+      expect(String(url)).not.toContain("tok123");
+    }
+  });
+
+  it("reports zero streams instead of failing the whole request when /status/sessions errors", async () => {
+    httpProxy
+      .mockResolvedValueOnce([500, "application/json", buf("boom")]) // sessions fails
+      .mockResolvedValueOnce([200, "application/xml", buf("libraries")])
+      .mockResolvedValueOnce([200, "application/xml", buf("movies_count")])
+      .mockResolvedValueOnce([200, "application/xml", buf("tv_count")])
+      .mockResolvedValueOnce([200, "application/xml", buf("movies_recent")])
+      .mockResolvedValueOnce([200, "application/xml", buf("tv_recent")]);
+
+    const res = createMockRes();
+    await plexProxyHandler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.streams).toBe(0);
+    expect(res.body.totalMovies).toBe(10);
+  });
+
+  it("returns 502 when libraries fail and there is no cached fallback", async () => {
+    httpProxy
+      .mockResolvedValueOnce([200, "application/xml", buf("sessions")])
+      .mockResolvedValueOnce([500, "application/json", buf("boom")]); // libraries fails, no cache yet
+
+    const res = createMockRes();
+    await plexProxyHandler(req, res);
+
+    expect(res.statusCode).toBe(502);
+  });
+
+  it("falls back to cached library data when a later libraries refresh fails", async () => {
+    httpProxy
+      .mockResolvedValueOnce([200, "application/xml", buf("sessions")])
+      .mockResolvedValueOnce([200, "application/xml", buf("libraries")])
+      .mockResolvedValueOnce([200, "application/xml", buf("movies_count")])
+      .mockResolvedValueOnce([200, "application/xml", buf("tv_count")])
+      .mockResolvedValueOnce([200, "application/xml", buf("movies_recent")])
+      .mockResolvedValueOnce([200, "application/xml", buf("tv_recent")]);
+
+    const first = createMockRes();
+    await plexProxyHandler(req, first);
+    expect(first.statusCode).toBe(200);
+
+    // Force the recent-items cache to be considered stale, but leave the libraries cache intact.
+    cache.del(`plexRecentProxyHandler__recent_movies.svc.0`);
+    cache.del(`plexRecentProxyHandler__recent_tv.svc.0`);
+
+    httpProxy
+      .mockResolvedValueOnce([200, "application/xml", buf("sessions")])
+      .mockResolvedValueOnce([500, "application/json", buf("boom")]) // libraries refresh fails this time
+      .mockResolvedValueOnce([200, "application/xml", buf("movies_recent")])
+      .mockResolvedValueOnce([200, "application/xml", buf("tv_recent")]);
+
+    const second = createMockRes();
+    await plexProxyHandler(req, second);
+
+    expect(second.statusCode).toBe(200);
+    expect(second.body.totalMovies).toBe(10);
+    expect(second.body.totalShows).toBe(20);
   });
 });

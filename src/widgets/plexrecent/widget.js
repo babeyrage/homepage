@@ -1,7 +1,7 @@
 import plexProxyHandler from './proxy';
 
 const widget = {
-	api: '{url}{endpoint}?X-Plex-Token={key}',
+	api: '{url}{endpoint}',
 	proxyHandler: plexProxyHandler,
 
 	mappings: {

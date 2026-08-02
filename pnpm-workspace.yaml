@@ -4,12 +4,12 @@ packages:
 allowBuilds:
   '@tailwindcss/oxide': true
   core-js: false
-  cpu-features: false
+  cpu-features: true
   esbuild: false
   osx-temperature-sensor: true
-  protobufjs: false
+  protobufjs: true
   sharp: true
-  ssh2: false
+  ssh2: true
 
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'

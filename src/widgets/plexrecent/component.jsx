@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next/pages';
 import Container from 'components/services/widget/container';
 import Block from 'components/services/widget/block';
 
@@ -71,11 +71,15 @@ function RecentRow({ title, items = [], type }) {
     }
   };
 
+  if (items.length === 0) return null;
+
   return (
     <div>
       <h3 className={`${headingCls} mb-2`}>{title}</h3>
       <div className="relative group">
         <button
+          type="button"
+          aria-label={`Scroll ${title} left`}
           onClick={() => scroll('left')}
           className="hidden group-hover:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white px-2 py-1 rounded-full shadow-md"
         >
@@ -90,6 +94,8 @@ function RecentRow({ title, items = [], type }) {
           ))}
         </div>
         <button
+          type="button"
+          aria-label={`Scroll ${title} right`}
           onClick={() => scroll('right')}
           className="hidden group-hover:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white px-2 py-1 rounded-full shadow-md"
         >
@@ -103,7 +109,8 @@ function RecentRow({ title, items = [], type }) {
 function RecentItem({ item, type, priority = false }) {
   const [show, setShow] = useState(false);
   const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
-  const ref = useRef();
+  const triggerRef = useRef(null);
+  const popupRef = useRef(null);
   const poster = type === 'tv' ? item.poster : item.coverPoster || '/no-thumb.png';
 
   const [imgSrc, setImgSrc] = useState(poster || '/no-thumb.png');
@@ -115,12 +122,24 @@ function RecentItem({ item, type, priority = false }) {
   };
 
   useEffect(() => {
+    if (!show) return undefined;
+
     const handleClickOutside = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setShow(false);
+      if (triggerRef.current?.contains(e.target)) return;
+      if (popupRef.current?.contains(e.target)) return;
+      setShow(false);
     };
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setShow(false);
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [show]);
 
   const criticRating = parseFloat(item.rating || 0);
   const audienceRating = parseFloat(item.audienceRating || 0);
@@ -131,7 +150,7 @@ function RecentItem({ item, type, priority = false }) {
   return (
     <>
       <div
-        ref={ref}
+        ref={triggerRef}
         onClick={handleClick}
         className="relative w-25 min-w-25 shrink-0 cursor-pointer mb-1 hover:scale-[1.03] transition-transform duration-200 ease-out"
       >
@@ -156,8 +175,8 @@ function RecentItem({ item, type, priority = false }) {
       {show &&
         createPortal(
           <div
-            ref={ref}
-            className="fixed z-9999 w-[90vw] max-w-85 bg-[#1e1e2f] text-gray-100 p-4 rounded-lg border border-gray-700 shadow-2xl animate-fade-in overflow-y-auto max-h-[calc(100vh-100px)]"
+            ref={popupRef}
+            className="fixed z-9999 w-[90vw] max-w-85 bg-theme-100 dark:bg-theme-900 text-theme-700 dark:text-theme-200 p-4 rounded-lg border border-theme-200 dark:border-theme-700 shadow-2xl animate-fade-in overflow-y-auto max-h-[calc(100vh-100px)]"
             style={{
               top: Math.min(clickPosition.y + 10, window.innerHeight - 360),
               left: Math.min(clickPosition.x + 10, window.innerWidth - 380),
@@ -237,31 +256,31 @@ function ExpandableEpisodeRow({ ep, index }) {
   return (
     <div
       onClick={handleEpisodeClick}
-      className={`cursor-pointer border-b border-gray-700 pb-1 px-1 rounded-sm ${
-        index % 2 === 0 ? 'bg-gray-800/30' : ''
+      className={`cursor-pointer border-b border-theme-200 dark:border-theme-700 pb-1 px-1 rounded-sm ${
+        index % 2 === 0 ? 'bg-theme-200/30 dark:bg-theme-800/30' : ''
       }`}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-semibold text-gray-100 whitespace-nowrap">
+        <span className={`font-semibold whitespace-nowrap ${headingCls} tracking-normal normal-case`}>
           S{ep.seasonNumber}E{ep.episodeNumber}
         </span>
-        <span className="text-xs text-gray-300 font-normal truncate flex-1">
+        <span className={`font-normal truncate flex-1 ${bodyCls}`}>
           {ep.title}
         </span>
       </div>
-      <div className="text-xs text-gray-400 mt-0.5">
+      <div className={`mt-0.5 ${labelCls}`}>
         Added: {ep.date_added}
       </div>
       {expanded && (
         <>
           {ep.audienceRating && (
-            <div className="flex items-center gap-1 text-xs text-gray-300 mt-1">
+            <div className={`flex items-center gap-1 mt-1 ${bodyCls}`}>
               <AudienceIcon />
               <span>{Math.round(audienceRating * 10)}%</span>
             </div>
           )}
           {ep.summary && (
-            <div className="mt-1 text-xs text-gray-300 whitespace-pre-line">
+            <div className={`mt-1 whitespace-pre-line ${bodyCls}`}>
               {ep.summary}
             </div>
           )}

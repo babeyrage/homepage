@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 import { ModalMatchRow } from "../matches/MatchRow";
 

@@ -16,8 +16,10 @@ export default async function handler(req, res) {
     return res.status(403).end();
   }
 
-  const url = `${widget.url}${decodedPath}?X-Plex-Token=${widget.key}`;
-  const [status, contentType, data] = await httpProxy(url);
+  const url = `${widget.url}${decodedPath}`;
+  const [status, contentType, data] = await httpProxy(url, {
+    headers: { 'X-Plex-Token': widget.key },
+  });
 
   if (status !== 200) return res.status(status).end();
 
