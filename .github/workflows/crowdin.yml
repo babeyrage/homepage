@@ -10,6 +10,10 @@ on:
     ]
     branches: [ dev ]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   synchronize-with-crowdin:
     name: Crowdin Sync
@@ -17,9 +21,9 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: crowdin action
-      uses: crowdin/github-action@c7af9bc98b01694653031fef2a0dc6c7888ce9bc # v2
+      uses: crowdin/github-action@71fdb8814261dd703be4ca7c6450d21b1868da4b # v3.0.1
       with:
         upload_translations: false
         download_translations: true

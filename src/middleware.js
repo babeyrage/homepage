@@ -1,8 +1,20 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
-const authEnabled = Boolean(process.env.HOMEPAGE_AUTH_ENABLED);
+import { isAuthEnabled } from "utils/env";
+
+const authEnabled = isAuthEnabled();
 const authSecret = process.env.NEXTAUTH_SECRET || process.env.HOMEPAGE_AUTH_SECRET;
+
+// Prerendered pages carry `s-maxage`, and the dashboard HTML embeds the service and
+// bookmark inventory. Without this, a CDN or caching reverse proxy in front of Homepage
+// would store an authenticated response and serve it to anonymous visitors.
+function withPrivateCache(res) {
+  if (authEnabled) {
+    res.headers.set("Cache-Control", "private, no-store");
+  }
+  return res;
+}
 
 export async function middleware(req) {
   // Check the Host header, if HOMEPAGE_ALLOWED_HOSTS is set
@@ -20,22 +32,24 @@ export async function middleware(req) {
     return NextResponse.json({ error: "Host validation failed. See logs for more details." }, { status: 400 });
   }
 
-  const pathname = new URL(req.url).pathname;
-  if (authEnabled && !pathname.startsWith("/api/healthcheck")) {
+  const { pathname, search } = new URL(req.url);
+  const isPublicAuthPath = pathname.startsWith("/api/healthcheck") || pathname === "/api/config/custom.css";
+  if (authEnabled && !isPublicAuthPath) {
     // The MCP API handler authorizes both bearer tokens and Homepage sessions.
     if (pathname === "/api/mcp") {
-      return NextResponse.next();
+      return withPrivateCache(NextResponse.next());
     }
 
     const token = await getToken({ req, secret: authSecret });
     if (!token) {
       const signInUrl = new URL("/auth/signin", req.url);
-      signInUrl.searchParams.set("callbackUrl", "/");
-      return NextResponse.redirect(signInUrl);
+      // Same-origin by construction, so this cannot be used as an open redirect
+      signInUrl.searchParams.set("callbackUrl", `${pathname}${search}`);
+      return withPrivateCache(NextResponse.redirect(signInUrl));
     }
   }
 
-  return NextResponse.next();
+  return withPrivateCache(NextResponse.next());
 }
 
 export const config = {

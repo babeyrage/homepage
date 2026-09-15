@@ -35,6 +35,7 @@ vi.mock("widgets/widgets", () => ({
     proxmox: { api: "{url}/api2/json/{endpoint}" },
     truenas: { api: "{url}/api/v2.0/{endpoint}" },
     ntfy: { api: "{url}/{endpoint}" },
+    whatsupdocker: { api: "{url}/{endpoint}" },
     proxmoxbackupserver: { api: "{url}/api2/json/{endpoint}" },
     checkmk: { api: "{url}/{endpoint}" },
     stocks: { api: "{url}/{endpoint}" },
@@ -186,6 +187,24 @@ describe("utils/proxy/handlers/credentialed", () => {
     expect(params.headers.Authorization).toBe("Bearer k");
   });
 
+  it.each([
+    ["Bearer", { key: "token" }, "Bearer token"],
+    ["Basic", { username: "u", password: "p" }, `Basic ${Buffer.from("u:p").toString("base64")}`],
+    ["no", {}, undefined],
+    ["Bearer over Basic", { key: "token", username: "u", password: "p" }, "Bearer token"],
+  ])("uses %s auth for whatsupdocker", async (_mode, credentials, authorization) => {
+    getServiceWidget.mockResolvedValue({ type: "whatsupdocker", url: "http://whatsupdocker", ...credentials });
+    httpProxy.mockResolvedValue([200, "application/json", []]);
+
+    const req = { method: "GET", query: { group: "g", service: "s", endpoint: "api/containers", index: 0 } };
+    const res = createMockRes();
+
+    await credentialedProxyHandler(req, res);
+
+    const [, params] = httpProxy.mock.calls.at(-1);
+    expect(params.headers.Authorization).toBe(authorization);
+  });
+
   it("uses Bearer auth for ntfy when key is provided", async () => {
     getServiceWidget.mockResolvedValue({ type: "ntfy", url: "http://ntfy", topic: "alerts", key: "tk_test" });
     httpProxy.mockResolvedValue([200, "application/json", { ok: true }]);
@@ -263,7 +282,7 @@ describe("utils/proxy/handlers/credentialed", () => {
     expect(res.body).toEqual({
       error: {
         message: "HTTP Error",
-        url: "http://x/api/statistics",
+        url: "x (see logs for details)",
         data: { detail: "Invalid token." },
       },
     });
@@ -414,7 +433,7 @@ describe("utils/proxy/handlers/credentialed", () => {
     expect(params.headers["X-Finnhub-Token"]).toBe("finnhub-token");
   });
 
-  it("sanitizes embedded query params when a downstream error contains a url", async () => {
+  it("replaces embedded error urls with the hostname when a downstream error contains a url", async () => {
     getServiceWidget.mockResolvedValue({ type: "linkwarden", url: "http://example", key: "token" });
     httpProxy.mockResolvedValue([500, "application/json", { error: { message: "oops", url: "http://bad" } }]);
 
@@ -424,7 +443,7 @@ describe("utils/proxy/handlers/credentialed", () => {
     await credentialedProxyHandler(req, res);
 
     expect(res.statusCode).toBe(500);
-    expect(res.body.error.url).toContain("apikey=***");
+    expect(res.body.error.url).toBe("example (see logs for details)");
   });
 
   it("ends the response for 204/304 statuses", async () => {
@@ -451,7 +470,7 @@ describe("utils/proxy/handlers/credentialed", () => {
 
     expect(res.statusCode).toBe(500);
     expect(res.body.error.message).toBe("Invalid data");
-    expect(res.body.error.url).toContain("http://example/api/v1/collections");
+    expect(res.body.error.url).toBe("example (see logs for details)");
   });
 
   it("applies the response mapping function when provided", async () => {

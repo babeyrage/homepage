@@ -20,6 +20,9 @@
         "minutes": "m",
         "seconds": "s"
     },
+    "auth": {
+        "signout": "Sign out"
+    },
     "widget": {
         "missing_type": "Tipo del Widget Mancante: {{type}}",
         "api_error": "Errore API",
@@ -36,7 +39,9 @@
         "wait": "Attendi per favore"
     },
     "search": {
-        "placeholder": "Cerca…"
+        "placeholder": "Cerca…",
+        "provider": "Search engine: {{name}}",
+        "select_provider": "Select search engine"
     },
     "resources": {
         "cpu": "CPU",
@@ -71,6 +76,15 @@
         "degraded": "Degradato",
         "no_data": "Nessun dato di archiviazione disponibile"
     },
+    "duplicati": {
+        "jobs": "Jobs",
+        "stored": "Stored",
+        "lastBackup": "Last Run",
+        "nextRun": "Next Run",
+        "running": "Running",
+        "warnings": "Warnings",
+        "errors": "Errors"
+    },
     "docker": {
         "rx": "RX",
         "tx": "TX",
@@ -85,7 +99,12 @@
         "unhealthy": "Non sano",
         "not_found": "Non trovato",
         "exited": "Uscito",
-        "partial": "Parziale"
+        "partial": "Parziale",
+        "created": "Created",
+        "paused": "Paused",
+        "restarting": "Restarting",
+        "removing": "Removing",
+        "dead": "Dead"
     },
     "ping": {
         "error": "Errore",
@@ -120,7 +139,8 @@
         "movies": "Film",
         "series": "Serie",
         "episodes": "Episodi",
-        "songs": "Canzoni"
+        "songs": "Canzoni",
+        "albums": "Albums"
     },
     "esphome": {
         "offline": "Disconnesso",
@@ -458,13 +478,19 @@
     "authentik": {
         "users": "Utenti",
         "loginsLast24H": "Accessi (24h)",
-        "failedLoginsLast24H": "Accessi Falliti (24h)"
+        "failedLoginsLast24H": "Accessi Falliti (24h)",
+        "authorizationsLast24H": "Auths (24h)"
     },
     "proxmox": {
         "mem": "MEM",
         "cpu": "CPU",
         "lxc": "LXC",
         "vms": "Macchine Virtuali"
+    },
+    "pulse": {
+        "nodes": "Nodes",
+        "vms": "VMs",
+        "lxcs": "LXCs"
     },
     "glances": {
         "cpu": "CPU",
@@ -932,6 +958,17 @@
         "mails": "Mail",
         "storage": "Storage"
     },
+    "maintainerr": {
+        "itemsHandled": "Items Handled",
+        "episodesHandled": "Episodes Handled",
+        "moviesHandled": "Movies Handled",
+        "showsHandled": "Shows Handled",
+        "seasonsHandled": "Seasons Handled",
+        "reclaimable": "Reclaimable",
+        "movieReclaimable": "Movie Reclaimable",
+        "showReclaimable": "Show Reclaimable",
+        "totalCapacity": "Total Capacity"
+    },
     "netdata": {
         "warnings": "Avvisi",
         "criticals": "Critici"
@@ -1210,5 +1247,16 @@
         "burned": "Burned",
         "remaining": "Remaining",
         "steps": "Steps"
+    },
+    "syncthing": {
+        "connected": "Connected",
+        "synced": "Synced",
+        "errors": "Errors",
+        "storage": "Storage"
+    },
+    "sportarr": {
+        "wanted": "Wanted",
+        "queued": "Queued",
+        "leagues": "Leagues"
     }
 }

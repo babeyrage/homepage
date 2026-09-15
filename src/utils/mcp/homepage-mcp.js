@@ -2,15 +2,18 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { join } from "path";
 
-import yaml from "js-yaml";
+import * as yaml from "js-yaml";
 
 import { CONF_DIR } from "utils/config/config";
+import { loadYaml } from "utils/config/yaml";
 
 const PROTOCOL_VERSION = "2025-11-25";
 const SERVER_INFO = {
   name: "homepage",
   version: "1.0.0",
 };
+
+const MIN_TOKEN_LENGTH = 32;
 
 const CONFIG_FILES = [
   "settings.yaml",
@@ -116,7 +119,7 @@ function readConfig(file) {
 }
 
 function parseYamlConfig(file) {
-  const parsed = yaml.load(readConfig(file) || "");
+  const parsed = loadYaml(readConfig(file) || "");
   return parsed ?? [];
 }
 
@@ -126,7 +129,7 @@ function validateYaml(file, content) {
   }
 
   try {
-    yaml.load(content || "");
+    loadYaml(content || "");
     return { valid: true };
   } catch (error) {
     return {
@@ -442,9 +445,18 @@ export function mcpEnabled() {
   return enabled();
 }
 
+export function mcpTokenConfigError() {
+  if (!enabled()) return null;
+  const token = requiredToken();
+  if (token && token.length < MIN_TOKEN_LENGTH) {
+    return `HOMEPAGE_MCP_TOKEN must be at least ${MIN_TOKEN_LENGTH} characters. Generate one with: openssl rand -base64 32`;
+  }
+  return null;
+}
+
 export function mcpTokenAuthorized(req) {
   const token = requiredToken();
-  if (!token) return false;
+  if (!token || token.length < MIN_TOKEN_LENGTH) return false;
 
   const authHeader = req.headers.authorization;
   const bearerToken = typeof authHeader === "string" && authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
