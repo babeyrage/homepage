@@ -12,10 +12,10 @@ const { NextResponse, getToken } = vi.hoisted(() => ({
 vi.mock("next/server", () => ({ NextResponse }));
 vi.mock("next-auth/jwt", () => ({ getToken }));
 
-async function loadMiddleware() {
+async function loadProxy() {
   vi.resetModules();
-  const mod = await import("./middleware");
-  return mod.middleware;
+  const mod = await import("./proxy");
+  return mod.proxy;
 }
 
 function createReq(host = "localhost:3000", url = "http://localhost:3000/", headers = {}) {
@@ -30,7 +30,7 @@ function createReq(host = "localhost:3000", url = "http://localhost:3000/", head
   };
 }
 
-describe("middleware", () => {
+describe("proxy", () => {
   const originalEnv = process.env;
   const originalConsoleError = console.error;
 
@@ -43,8 +43,8 @@ describe("middleware", () => {
   it("allows requests for default localhost hosts when auth is disabled", async () => {
     process.env.PORT = "3000";
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000"));
 
     expect(NextResponse.next).toHaveBeenCalled();
     expect(res.type).toBe("next");
@@ -54,8 +54,8 @@ describe("middleware", () => {
     process.env.PORT = "3000";
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("evil.com"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("evil.com"));
 
     expect(errSpy).toHaveBeenCalled();
     expect(NextResponse.json).toHaveBeenCalledWith(
@@ -70,8 +70,8 @@ describe("middleware", () => {
   it("allows requests when HOMEPAGE_ALLOWED_HOSTS is '*'", async () => {
     process.env.HOMEPAGE_ALLOWED_HOSTS = "*";
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("anything.example"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("anything.example"));
 
     expect(NextResponse.next).toHaveBeenCalled();
     expect(res.type).toBe("next");
@@ -81,8 +81,8 @@ describe("middleware", () => {
     process.env.PORT = "3000";
     process.env.HOMEPAGE_ALLOWED_HOSTS = "example.com:3000,other:3000";
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("example.com:3000", "http://example.com:3000/"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("example.com:3000", "http://example.com:3000/"));
 
     expect(NextResponse.next).toHaveBeenCalled();
     expect(res.type).toBe("next");
@@ -92,8 +92,8 @@ describe("middleware", () => {
     process.env.HOMEPAGE_AUTH_ENABLED = "true";
     process.env.HOMEPAGE_AUTH_SECRET = "secret";
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000", "http://localhost:3000/api/healthcheck"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000", "http://localhost:3000/api/healthcheck"));
 
     expect(getToken).not.toHaveBeenCalled();
     expect(NextResponse.next).toHaveBeenCalled();
@@ -104,8 +104,8 @@ describe("middleware", () => {
     process.env.HOMEPAGE_AUTH_ENABLED = "true";
     process.env.HOMEPAGE_AUTH_SECRET = "secret";
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000", "http://localhost:3000/api/config/custom.css"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000", "http://localhost:3000/api/config/custom.css"));
 
     expect(getToken).not.toHaveBeenCalled();
     expect(NextResponse.next).toHaveBeenCalled();
@@ -118,8 +118,8 @@ describe("middleware", () => {
 
     getToken.mockResolvedValueOnce(null);
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000", "http://localhost:3000/api/config/custom.js"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000", "http://localhost:3000/api/config/custom.js"));
 
     expect(getToken).toHaveBeenCalled();
     expect(res.type).toBe("redirect");
@@ -128,8 +128,8 @@ describe("middleware", () => {
   it.each(["false", "0", "no", "off", ""])("treats HOMEPAGE_AUTH_ENABLED=%j as disabled", async (value) => {
     process.env.HOMEPAGE_AUTH_ENABLED = value;
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000", "http://localhost:3000/some"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000", "http://localhost:3000/some"));
 
     expect(getToken).not.toHaveBeenCalled();
     expect(res.type).toBe("next");
@@ -141,8 +141,8 @@ describe("middleware", () => {
 
     getToken.mockResolvedValueOnce(null);
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000", "http://localhost:3000/some"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000", "http://localhost:3000/some"));
 
     expect(getToken).toHaveBeenCalledWith({
       req: expect.objectContaining({ url: "http://localhost:3000/some" }),
@@ -159,8 +159,8 @@ describe("middleware", () => {
 
     getToken.mockResolvedValueOnce(null);
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000", "http://localhost:3000/some/page?tab=2"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000", "http://localhost:3000/some/page?tab=2"));
 
     expect(new URL(res.url).searchParams.get("callbackUrl")).toBe("/some/page?tab=2");
   });
@@ -171,8 +171,8 @@ describe("middleware", () => {
 
     getToken.mockResolvedValueOnce({ sub: "user" });
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000", "http://localhost:3000/"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000", "http://localhost:3000/"));
 
     expect(NextResponse.next).toHaveBeenCalled();
     expect(res.type).toBe("next");
@@ -184,8 +184,8 @@ describe("middleware", () => {
 
     getToken.mockResolvedValueOnce({ sub: "user" });
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000", "http://localhost:3000/"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000", "http://localhost:3000/"));
 
     expect(res.headers.get("Cache-Control")).toBe("private, no-store");
   });
@@ -196,16 +196,16 @@ describe("middleware", () => {
 
     getToken.mockResolvedValueOnce(null);
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000", "http://localhost:3000/some"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000", "http://localhost:3000/some"));
 
     expect(res.type).toBe("redirect");
     expect(res.headers.get("Cache-Control")).toBe("private, no-store");
   });
 
   it("leaves cache headers alone when auth is disabled", async () => {
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000", "http://localhost:3000/"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000", "http://localhost:3000/"));
 
     expect(res.headers.get("Cache-Control")).toBeNull();
   });
@@ -214,8 +214,8 @@ describe("middleware", () => {
     process.env.HOMEPAGE_AUTH_ENABLED = "true";
     process.env.HOMEPAGE_AUTH_SECRET = "secret";
 
-    const middleware = await loadMiddleware();
-    const res = await middleware(createReq("localhost:3000", "http://localhost:3000/api/mcp"));
+    const proxy = await loadProxy();
+    const res = await proxy(createReq("localhost:3000", "http://localhost:3000/api/mcp"));
 
     expect(getToken).not.toHaveBeenCalled();
     expect(NextResponse.next).toHaveBeenCalled();
