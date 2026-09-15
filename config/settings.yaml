@@ -8,7 +8,7 @@ useEqualHeights: true
 theme: dark
 cardBlur: xl
 headerStyle: clean
-hideVersion: true
+target: _self
 
 ###### LAYOUT SETTINGS ######
 layout:
