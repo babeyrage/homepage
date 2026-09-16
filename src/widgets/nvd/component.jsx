@@ -154,7 +154,9 @@ export default function Component({ service }) {
   }
   const pubStartDate = toNvdDate(startDate);
 
-  const params = { resultsPerPage: 2000, pubStartDate, pubEndDate, refreshInterval: 3600000 };
+  // NVD throttles unauthenticated requests hard as resultsPerPage grows (2000 can hang
+  // 20s+ and never resolve). Only request the full page size when an apiKey is configured.
+  const params = { resultsPerPage: widget.apiKey ? 2000 : 100, pubStartDate, pubEndDate, refreshInterval: 3600000 };
   if (widget.apiKey) params.apiKey = widget.apiKey;
 
   const { data, error } = useWidgetAPI(widget, "cves", params);

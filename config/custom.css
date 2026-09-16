@@ -22,6 +22,42 @@ iframe {
 }
 
 /* ============================================================
+   FUSION BASE PALETTE — override Homepage's slate-800 page/panel
+   tone with Fusion's near-black --bg (#0a0d12). Homepage's own
+   .theme-slate class supplies --color-700/800/900 (the shades
+   every dark:bg-theme-800 etc. utility class reads from), and the
+   real <body> background is driven directly by --color-800 — so
+   remapping these three repaints the whole app's base canvas,
+   not just the elements this file already targets explicitly.
+   ============================================================ */
+:root {
+  --color-700: 23 29 38 !important; /* Fusion --panel-2 */
+  --color-800: 10 13 18 !important; /* Fusion --bg — drives the real page background */
+  --color-900: 6 8 11   !important; /* deeper than --bg, for shadows/recessed elements */
+}
+
+/* ============================================================
+   FUSION TYPOGRAPHY — Manrope body / IBM Plex Mono data+labels
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+body, #__next {
+  font-family: 'Manrope', system-ui, sans-serif !important;
+}
+
+.service-group-name,
+.bookmark-group-name,
+.service-tag,
+#myTab button,
+.service-block > div:first-child,
+.service-block > div:last-child,
+.bookmark-icon,
+.information-widget-datetime span,
+.information-widget-resource .text-xs > div:first-child {
+  font-family: 'IBM Plex Mono', ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", monospace !important;
+}
+
+/* ============================================================
    FUSION ZONE ACCENTS — per-section colour system
    Every rule above (and below) reads colour from --accent via
    var(), and CSS custom properties cascade — so re-declaring
@@ -39,6 +75,31 @@ iframe {
 .services-group[data-group="HOME NETWORK"]{ --accent: 52 211 153; } /* network green */
 .services-group[data-group="SECURITY"]    { --accent: 251 113 133;} /* rose — overrides inherited green under HOME NETWORK */
 .services-group[data-group="SECURITY INFO"]{ --accent: 251 113 133;} /* rose */
+
+/* ─── Zone cards — the coloured left-border glass panel per section ───
+   This is the signature Fusion element: every top-level section becomes
+   its own card (blurred glass background + border + accent-coloured
+   left stripe), reusing the --accent scoped above. Subgroups stay plain
+   (no nested double-box) except DOTA 2 / MEDIA-INFO, which are Fusion's
+   promoted "signal rail" cards despite being subgroups, and INFO, which
+   is a headerless layout wrapper and must stay a plain flex container. */
+.services-group:not(.subgroup),
+.services-group.subgroup[data-group="DOTA 2"],
+.services-group.subgroup[data-group="MEDIA-INFO"] {
+  background: linear-gradient(180deg, rgb(255 255 255 / 3%), rgb(255 255 255 / 1%)), rgb(0 0 0 / 16%) !important;
+  border: 1px solid rgb(var(--card-border)) !important;
+  border-left: 3px solid rgb(var(--accent) / 75%) !important;
+  border-radius: 10px !important;
+  padding: 14px 16px !important;
+  backdrop-filter: blur(14px);
+}
+
+.services-group[data-group="INFO"] {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  backdrop-filter: none !important;
+}
 
 /* ─── Subtle Page Background Gradient ─── */
 #__next::before {
