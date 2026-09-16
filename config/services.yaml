@@ -110,54 +110,16 @@
             url: http://{{HOMEPAGE_VAR_SEERR_URL}}:{{HOMEPAGE_VAR_SEERR_PORT}}
             key: "{{HOMEPAGE_VAR_SEERR_API_KEY}}"
 
-    # - Tautulli:
-    #     icon: tautulli.svg
-    #     href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
-    #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
-    #     proxmoxVMID: "{{HOMEPAGE_VAR_TAUTULLI_VMID}}"
-    #     proxmoxType: lxc
-    #     widget:
-    #         type: tautulli
-    #         url: http://{{HOMEPAGE_VAR_TAUTULLI_URL}}:{{HOMEPAGE_VAR_TAUTULLI_PORT}}
-    #         key: "{{HOMEPAGE_VAR_TAUTULLI_API_KEY}}"
-    #         enableUser: true
-    #         showEpisodeNumber: true
-    #         expandOneStreamToTwoRows: true
-
-    - Lidarr:
-        icon: lidarr.svg
-        href: http://{{HOMEPAGE_VAR_LIDARR_URL}}:{{HOMEPAGE_VAR_LIDARR_PORT}}
+    - Prowlarr:
+        icon: prowlarr.svg
+        href: http://{{HOMEPAGE_VAR_PROWLARR_URL}}:{{HOMEPAGE_VAR_PROWLARR_PORT}}
         proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_LIDARR_VMID}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_PROWLARR_VMID}}"
         proxmoxType: lxc
         widget:
-            type: lidarr
-            url: http://{{HOMEPAGE_VAR_LIDARR_URL}}:{{HOMEPAGE_VAR_LIDARR_PORT}}
-            key: "{{HOMEPAGE_VAR_LIDARR_API_KEY}}"
-
-    - Bazarr:
-        icon: bazarr.svg
-        href: http://{{HOMEPAGE_VAR_BAZARR_URL}}:{{HOMEPAGE_VAR_BAZARR_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_BAZARR_VMID}}"
-        proxmoxType: lxc
-        widget:
-            type: bazarr
-            url: http://{{HOMEPAGE_VAR_BAZARR_URL}}:{{HOMEPAGE_VAR_BAZARR_PORT}}
-            key: "{{HOMEPAGE_VAR_BAZARR_API_KEY}}"
-
-    - Dispatcharr:
-        icon: dispatcharr.svg
-        href: http://{{HOMEPAGE_VAR_DISPATCHARR_URL}}:{{HOMEPAGE_VAR_DISPATCHARR_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_DISPATCHARR_VMID}}"
-        proxmoxType: lxc
-        widget:
-            type: dispatcharr
-            url: http://{{HOMEPAGE_VAR_DISPATCHARR_URL}}:{{HOMEPAGE_VAR_DISPATCHARR_PORT}}
-            username: "{{HOMEPAGE_VAR_DISPATCHARR_USER}}"
-            password: "{{HOMEPAGE_VAR_DISPATCHARR_PASSWORD}}"
-            enableActiveStreams: true
+            type: prowlarr
+            url: http://{{HOMEPAGE_VAR_PROWLARR_URL}}:{{HOMEPAGE_VAR_PROWLARR_PORT}}
+            key: "{{HOMEPAGE_VAR_PROWLARR_API_KEY}}"
 
     - Tracearr:
         icon: tracearr.svg
@@ -174,25 +136,6 @@
             showEpisodeNumber: true
             expandOneStreamToTwoRows: false
 
-    - Soulsync:
-        icon: sh-soulsync.png
-        href: http://{{HOMEPAGE_VAR_SOULSYNC_URL}}:{{HOMEPAGE_VAR_SOULSYNC_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_SOULSYNC_VMID}}"
-        proxmoxType: lxc
-
-    - Immich:
-        icon: immich.svg
-        href: http://{{HOMEPAGE_VAR_IMMICH_URL}}:{{HOMEPAGE_VAR_IMMICH_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_IMMICH_VMID}}"
-        proxmoxType: lxc
-        widget:
-            type: immich
-            url: http://{{HOMEPAGE_VAR_IMMICH_URL}}:{{HOMEPAGE_VAR_IMMICH_PORT}}
-            key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
-            version: 2
-
     - RomM:
         icon: romm.svg
         href: http://{{HOMEPAGE_VAR_ROMM_URL}}:{{HOMEPAGE_VAR_ROMM_PORT}}
@@ -204,16 +147,73 @@
             url: http://{{HOMEPAGE_VAR_ROMM_URL}}:{{HOMEPAGE_VAR_ROMM_PORT}}
             fields: ["platforms", "totalRoms", "saves", "states"]
 
-    - Prowlarr:
-        icon: prowlarr.svg
-        href: http://{{HOMEPAGE_VAR_PROWLARR_URL}}:{{HOMEPAGE_VAR_PROWLARR_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_PROWLARR_VMID}}"
-        proxmoxType: lxc
-        widget:
-            type: prowlarr
-            url: http://{{HOMEPAGE_VAR_PROWLARR_URL}}:{{HOMEPAGE_VAR_PROWLARR_PORT}}
-            key: "{{HOMEPAGE_VAR_PROWLARR_API_KEY}}"
+    # - Immich:
+    #     icon: immich.svg
+    #     href: http://{{HOMEPAGE_VAR_IMMICH_URL}}:{{HOMEPAGE_VAR_IMMICH_PORT}}
+    #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+    #     proxmoxVMID: "{{HOMEPAGE_VAR_IMMICH_VMID}}"
+    #     proxmoxType: lxc
+    #     widget:
+    #         type: immich
+    #         url: http://{{HOMEPAGE_VAR_IMMICH_URL}}:{{HOMEPAGE_VAR_IMMICH_PORT}}
+    #         key: "{{HOMEPAGE_VAR_IMMICH_API_KEY}}"
+    #         version: 2
+
+    # - Tautulli:
+    #     icon: tautulli.svg
+    #     href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}
+    #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+    #     proxmoxVMID: "{{HOMEPAGE_VAR_TAUTULLI_VMID}}"
+    #     proxmoxType: lxc
+    #     widget:
+    #         type: tautulli
+    #         url: http://{{HOMEPAGE_VAR_TAUTULLI_URL}}:{{HOMEPAGE_VAR_TAUTULLI_PORT}}
+    #         key: "{{HOMEPAGE_VAR_TAUTULLI_API_KEY}}"
+    #         enableUser: true
+    #         showEpisodeNumber: true
+    #         expandOneStreamToTwoRows: true
+
+    # - Lidarr:
+    #     icon: lidarr.svg
+    #     href: http://{{HOMEPAGE_VAR_LIDARR_URL}}:{{HOMEPAGE_VAR_LIDARR_PORT}}
+    #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+    #     proxmoxVMID: "{{HOMEPAGE_VAR_LIDARR_VMID}}"
+    #     proxmoxType: lxc
+    #     widget:
+    #         type: lidarr
+    #         url: http://{{HOMEPAGE_VAR_LIDARR_URL}}:{{HOMEPAGE_VAR_LIDARR_PORT}}
+    #         key: "{{HOMEPAGE_VAR_LIDARR_API_KEY}}"
+
+    # - Bazarr:
+    #     icon: bazarr.svg
+    #     href: http://{{HOMEPAGE_VAR_BAZARR_URL}}:{{HOMEPAGE_VAR_BAZARR_PORT}}
+    #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+    #     proxmoxVMID: "{{HOMEPAGE_VAR_BAZARR_VMID}}"
+    #     proxmoxType: lxc
+    #     widget:
+    #         type: bazarr
+    #         url: http://{{HOMEPAGE_VAR_BAZARR_URL}}:{{HOMEPAGE_VAR_BAZARR_PORT}}
+    #         key: "{{HOMEPAGE_VAR_BAZARR_API_KEY}}"
+
+    # - Dispatcharr:
+    #     icon: dispatcharr.svg
+    #     href: http://{{HOMEPAGE_VAR_DISPATCHARR_URL}}:{{HOMEPAGE_VAR_DISPATCHARR_PORT}}
+    #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+    #     proxmoxVMID: "{{HOMEPAGE_VAR_DISPATCHARR_VMID}}"
+    #     proxmoxType: lxc
+    #     widget:
+    #         type: dispatcharr
+    #         url: http://{{HOMEPAGE_VAR_DISPATCHARR_URL}}:{{HOMEPAGE_VAR_DISPATCHARR_PORT}}
+    #         username: "{{HOMEPAGE_VAR_DISPATCHARR_USER}}"
+    #         password: "{{HOMEPAGE_VAR_DISPATCHARR_PASSWORD}}"
+    #         enableActiveStreams: true
+
+    # - Soulsync:
+    #     icon: sh-soulsync.png
+    #     href: http://{{HOMEPAGE_VAR_SOULSYNC_URL}}:{{HOMEPAGE_VAR_SOULSYNC_PORT}}
+    #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+    #     proxmoxVMID: "{{HOMEPAGE_VAR_SOULSYNC_VMID}}"
+    #     proxmoxType: lxc
 
 - SERVERS:
     - Zues Proxmox:
@@ -226,12 +226,12 @@
             password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
             node: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
 
-    - Mars Proxmox:
+    - Apollo Proxmox:
         icon: proxmox.svg
-        href: https://{{HOMEPAGE_VAR_MARS_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+        href: https://{{HOMEPAGE_VAR_APOLLO_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
         widget:
             type: proxmox
-            url: https://{{HOMEPAGE_VAR_MARS_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+            url: https://{{HOMEPAGE_VAR_APOLLO_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
             username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
             password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
             node: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
@@ -242,9 +242,9 @@
 - BACKUPS:
     - Zues PBS:
         icon: proxmox.svg
-        href: https://pbs006.tuxis.nl:8007/
+        href: https://dashboard.remote-backups.com/
     
-    - Mars PBS:
+    - Apollo PBS:
         icon: proxmox.svg
         href: https://dashboard.remote-backups.com/
 
@@ -344,13 +344,6 @@
             href: https://{{HOMEPAGE_VAR_SWITCH_URL}}:{{HOMEPAGE_VAR_SWITCH_PORT}}
 
     - MONITORING:
-        - Notifiarr:
-            icon: notifiarr.svg
-            href: http://{{HOMEPAGE_VAR_NOTIFIARR_URL}}:{{HOMEPAGE_VAR_NOTIFIARR_PORT}}
-            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
-            proxmoxVMID: "{{HOMEPAGE_VAR_NOTIFIARR_VMID}}"
-            proxmoxType: lxc
-
         - Pulse:
             icon: pulse.svg
             href: http://{{HOMEPAGE_VAR_PULSE_URL}}:{{HOMEPAGE_VAR_PULSE_PORT}}
@@ -388,6 +381,12 @@
             proxmoxVMID: "{{HOMEPAGE_VAR_DOMAINS_VMID}}"
             proxmoxType: lxc
 
+        # - Notifiarr:
+        #     icon: notifiarr.svg
+        #     href: http://{{HOMEPAGE_VAR_NOTIFIARR_URL}}:{{HOMEPAGE_VAR_NOTIFIARR_PORT}}
+        #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+        #     proxmoxVMID: "{{HOMEPAGE_VAR_NOTIFIARR_VMID}}"
+        #     proxmoxType: lxc
     - SECURITY:
         - OPNsense:
             icon: opnsense.svg
@@ -397,16 +396,16 @@
             icon: crowdsec.svg
             href: https://app.crowdsec.net/
 
-        - Wazuh:
-            icon: wazuh.svg
-            href: https://{{HOMEPAGE_VAR_WAZUH_URL}}:{{HOMEPAGE_VAR_WAZUH_PORT}}
-            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-            proxmoxVMID: "{{HOMEPAGE_VAR_WAZUH_VMID}}"
-            proxmoxType: lxc
+        # - Wazuh:
+        #     icon: wazuh.svg
+        #     href: https://{{HOMEPAGE_VAR_WAZUH_URL}}:{{HOMEPAGE_VAR_WAZUH_PORT}}
+        #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        #     proxmoxVMID: "{{HOMEPAGE_VAR_WAZUH_VMID}}"
+        #     proxmoxType: lxc
 
-        - Web-Check:
-            icon: web-check.svg
-            href: https://{{HOMEPAGE_VAR_WEBCHECK_URL}}:{{HOMEPAGE_VAR_WEBCHECK_PORT}}
-            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-            proxmoxVMID: "{{HOMEPAGE_VAR_WEBCHECK_VMID}}"
-            proxmoxType: lxc
+        # - Web-Check:
+        #     icon: web-check.svg
+        #     href: https://{{HOMEPAGE_VAR_WEBCHECK_URL}}:{{HOMEPAGE_VAR_WEBCHECK_PORT}}
+        #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        #     proxmoxVMID: "{{HOMEPAGE_VAR_WEBCHECK_VMID}}"
+        #     proxmoxType: lxc
