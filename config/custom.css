@@ -168,31 +168,41 @@ body, #__next {
   letter-spacing: 0.04em !important;
 }
 
-/* ─── Tab Bar ─── */
+/* ─── Tab Bar — Fusion compact pill buttons (no outer strip, no underline) ─── */
+#myTab {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  display: inline-flex !important;
+  width: auto !important;
+  gap: 6px !important;
+}
+
+#myTab li {
+  width: auto !important;
+  height: auto !important;
+  flex: 0 0 auto !important;
+}
+
 #myTab button {
-  font-size: 0.68rem !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 7px 16px !important;
+  font-size: 0.72rem !important;
   font-weight: 600 !important;
-  letter-spacing: 0.1em !important;
+  letter-spacing: 0.04em !important;
   text-transform: uppercase !important;
-  border-radius: 6px !important;
-  position: relative;
-  transition: color var(--ease), background var(--ease) !important;
+  border-radius: 8px !important;
+  border: 1px solid transparent !important;
+  color: rgb(255 255 255 / 40%) !important;
+  transition: color var(--ease), background var(--ease), border-color var(--ease) !important;
 }
 
 #myTab button[aria-selected="true"] {
-  color: rgb(var(--accent)) !important;
-}
-
-#myTab button[aria-selected="true"]::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 25%;
-  right: 25%;
-  height: 2px;
-  background: rgb(var(--accent));
-  border-radius: 2px;
-  box-shadow: 0 0 10px rgb(var(--accent) / 70%);
+  background: rgb(var(--color-700)) !important;
+  border-color: rgb(255 255 255 / 8%) !important;
+  color: rgb(255 255 255 / 92%) !important;
+  font-weight: 700 !important;
 }
 
 /* ─── Scrollbar ─── */
@@ -262,11 +272,60 @@ body, #__next {
 }
 
 /* ─── Info Widgets (weather, clock, resources) ─── */
-[class*="information-widget"] {
+[class*="information-widget"]:not(.information-widget-resource) {
   background: rgb(var(--card-bg)) !important;
   border: 1px solid rgb(var(--card-border)) !important;
   border-radius: 10px !important;
   padding: 0.35rem 0.75rem !important;
+}
+
+/* Fusion's resource stats (CPU/RAM) are flat and inline, not boxed cards:
+   label → thin bar → value, all in one row, no icon. */
+.information-widget-resource {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 7px !important;
+  margin: 0 18px 0 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  border: none !important;
+}
+
+.information-widget-resource .resource-icon {
+  display: none !important;
+}
+
+.information-widget-resource > div {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 7px !important;
+  margin-left: 0 !important;
+  min-width: 0 !important;
+}
+
+.information-widget-resource .text-xs {
+  display: contents !important;
+}
+
+/* hide the expanded (absolute-value) second row Fusion doesn't show */
+.information-widget-resource .text-xs:nth-of-type(2) {
+  display: none !important;
+}
+
+.information-widget-resource .text-xs > div:first-child {
+  order: 3 !important;
+  padding: 0 !important;
+}
+
+.information-widget-resource .text-xs > div:last-child {
+  order: 1 !important;
+  padding: 0 !important;
+}
+
+.information-widget-resource .resource-usage {
+  order: 2 !important;
 }
 
 /* ─── Stats / Metrics — tabular nums on container, centered blocks ─── */
@@ -378,6 +437,9 @@ body, #__next {
   background: rgb(255 255 255 / 8%) !important;
   height: 3px !important;
   border-radius: 99px !important;
+  width: 54px !important;
+  flex: 0 0 54px !important;
+  margin: 0 !important;
 }
 
 .resource-usage > div {
@@ -506,7 +568,9 @@ body, #__next {
 
 .information-widget-resource .text-xs > div:last-child {
   color: rgb(255 255 255 / 40%);
-  font-size: 0.65rem;
+  font-size: 0.68rem;
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", monospace;
+  text-transform: uppercase;
 }
 
 /* ─── color-scheme ─── */
@@ -515,11 +579,11 @@ body, #__next {
 }
 
 /* ─── Info Widget Hover Glow ─── */
-[class*="information-widget"] {
+[class*="information-widget"]:not(.information-widget-resource) {
   transition: border-color var(--ease), box-shadow var(--ease) !important;
 }
 
-[class*="information-widget"]:hover {
+[class*="information-widget"]:not(.information-widget-resource):hover {
   border-color: rgb(var(--accent) / 40%) !important;
   box-shadow:
     0 0 0 1px rgb(var(--accent) / 10%),
@@ -683,6 +747,37 @@ dialog .bg-theme-300\/10 {
   letter-spacing: 0.04em;
 }
 
+
+/* ─── Top Bar Merge — Fusion puts tabs + resource stats + weather/time
+   on one row. Homepage renders them as two stacked sibling blocks
+   (#information-widgets, #tabs); merge them via CSS Grid on desktop. ─── */
+@media (min-width: 640px) {
+  .relative.m-auto.flex.flex-col.justify-start.z-10.h-full.min-h-screen {
+    display: grid !important;
+    grid-template-columns: auto 1fr !important;
+    align-items: center !important;
+  }
+
+  .relative.m-auto.flex.flex-col.justify-start.z-10.h-full.min-h-screen > #tabs {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    margin: 2.25rem 0 2.25rem 2.25rem !important;
+  }
+
+  .relative.m-auto.flex.flex-col.justify-start.z-10.h-full.min-h-screen > #information-widgets {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    margin: 2.25rem 2.25rem 2.25rem 0 !important;
+  }
+
+  .relative.m-auto.flex.flex-col.justify-start.z-10.h-full.min-h-screen > #layout-groups,
+  .relative.m-auto.flex.flex-col.justify-start.z-10.h-full.min-h-screen > #services,
+  .relative.m-auto.flex.flex-col.justify-start.z-10.h-full.min-h-screen > #bookmarks,
+  .relative.m-auto.flex.flex-col.justify-start.z-10.h-full.min-h-screen > #footer,
+  .relative.m-auto.flex.flex-col.justify-start.z-10.h-full.min-h-screen > div:first-child {
+    grid-column: 1 / -1 !important;
+  }
+}
 
 /* ─── Reduced Motion — accessibility ─── */
 @media (prefers-reduced-motion: reduce) {
