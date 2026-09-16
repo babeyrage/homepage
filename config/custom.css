@@ -21,6 +21,25 @@ iframe {
   --ease:        200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ============================================================
+   FUSION ZONE ACCENTS — per-section colour system
+   Every rule above (and below) reads colour from --accent via
+   var(), and CSS custom properties cascade — so re-declaring
+   --accent on a .services-group scopes the whole existing
+   accent palette (borders, hovers, block values, bars, bookmark
+   icons, tab underline, etc.) to that section for free, no rule
+   duplication needed. group.name comes straight from services.yaml
+   / settings.yaml group and subgroup names via data-group.
+   ============================================================ */
+.services-group[data-group="DOTA 2"]      { --accent: 191 46 26;  } /* dota red */
+.services-group[data-group="MEDIA-INFO"]  { --accent: 245 165 36; } /* amber */
+.services-group[data-group="MEDIA"]       { --accent: 245 165 36; } /* amber */
+.services-group[data-group="SERVERS"]     { --accent: 91 141 239; } /* infra blue */
+.services-group[data-group="BACKUPS"]     { --accent: 91 141 239; } /* infra blue */
+.services-group[data-group="HOME NETWORK"]{ --accent: 52 211 153; } /* network green */
+.services-group[data-group="SECURITY"]    { --accent: 251 113 133;} /* rose — overrides inherited green under HOME NETWORK */
+.services-group[data-group="SECURITY INFO"]{ --accent: 251 113 133;} /* rose */
+
 /* ─── Subtle Page Background Gradient ─── */
 #__next::before {
   content: '';

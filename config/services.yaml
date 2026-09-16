@@ -7,10 +7,12 @@
         href: https://nvd.nist.gov/vuln/search#/nvd/home?resultType=records
         widget:
             type: nvd
-    
+            limit: 20
+
     - CISA KEV:
         widget:
             type: cisa
+            limit: 20
 
     - Calendar:
         widget:
@@ -87,6 +89,7 @@
             type: radarr
             url: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
             key: "{{HOMEPAGE_VAR_RADARR_API_KEY}}"
+            enableQueue: true
 
     - Sonarr:
         icon: sonarr.svg
@@ -98,6 +101,7 @@
             type: sonarr
             url: http://{{HOMEPAGE_VAR_SONARR_URL}}:{{HOMEPAGE_VAR_SONARR_PORT}}
             key: "{{HOMEPAGE_VAR_SONARR_API_KEY}}"
+            enableQueue: true
 
     - Seerr:
         icon: seerr.svg

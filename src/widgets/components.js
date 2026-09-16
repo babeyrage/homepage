@@ -96,6 +96,7 @@ const components = {
   nextdns: dynamic(() => import("./nextdns/component")),
   npm: dynamic(() => import("./npm/component")),
   ntfy: dynamic(() => import("./ntfy/component")),
+  nvd: dynamic(() => import("./nvd/component")),
   nzbget: dynamic(() => import("./nzbget/component")),
   octoprint: dynamic(() => import("./octoprint/component")),
   omada: dynamic(() => import("./omada/component")),

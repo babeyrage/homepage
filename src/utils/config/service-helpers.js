@@ -319,6 +319,9 @@ export function cleanServiceGroups(groups) {
           slugs,
           symbols,
 
+          // cisa, nvd
+          limit,
+
           // crowdsec
           limit24h,
 
@@ -528,6 +531,10 @@ export function cleanServiceGroups(groups) {
 
         if (limit24h !== undefined) {
           widget.limit24h = !!limit24h;
+        }
+
+        if (["cisa", "nvd"].includes(type)) {
+          if (limit !== undefined) widget.limit = parseInt(limit, 10);
         }
 
         if (type === "docker") {
