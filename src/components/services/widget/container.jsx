@@ -1,9 +1,10 @@
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 
 import Error from "./error";
 import { BlockHighlightContext } from "./highlight-context";
 
 import { SettingsContext } from "utils/contexts/settings";
+import { useGroupStatus } from "utils/contexts/group-status";
 import { buildHighlightConfig } from "utils/highlights";
 
 const ALIASED_WIDGETS = {
@@ -15,6 +16,13 @@ const ALIASED_WIDGETS = {
 
 export default function Container({ error = false, children, service }) {
   const { settings } = useContext(SettingsContext);
+  const reportError = useGroupStatus()?.reportError;
+
+  useEffect(() => {
+    if (!reportError) return undefined;
+    reportError(service?.name, Boolean(error));
+    return () => reportError(service?.name, false);
+  }, [reportError, service?.name, error]);
 
   const highlightConfig = useMemo(
     () => buildHighlightConfig(settings?.blockHighlights, service?.widget?.highlight, service?.widget?.type),

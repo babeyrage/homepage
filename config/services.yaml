@@ -218,48 +218,50 @@
     #     proxmoxType: lxc
 
 - INFRASTRUCTURE:
-    - Zues Proxmox:
-        icon: proxmox.svg
-        href: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
-        widget:
-            type: proxmox
-            url: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
-            username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
-            password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
-            node: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+    - COMPUTE:
+        - Zues Proxmox:
+            icon: proxmox.svg
+            href: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+            widget:
+                type: proxmox
+                url: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+                username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
+                password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
+                node: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
 
-    - Apollo Proxmox:
-        icon: proxmox.svg
-        href: https://{{HOMEPAGE_VAR_APOLLO_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
-        widget:
-            type: proxmox
-            url: https://{{HOMEPAGE_VAR_APOLLO_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
-            username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
-            password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
-            node: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+        - Apollo Proxmox:
+            icon: proxmox.svg
+            href: https://{{HOMEPAGE_VAR_APOLLO_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+            widget:
+                type: proxmox
+                url: https://{{HOMEPAGE_VAR_APOLLO_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
+                username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
+                password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
+                node: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
 
-    - VPS:
-        icon: sh-univention-corporate-server.svg
+        - VPS:
+            icon: sh-univention-corporate-server.svg
 
-    - Zues PBS:
-        icon: proxmox.svg
-        href: https://dashboard.remote-backups.com/
-    
-    - Apollo PBS:
-        icon: proxmox.svg
-        href: https://dashboard.remote-backups.com/
+    - BACKUPS:
+        - Zues PBS:
+            icon: proxmox.svg
+            href: https://dashboard.remote-backups.com/
 
-    - Backrest:
-        icon: backrest.svg
-        href: http://{{HOMEPAGE_VAR_BACKREST_URL}}:{{HOMEPAGE_VAR_BACKREST_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_BACKREST_VMID}}"
-        proxmoxType: lxc
-        widget:
-            type: backrest
-            url: http://{{HOMEPAGE_VAR_BACKREST_URL}}:{{HOMEPAGE_VAR_BACKREST_PORT}}
-            username: "{{HOMEPAGE_VAR_BACKREST_USER}}"
-            password: "{{HOMEPAGE_VAR_BACKREST_PASSWORD}}"
+        - Apollo PBS:
+            icon: proxmox.svg
+            href: https://dashboard.remote-backups.com/
+
+        - Backrest:
+            icon: backrest.svg
+            href: http://{{HOMEPAGE_VAR_BACKREST_URL}}:{{HOMEPAGE_VAR_BACKREST_PORT}}
+            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+            proxmoxVMID: "{{HOMEPAGE_VAR_BACKREST_VMID}}"
+            proxmoxType: lxc
+            widget:
+                type: backrest
+                url: http://{{HOMEPAGE_VAR_BACKREST_URL}}:{{HOMEPAGE_VAR_BACKREST_PORT}}
+                username: "{{HOMEPAGE_VAR_BACKREST_USER}}"
+                password: "{{HOMEPAGE_VAR_BACKREST_PASSWORD}}"
 
 - HOME NETWORK:
     - DOWNLOADS:

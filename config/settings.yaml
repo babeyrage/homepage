@@ -35,12 +35,14 @@ layout:
   INFRASTRUCTURE:
     tab: HOMELAB
     style: row
-    columns: 3
+    columns: 2
 
-  BACKUPS:
-    tab: HOMELAB
-    style: row
-    columns: 3
+    COMPUTE:
+      tab: HOMELAB
+      style: column
+    BACKUPS:
+      tab: HOMELAB
+      style: column
 
   HOME NETWORK:
     tab: HOMELAB

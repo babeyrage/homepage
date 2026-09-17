@@ -71,8 +71,7 @@ body, #__next {
 .services-group[data-group="DOTA 2"]      { --accent: 191 46 26;  } /* dota red */
 .services-group[data-group="MEDIA-INFO"]  { --accent: 245 165 36; } /* amber */
 .services-group[data-group="MEDIA"]       { --accent: 245 165 36; } /* amber */
-.services-group[data-group="SERVERS"]     { --accent: 91 141 239; } /* infra blue */
-.services-group[data-group="BACKUPS"]     { --accent: 91 141 239; } /* infra blue */
+.services-group[data-group="INFRASTRUCTURE"] { --accent: 91 141 239; } /* infra blue */
 .services-group[data-group="HOME NETWORK"]{ --accent: 52 211 153; } /* network green */
 .services-group[data-group="SECURITY"]    { --accent: 251 113 133;} /* rose — overrides inherited green under HOME NETWORK */
 .services-group[data-group="SECURITY INFO"]{ --accent: 251 113 133;} /* rose */
@@ -803,8 +802,7 @@ dialog .bg-theme-300\/10 {
    ============================================================ */
 :is(
   .services-group[data-group="MEDIA"],
-  .services-group[data-group="SERVERS"],
-  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="INFRASTRUCTURE"],
   .services-group[data-group="HOME NETWORK"],
   .services-group[data-group="SECURITY INFO"]
 ) .service-card {
@@ -816,8 +814,7 @@ dialog .bg-theme-300\/10 {
 
 :is(
   .services-group[data-group="MEDIA"],
-  .services-group[data-group="SERVERS"],
-  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="INFRASTRUCTURE"],
   .services-group[data-group="HOME NETWORK"],
   .services-group[data-group="SECURITY INFO"]
 ) .service-card:hover {
@@ -826,8 +823,7 @@ dialog .bg-theme-300\/10 {
 
 :is(
   .services-group[data-group="MEDIA"],
-  .services-group[data-group="SERVERS"],
-  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="INFRASTRUCTURE"],
   .services-group[data-group="HOME NETWORK"],
   .services-group[data-group="SECURITY INFO"]
 ) .service-icon {
@@ -838,15 +834,13 @@ dialog .bg-theme-300\/10 {
 
 :is(
   .services-group[data-group="MEDIA"],
-  .services-group[data-group="SERVERS"],
-  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="INFRASTRUCTURE"],
   .services-group[data-group="HOME NETWORK"],
   .services-group[data-group="SECURITY INFO"]
 ) .service-icon img,
 :is(
   .services-group[data-group="MEDIA"],
-  .services-group[data-group="SERVERS"],
-  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="INFRASTRUCTURE"],
   .services-group[data-group="HOME NETWORK"],
   .services-group[data-group="SECURITY INFO"]
 ) .service-icon svg {
@@ -856,8 +850,7 @@ dialog .bg-theme-300\/10 {
 
 :is(
   .services-group[data-group="MEDIA"],
-  .services-group[data-group="SERVERS"],
-  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="INFRASTRUCTURE"],
   .services-group[data-group="HOME NETWORK"],
   .services-group[data-group="SECURITY INFO"]
 ) .service-name {
@@ -867,8 +860,7 @@ dialog .bg-theme-300\/10 {
 
 :is(
   .services-group[data-group="MEDIA"],
-  .services-group[data-group="SERVERS"],
-  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="INFRASTRUCTURE"],
   .services-group[data-group="HOME NETWORK"],
   .services-group[data-group="SECURITY INFO"]
 ) .service-description {
@@ -877,8 +869,7 @@ dialog .bg-theme-300\/10 {
 
 :is(
   .services-group[data-group="MEDIA"],
-  .services-group[data-group="SERVERS"],
-  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="INFRASTRUCTURE"],
   .services-group[data-group="HOME NETWORK"],
   .services-group[data-group="SECURITY INFO"]
 ) .service-block {

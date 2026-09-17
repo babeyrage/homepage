@@ -7,6 +7,20 @@ import { columnMap } from "../../utils/layout/columns";
 
 import ResolvedIcon from "components/resolvedicon";
 import List from "components/services/list";
+import { GroupStatusProvider, useGroupStatus } from "utils/contexts/group-status";
+
+// Fusion's MEDIA zone shows a "N services · M errors" summary next to its
+// heading; every other group's heading stays plain, so this is opt-in by name.
+function GroupStatusMeta({ total }) {
+  const groupStatus = useGroupStatus();
+  const errors = groupStatus?.errorCount ?? 0;
+
+  return (
+    <span className="flex-1 pr-2 text-right text-[10px] normal-case tracking-normal font-normal text-theme-500 dark:text-theme-400 whitespace-nowrap group-status-meta">
+      {total} services · {errors} errors
+    </span>
+  );
+}
 
 export default function ServicesGroup({
   group,
@@ -40,7 +54,7 @@ export default function ServicesGroup({
     >
       <Disclosure defaultOpen={!(layout?.initiallyCollapsed ?? groupsInitiallyCollapsed)}>
         {({ open }) => (
-          <>
+          <GroupStatusProvider>
             {layout?.header !== false && (
               <Disclosure.Button disabled={disableCollapse} className="flex w-full select-none items-center group">
                 {layout?.icon && (
@@ -51,6 +65,7 @@ export default function ServicesGroup({
                 <h2 className="flex text-theme-800 dark:text-theme-300 text-xl font-medium service-group-name">
                   {group.name}
                 </h2>
+                {group.name === "MEDIA" && <GroupStatusMeta total={group.services?.length ?? 0} />}
                 <MdKeyboardArrowDown
                   className={classNames(
                     disableCollapse ? "hidden" : "",
@@ -110,7 +125,7 @@ export default function ServicesGroup({
                 )}
               </Disclosure.Panel>
             </Transition>
-          </>
+          </GroupStatusProvider>
         )}
       </Disclosure>
     </div>
