@@ -4,7 +4,7 @@ import { useTranslation } from "next-i18next/pages";
 
 import Event, { compareDateTimezone } from "./event";
 
-export default function Agenda({ service, colorVariants, events, showDate }) {
+export default function Agenda({ service, textColorVariants, events, showDate }) {
   const { widget } = service;
   const { t } = useTranslation();
 
@@ -34,7 +34,7 @@ export default function Agenda({ service, colorVariants, events, showDate }) {
                 date: DateTime.now(),
                 color: "gray",
               }}
-              colorVariants={colorVariants}
+              textColorVariants={textColorVariants}
             />
           </div>
         </div>
@@ -54,7 +54,7 @@ export default function Agenda({ service, colorVariants, events, showDate }) {
               <Event
                 key={`event-agenda-${event.title}-${event.date}-${event.additional}`}
                 event={event}
-                colorVariants={colorVariants}
+                textColorVariants={textColorVariants}
                 showDate={j === 0}
                 showTime={widget?.showTime && compareDateTimezone(showDate, event)}
               />

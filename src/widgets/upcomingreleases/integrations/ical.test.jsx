@@ -95,7 +95,7 @@ describe("widgets/upcomingreleases/integrations/ical", () => {
     const [event] = entries;
     expect(event.title).toBe("Work: Test Event");
     expect(event.color).toBe("blue");
-    expect(event.type).toBe("ical");
+    expect(event.type).toBe("Event");
     expect(event.additional).toBe("Office");
     expect(event.url).toBe("https://example.com");
     expect(event.isCompleted).toBe(false);

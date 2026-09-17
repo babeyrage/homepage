@@ -30,6 +30,7 @@ export default function Integration({ config, params, setEvents, hideErrors = fa
           date: DateTime.fromISO(event.inCinemas),
           color: config?.color ?? "amber",
           isCompleted: event.hasFile,
+          type: "Movie",
           additional: "",
           url,
         };
@@ -41,6 +42,7 @@ export default function Integration({ config, params, setEvents, hideErrors = fa
           date: DateTime.fromISO(event.physicalRelease),
           color: config?.color ?? "cyan",
           isCompleted: event.hasFile,
+          type: "Movie",
           additional: "",
           url,
         };
@@ -52,6 +54,7 @@ export default function Integration({ config, params, setEvents, hideErrors = fa
           date: DateTime.fromISO(event.digitalRelease),
           color: config?.color ?? "emerald",
           isCompleted: event.hasFile,
+          type: "Movie",
           additional: "",
           url,
         };

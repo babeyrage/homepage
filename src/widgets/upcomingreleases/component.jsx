@@ -36,6 +36,33 @@ const colorVariants = {
   zinc: "bg-zinc-500",
 };
 
+const textColorVariants = {
+  // https://tailwindcss.com/docs/content-configuration#dynamic-class-names
+  amber: "text-amber-500",
+  blue: "text-blue-500",
+  cyan: "text-cyan-500",
+  emerald: "text-emerald-500",
+  fuchsia: "text-fuchsia-500",
+  gray: "text-gray-500",
+  green: "text-green-500",
+  indigo: "text-indigo-500",
+  lime: "text-lime-500",
+  neutral: "text-neutral-500",
+  orange: "text-orange-500",
+  pink: "text-pink-500",
+  purple: "text-purple-500",
+  red: "text-red-500",
+  rose: "text-rose-500",
+  sky: "text-sky-500",
+  slate: "text-slate-500",
+  stone: "text-stone-500",
+  teal: "text-teal-500",
+  violet: "text-violet-500",
+  white: "text-white-500",
+  yellow: "text-yellow-500",
+  zinc: "text-zinc-500",
+};
+
 export default function Component({ service }) {
   const { widget } = service;
   const { i18n } = useTranslation();
@@ -89,6 +116,17 @@ export default function Component({ service }) {
   return (
     <Container service={service}>
       <div className="flex flex-col w-full">
+        <div className="flex items-center justify-between mb-2.5">
+          <span
+            className="widget-zone-label text-[10px] font-semibold uppercase tracking-widest"
+            style={{ color: "rgb(255 255 255 / 42%)" }}
+          >
+            Upcoming Releases
+          </span>
+          <span className="widget-zone-label text-[9px]" style={{ color: "rgb(255 255 255 / 30%)" }}>
+            next {widget?.maxEvents ?? 10}
+          </span>
+        </div>
         <div className="sticky top-0">
           {integrations.map((integration) => {
             const Integration = integration.service;
@@ -123,7 +161,7 @@ export default function Component({ service }) {
           <Agenda
             key={`agenda-${showDate?.toFormat("yyyy-MM-dd")}`}
             service={service}
-            colorVariants={colorVariants}
+            textColorVariants={textColorVariants}
             events={events}
             showDate={showDate}
             setShowDate={setShowDate}

@@ -27,6 +27,7 @@ export default function Integration({ config, params, setEvents, hideErrors = fa
         date: DateTime.fromISO(event.releaseDate),
         color: config?.color ?? "rose",
         isCompleted: event.grabbed,
+        type: "Book",
         additional: "",
       };
     });

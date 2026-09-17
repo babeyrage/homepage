@@ -28,6 +28,7 @@ layout:
       style: row
       columns: 1
     UPCOMING RELEASES:
+      header: false
       style: row
       columns: 1
 

@@ -24,12 +24,12 @@ import Agenda from "./agenda";
 
 describe("widgets/upcomingreleases/agenda", () => {
   it("renders an empty placeholder when showDate is not set", () => {
-    const { container } = render(<Agenda service={{ widget: {} }} colorVariants={{}} events={{}} showDate={null} />);
+    const { container } = render(<Agenda service={{ widget: {} }} textColorVariants={{}} events={{}} showDate={null} />);
     expect(container.textContent).toBe("");
   });
 
   it("renders a no-events placeholder when there are no events in range", () => {
-    render(<Agenda service={{ widget: {} }} colorVariants={{}} events={{}} showDate={DateTime.now()} />);
+    render(<Agenda service={{ widget: {} }} textColorVariants={{}} events={{}} showDate={DateTime.now()} />);
     expect(screen.getByText("calendar.noEventsToday")).toBeInTheDocument();
     expect(EventStub).toHaveBeenCalled();
   });
@@ -45,7 +45,7 @@ describe("widgets/upcomingreleases/agenda", () => {
       c: { title: "C", date: DateTime.local(2099, 1, 4, 10, 0), color: "gray" },
     };
 
-    render(<Agenda service={service} colorVariants={{}} events={events} showDate={showDate} />);
+    render(<Agenda service={service} textColorVariants={{}} events={events} showDate={showDate} />);
 
     // Old is filtered out, C is sliced out by maxEvents.
     expect(screen.queryByText("Old")).toBeNull();

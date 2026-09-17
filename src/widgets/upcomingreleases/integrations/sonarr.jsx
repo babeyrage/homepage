@@ -28,6 +28,7 @@ export default function Integration({ config, params, setEvents, hideErrors = fa
         date: DateTime.fromISO(event.airDateUtc),
         color: config?.color ?? "teal",
         isCompleted: event.hasFile,
+        type: "TV",
         additional: `S${event.seasonNumber} E${event.episodeNumber}`,
         url: config?.baseUrl && event.series.titleSlug && `${config.baseUrl}/series/${event.series.titleSlug}`,
       };

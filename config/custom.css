@@ -94,11 +94,33 @@ body, #__next {
   backdrop-filter: blur(14px);
 }
 
+/* UPCOMING RELEASES is a plain Fusion card (glass background + border),
+   not a promoted zone rail card — no accent-coloured left stripe, matching
+   the mockup's plain `.card` (as opposed to DOTA 2 / PLEX's `.card.zone`). */
+.services-group.subgroup[data-group="UPCOMING RELEASES"] {
+  background: linear-gradient(180deg, rgb(255 255 255 / 3%), rgb(255 255 255 / 1%)), rgb(0 0 0 / 16%) !important;
+  border: 1px solid rgb(var(--card-border)) !important;
+  border-radius: 10px !important;
+  padding: 14px 16px !important;
+  backdrop-filter: blur(14px);
+}
+
 .services-group[data-group="SIGNAL"] {
   background: none !important;
   border: none !important;
   padding: 0 !important;
   backdrop-filter: none !important;
+}
+
+/* SIGNAL's three cards are unequal widths — DOTA 2 wider, PLEX / UPCOMING
+   RELEASES slightly narrower — instead of the default equal thirds. The
+   grid lives on an inner wrapper div (see components/services/group.jsx),
+   not the [data-group="SIGNAL"] element itself, so target it via :has().
+   Order matches settings.yaml's layout: DOTA 2, PLEX, UPCOMING RELEASES. */
+@media (min-width: 1024px) {
+  .services-group[data-group="SIGNAL"] .grid:has(> .services-group.subgroup) {
+    grid-template-columns: 1.2fr 0.9fr 0.9fr !important;
+  }
 }
 
 /* SIGNAL's own heading is Fusion's plain rail label ("SIGNAL"), not a
@@ -877,16 +899,20 @@ dialog .bg-theme-300\/10 {
   padding: 4px 2px !important;
 }
 
-/* ─── Plex / Dota 2 — bespoke in-widget zone label ───
-   Both widgets now render their own accent-coloured "PLEX"/"DOTA 2" label
-   (see component.jsx), matching Fusion's zone-card header. Hide the generic
-   icon+name row so the card isn't double-labelled; any status badge
-   (service-tags, e.g. the Plex Proxmox indicator) stays visible since it's
-   positioned absolutely against .service-card, independent of this row. */
+/* ─── Plex / Dota 2 / Upcoming Releases — bespoke in-widget header ───
+   These widgets now render their own mono label (see component.jsx) —
+   accent-coloured for the DOTA 2 / PLEX zone rail cards, plain text-faint
+   grey for Upcoming Releases' plain card — matching Fusion's card headers.
+   Hide the generic icon+name row so the card isn't double-labelled; any
+   status badge (service-tags, e.g. the Plex Proxmox indicator) stays
+   visible since it's positioned absolutely against .service-card,
+   independent of this row. */
 li[data-name="Plex"] .service-icon,
 li[data-name="Plex"] .service-title-text,
 li[data-name="Dota 2"] .service-icon,
-li[data-name="Dota 2"] .service-title-text {
+li[data-name="Dota 2"] .service-title-text,
+li[data-name="Upcoming Releases"] .service-icon,
+li[data-name="Upcoming Releases"] .service-title-text {
   display: none !important;
 }
 

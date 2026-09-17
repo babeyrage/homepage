@@ -20,7 +20,7 @@ describe("widgets/upcomingreleases/event", () => {
           url: "https://example.com",
           isCompleted: true,
         }}
-        colorVariants={{ gray: "bg-gray-500" }}
+        textColorVariants={{ gray: "text-gray-500" }}
         showDate
         showTime
       />,
@@ -60,7 +60,7 @@ describe("widgets/upcomingreleases/event", () => {
           color: "gray",
           url: "https://example.com",
         }}
-        colorVariants={{ gray: "bg-gray-500" }}
+        textColorVariants={{ gray: "text-gray-500" }}
       />,
     );
 
@@ -83,7 +83,7 @@ describe("widgets/upcomingreleases/event", () => {
           date,
           color: "gray",
         }}
-        colorVariants={{ gray: "bg-gray-500" }}
+        textColorVariants={{ gray: "text-gray-500" }}
       />,
     );
 

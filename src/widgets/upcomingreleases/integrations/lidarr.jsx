@@ -26,6 +26,7 @@ export default function Integration({ config, params, setEvents, hideErrors = fa
         date: DateTime.fromISO(event.releaseDate),
         color: config?.color ?? "green",
         isCompleted: event.grabbed,
+        type: "Music",
         additional: "",
       };
     });

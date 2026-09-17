@@ -149,7 +149,7 @@ export default function Integration({ config, params, setEvents, hideErrors, tim
           color: config?.color ?? "zinc",
           isCompleted: getIsCompleted(),
           additional: event.location,
-          type: "ical",
+          type: "Event",
           url: event.url,
         };
       });
