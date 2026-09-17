@@ -12,9 +12,8 @@ target: _self
 
 ###### LAYOUT SETTINGS ######
 layout:
-  INFO:
+  SIGNAL:
     tab: HOMELAB
-    header: false
     style: row
     columns: 2
     useEqualHeights: true
@@ -29,12 +28,11 @@ layout:
       columns: 1
     
   MEDIA:
-    header: false
     tab: HOMELAB
     style: row
     columns: 4
 
-  SERVERS:
+  INFRASTRUCTURE:
     tab: HOMELAB
     style: row
     columns: 3
@@ -45,7 +43,6 @@ layout:
     columns: 3
 
   HOME NETWORK:
-    header: false
     tab: HOMELAB
     style: row
     columns: 4

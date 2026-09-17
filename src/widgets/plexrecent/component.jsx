@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next/pages';
-import Container from 'components/services/widget/container';
-import Block from 'components/services/widget/block';
 
 import {
   CriticsFresh,
@@ -12,10 +10,31 @@ import {
   AudienceRotten,
 } from './ratingIcons';
 
+import Container from 'components/services/widget/container';
+import Block from 'components/services/widget/block';
 import useWidgetAPI from 'utils/proxy/use-widget-api';
 
+// Zone-style card label ("PLEX") shown at the top of the widget, matching
+// the accent-coloured header every other card in the SIGNAL rail uses.
+function ZoneLabel({ children }) {
+  return (
+    <div className="flex items-center gap-2 mb-2.5">
+      <span
+        className="w-1.5 h-1.5 rounded-full shrink-0"
+        style={{ backgroundColor: 'rgb(var(--accent))', boxShadow: '0 0 6px rgb(var(--accent) / 70%)' }}
+      />
+      <span
+        className="widget-zone-label text-[10px] font-semibold uppercase tracking-widest"
+        style={{ color: 'rgb(var(--accent))' }}
+      >
+        {children}
+      </span>
+    </div>
+  );
+}
+
 // Shared heading style used across all section/row headings
-const headingCls = 'text-xs font-bold uppercase tracking-wide text-theme-700 dark:text-theme-200';
+const headingCls = 'text-[9px] font-semibold uppercase tracking-wide text-theme-500 dark:text-theme-400';
 // Muted label style for popup metadata keys
 const labelCls = 'text-xs text-theme-700 dark:text-theme-200 opacity-60';
 // Body text style for popup content
@@ -31,7 +50,8 @@ export default function Component({ service }) {
   if (error) return <Container service={service} error={error} />;
   if (!plexData) return (
     <Container service={service}>
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full px-4 pt-3">
+        <ZoneLabel>{t('plex.title', 'Plex')}</ZoneLabel>
         <div className="flex flex-row w-full">
           <Block label="plex.movies" />
           <Block label="plex.tv" />
@@ -42,18 +62,20 @@ export default function Component({ service }) {
 
   return (
     <Container service={service}>
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full px-4 pt-3">
+        <ZoneLabel>{t('plex.title', 'Plex')}</ZoneLabel>
         <div className="flex flex-row w-full">
           <Block label="plex.movies" value={t('common.number', { value: plexData.totalMovies })} />
           <Block label="plex.tv" value={t('common.number', { value: plexData.totalShows })} />
         </div>
-        <div className="w-full px-4 pt-3 pb-4 space-y-4">
-          <h2 className={headingCls}>
-            {t('plex.recentlyAdded', 'Recently Added')}
-          </h2>
+        <div className="w-full pt-3 pb-4 space-y-4">
           <div className="space-y-4">
-            <RecentRow title={t('plex.recentMovies', 'Movies')} items={plexData.recentMovies} type="movie" />
-            <RecentTVRow title={t('plex.recentTV', 'TV Shows')} items={plexData.recentTV} />
+            <RecentRow
+              title={t('plex.recentMovies', 'Recently Added — Movies')}
+              items={plexData.recentMovies}
+              type="movie"
+            />
+            <RecentTVRow title={t('plex.recentTV', 'Recently Added — TV')} items={plexData.recentTV} />
           </div>
         </div>
       </div>

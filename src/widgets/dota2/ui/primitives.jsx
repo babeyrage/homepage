@@ -1,5 +1,24 @@
 // ── Shared UI primitives ──────────────────────────────────────────────────────
 
+// Zone-style card label ("DOTA 2") shown at the top of the widget, matching
+// the accent-coloured header every other card in the SIGNAL rail uses.
+export function ZoneLabel({ children }) {
+  return (
+    <div className="flex items-center gap-2 mb-2.5">
+      <span
+        className="w-1.5 h-1.5 rounded-full shrink-0"
+        style={{ backgroundColor: "rgb(var(--accent))", boxShadow: "0 0 6px rgb(var(--accent) / 70%)" }}
+      />
+      <span
+        className="widget-zone-label text-[10px] font-semibold uppercase tracking-widest"
+        style={{ color: "rgb(var(--accent))" }}
+      >
+        {children}
+      </span>
+    </div>
+  );
+}
+
 export function SectionLabel({ children }) {
   return (
     <div className="text-[10px] font-semibold uppercase tracking-wide text-theme-500 dark:text-theme-400 mb-0.5 mt-1.5 first:mt-0 border-l-2 border-theme-400 dark:border-theme-500 pl-1.5">

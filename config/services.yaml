@@ -38,8 +38,8 @@
             referrerPolicy: same-origin
             allowPolicy: fullscreen
 
-- INFO:
-    - MEDIA-INFO: 
+- SIGNAL:
+    - MEDIA-INFO:
         - Plex:
             icon: plex.svg
             href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}/web
@@ -217,7 +217,7 @@
     #     proxmoxVMID: "{{HOMEPAGE_VAR_SOULSYNC_VMID}}"
     #     proxmoxType: lxc
 
-- SERVERS:
+- INFRASTRUCTURE:
     - Zues Proxmox:
         icon: proxmox.svg
         href: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
@@ -241,7 +241,6 @@
     - VPS:
         icon: sh-univention-corporate-server.svg
 
-- BACKUPS:
     - Zues PBS:
         icon: proxmox.svg
         href: https://dashboard.remote-backups.com/

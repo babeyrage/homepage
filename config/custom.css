@@ -53,7 +53,8 @@ body, #__next {
 .service-block > div:last-child,
 .bookmark-icon,
 .information-widget-datetime span,
-.information-widget-resource .text-xs > div:first-child {
+.information-widget-resource .text-xs > div:first-child,
+.widget-zone-label {
   font-family: 'IBM Plex Mono', ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", monospace !important;
 }
 
@@ -81,7 +82,7 @@ body, #__next {
    its own card (blurred glass background + border + accent-coloured
    left stripe), reusing the --accent scoped above. Subgroups stay plain
    (no nested double-box) except DOTA 2 / MEDIA-INFO, which are Fusion's
-   promoted "signal rail" cards despite being subgroups, and INFO, which
+   promoted "signal rail" cards despite being subgroups, and SIGNAL, which
    is a headerless layout wrapper and must stay a plain flex container. */
 .services-group:not(.subgroup),
 .services-group.subgroup[data-group="DOTA 2"],
@@ -94,11 +95,18 @@ body, #__next {
   backdrop-filter: blur(14px);
 }
 
-.services-group[data-group="INFO"] {
+.services-group[data-group="SIGNAL"] {
   background: none !important;
   border: none !important;
   padding: 0 !important;
   backdrop-filter: none !important;
+}
+
+/* SIGNAL's own heading is Fusion's plain rail label ("SIGNAL"), not a
+   zone-coloured one — text-faint grey, same weight/tracking as the
+   coloured zone headings below. */
+.services-group[data-group="SIGNAL"] .service-group-name {
+  color: rgb(255 255 255 / 42%) !important;
 }
 
 /* ─── Subtle Page Background Gradient ─── */
@@ -150,14 +158,15 @@ body, #__next {
   letter-spacing: 0.01em;
 }
 
-/* ─── Group / Section Headers ─── */
+/* ─── Group / Section Headers — Fusion's zone label: mono, ~11px,
+   1.5px tracking, semibold (not heavy), full-strength accent colour ─── */
 .service-group-name,
 .bookmark-group-name {
-  font-size: 0.62rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.14em !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.0875em !important;
   text-transform: uppercase !important;
-  color: rgb(var(--accent) / 65%) !important;
+  color: rgb(var(--accent) / 92%) !important;
 }
 
 /* ─── Status / Ping Tags ─── */
@@ -521,11 +530,15 @@ body, #__next {
   filter: saturate(1) brightness(1);
 }
 
-/* ─── Subgroup Containers ─── */
+/* ─── Subgroup Containers — Fusion's sub-label under a zone heading
+   (DOWNLOADS/NETWORK/MONITORING/SECURITY, COMPUTE/BACKUPS, etc.) is
+   plain text-faint grey and lighter weight, not accent-coloured or
+   bold, so it recedes beneath the zone's own coloured heading ─── */
 
 .services-group.subgroup .service-group-name {
-  color: rgb(var(--accent) / 65%) !important;
-  font-size: 0.58rem !important;
+  color: rgb(255 255 255 / 36%) !important;
+  font-size: 0.59rem !important;
+  font-weight: 500 !important;
   letter-spacing: 0.1em !important;
 }
 
@@ -871,6 +884,19 @@ dialog .bg-theme-300\/10 {
 ) .service-block {
   margin: 1px !important;
   padding: 4px 2px !important;
+}
+
+/* ─── Plex / Dota 2 — bespoke in-widget zone label ───
+   Both widgets now render their own accent-coloured "PLEX"/"DOTA 2" label
+   (see component.jsx), matching Fusion's zone-card header. Hide the generic
+   icon+name row so the card isn't double-labelled; any status badge
+   (service-tags, e.g. the Plex Proxmox indicator) stays visible since it's
+   positioned absolutely against .service-card, independent of this row. */
+li[data-name="Plex"] .service-icon,
+li[data-name="Plex"] .service-title-text,
+li[data-name="Dota 2"] .service-icon,
+li[data-name="Dota 2"] .service-title-text {
+  display: none !important;
 }
 
 /* ─── Reduced Motion — accessibility ─── */
