@@ -3,6 +3,7 @@
 # https://gethomepage.dev/configs/settings/
 
 ###### GLOBAL SETTINGS ######
+fullWidth: true
 fiveColumns: true
 useEqualHeights: true
 theme: dark
@@ -15,18 +16,21 @@ layout:
   SIGNAL:
     tab: HOMELAB
     style: row
-    columns: 2
+    columns: 3
     useEqualHeights: true
 
-    MEDIA-INFO: 
-      header: false
-      style: row
-      columns: 2
     DOTA 2:
       header: false
       style: row
       columns: 1
-    
+    PLEX:
+      header: false
+      style: row
+      columns: 1
+    UPCOMING RELEASES:
+      style: row
+      columns: 1
+
   MEDIA:
     tab: HOMELAB
     style: row

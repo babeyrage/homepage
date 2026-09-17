@@ -69,7 +69,7 @@ body, #__next {
    / settings.yaml group and subgroup names via data-group.
    ============================================================ */
 .services-group[data-group="DOTA 2"]      { --accent: 191 46 26;  } /* dota red */
-.services-group[data-group="MEDIA-INFO"]  { --accent: 245 165 36; } /* amber */
+.services-group[data-group="PLEX"]        { --accent: 245 165 36; } /* amber */
 .services-group[data-group="MEDIA"]       { --accent: 245 165 36; } /* amber */
 .services-group[data-group="INFRASTRUCTURE"] { --accent: 91 141 239; } /* infra blue */
 .services-group[data-group="HOME NETWORK"]{ --accent: 52 211 153; } /* network green */
@@ -80,12 +80,12 @@ body, #__next {
    This is the signature Fusion element: every top-level section becomes
    its own card (blurred glass background + border + accent-coloured
    left stripe), reusing the --accent scoped above. Subgroups stay plain
-   (no nested double-box) except DOTA 2 / MEDIA-INFO, which are Fusion's
+   (no nested double-box) except DOTA 2 / PLEX, which are Fusion's
    promoted "signal rail" cards despite being subgroups, and SIGNAL, which
    is a headerless layout wrapper and must stay a plain flex container. */
 .services-group:not(.subgroup),
 .services-group.subgroup[data-group="DOTA 2"],
-.services-group.subgroup[data-group="MEDIA-INFO"] {
+.services-group.subgroup[data-group="PLEX"] {
   background: linear-gradient(180deg, rgb(255 255 255 / 3%), rgb(255 255 255 / 1%)), rgb(0 0 0 / 16%) !important;
   border: 1px solid rgb(var(--card-border)) !important;
   border-left: 3px solid rgb(var(--accent) / 75%) !important;
@@ -797,7 +797,7 @@ dialog .bg-theme-300\/10 {
    in a grid. Fusion shows these as small flat panel-2 tiles inside
    one zone card, not individually-shadowed cards — so flatten each
    .service-card into a tile and tighten every internal spacing to
-   match. (INFO's MEDIA-INFO/DOTA 2 subgroups keep their bespoke
+   match. (SIGNAL's PLEX/DOTA 2 subgroups keep their bespoke
    Plex/Dota2 layouts and are intentionally excluded.)
    ============================================================ */
 :is(

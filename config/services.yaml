@@ -39,7 +39,15 @@
             allowPolicy: fullscreen
 
 - SIGNAL:
-    - MEDIA-INFO:
+    - DOTA 2:
+        - Dota 2:
+            icon: si-dota2-#BF2E1A
+            href: https://www.dota2.com
+            widget:
+                type: dota2
+                key: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
+
+    - PLEX:
         - Plex:
             icon: plex.svg
             href: http://{{HOMEPAGE_VAR_PLEX_URL}}:{{HOMEPAGE_VAR_PLEX_PORT}}/web
@@ -52,10 +60,11 @@
                 key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
                 enableImageProxy: true
 
+    - UPCOMING RELEASES:
         - Upcoming Releases:
             icon: notion-calendar.svg
             widget:
-                type: calendar
+                type: upcomingreleases
                 view: agenda
                 maxEvents: 10
                 showTime: true
@@ -69,14 +78,6 @@
                       service_group: MEDIA
                       service_name: Radarr
                       color: amber
-    
-    - DOTA 2:
-        - Dota 2:
-            icon: si-dota2-#BF2E1A
-            href: https://www.dota2.com
-            widget:
-                type: dota2
-                key: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
 
 - MEDIA:
     - Radarr:

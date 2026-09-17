@@ -661,7 +661,7 @@ export function cleanServiceGroups(groups) {
           if (display) widget.display = display;
           if (refreshInterval) widget.refreshInterval = refreshInterval;
         }
-        if (type === "calendar") {
+        if (type === "calendar" || type === "upcomingreleases") {
           if (integrations) {
             if (Array.isArray(integrations)) {
               widget.integrations = integrations.map((integration) => {

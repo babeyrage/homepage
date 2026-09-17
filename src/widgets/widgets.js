@@ -151,6 +151,7 @@ import unifi from "./unifi/widget";
 import unifi_drive from "./unifi_drive/widget";
 import unmanic from "./unmanic/widget";
 import unraid from "./unraid/widget";
+import upcomingreleases from "./upcomingreleases/widget";
 import uptimekuma from "./uptimekuma/widget";
 import uptimerobot from "./uptimerobot/widget";
 import urbackup from "./urbackup/widget";
@@ -322,6 +323,7 @@ const widgets = {
   unifi_drive,
   unmanic,
   unraid,
+  upcomingreleases,
   uptimekuma,
   uptimerobot,
   urbackup,
