@@ -779,6 +779,100 @@ dialog .bg-theme-300\/10 {
   }
 }
 
+/* ============================================================
+   FUSION DENSE TILES — MEDIA / SERVERS / BACKUPS / HOME NETWORK /
+   SECURITY INFO each render many same-shaped stat-only services
+   in a grid. Fusion shows these as small flat panel-2 tiles inside
+   one zone card, not individually-shadowed cards — so flatten each
+   .service-card into a tile and tighten every internal spacing to
+   match. (INFO's MEDIA-INFO/DOTA 2 subgroups keep their bespoke
+   Plex/Dota2 layouts and are intentionally excluded.)
+   ============================================================ */
+:is(
+  .services-group[data-group="MEDIA"],
+  .services-group[data-group="SERVERS"],
+  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="HOME NETWORK"],
+  .services-group[data-group="SECURITY INFO"]
+) .service-card {
+  background: rgb(var(--color-700) / 55%) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+  margin-bottom: 6px !important;
+}
+
+:is(
+  .services-group[data-group="MEDIA"],
+  .services-group[data-group="SERVERS"],
+  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="HOME NETWORK"],
+  .services-group[data-group="SECURITY INFO"]
+) .service-card:hover {
+  background: rgb(var(--color-700) / 75%) !important;
+}
+
+:is(
+  .services-group[data-group="MEDIA"],
+  .services-group[data-group="SERVERS"],
+  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="HOME NETWORK"],
+  .services-group[data-group="SECURITY INFO"]
+) .service-icon {
+  width: 30px !important;
+  min-width: 30px !important;
+  background: none !important;
+}
+
+:is(
+  .services-group[data-group="MEDIA"],
+  .services-group[data-group="SERVERS"],
+  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="HOME NETWORK"],
+  .services-group[data-group="SECURITY INFO"]
+) .service-icon img,
+:is(
+  .services-group[data-group="MEDIA"],
+  .services-group[data-group="SERVERS"],
+  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="HOME NETWORK"],
+  .services-group[data-group="SECURITY INFO"]
+) .service-icon svg {
+  max-width: 18px !important;
+  max-height: 18px !important;
+}
+
+:is(
+  .services-group[data-group="MEDIA"],
+  .services-group[data-group="SERVERS"],
+  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="HOME NETWORK"],
+  .services-group[data-group="SECURITY INFO"]
+) .service-name {
+  padding: 4px 6px !important;
+  font-size: 0.72rem !important;
+}
+
+:is(
+  .services-group[data-group="MEDIA"],
+  .services-group[data-group="SERVERS"],
+  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="HOME NETWORK"],
+  .services-group[data-group="SECURITY INFO"]
+) .service-description {
+  display: none !important;
+}
+
+:is(
+  .services-group[data-group="MEDIA"],
+  .services-group[data-group="SERVERS"],
+  .services-group[data-group="BACKUPS"],
+  .services-group[data-group="HOME NETWORK"],
+  .services-group[data-group="SECURITY INFO"]
+) .service-block {
+  margin: 1px !important;
+  padding: 4px 2px !important;
+}
+
 /* ─── Reduced Motion — accessibility ─── */
 @media (prefers-reduced-motion: reduce) {
   *,

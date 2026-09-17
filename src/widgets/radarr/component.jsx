@@ -5,6 +5,7 @@ import QueueEntry from "../../components/widgets/queue/queueEntry";
 import Block from "components/services/widget/block";
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
+import parseTimeSpan from "utils/parse-timespan";
 
 function getProgress(sizeLeft, size) {
   if (!Number.isFinite(size) || size <= 0) return 0;
@@ -20,7 +21,8 @@ function formatDownloadState(downloadState) {
     case "failedPending":
       return "failed pending";
     default:
-      return downloadState;
+      // camelCase status strings (e.g. "downloadClientUnavailable") -> "download client unavailable"
+      return downloadState?.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
   }
 }
 
@@ -72,7 +74,9 @@ export default function Component({ service }) {
         queueDetailsData.map((queueEntry) => (
           <QueueEntry
             progress={getProgress(queueEntry.sizeLeft, queueEntry.size)}
-            timeLeft={queueEntry.timeLeft}
+            timeLeft={
+              queueEntry.timeLeft ? t("common.duration", { value: parseTimeSpan(queueEntry.timeLeft) }) : null
+            }
             title={moviesData.all.find((entry) => entry.id === queueEntry.movieId)?.title ?? t("radarr.unknown")}
             activity={getActivity(queueEntry.status, queueEntry.trackedDownloadState)}
             key={`${queueEntry.movieId}-${queueEntry.sizeLeft}`}
