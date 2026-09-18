@@ -53,6 +53,12 @@ describe("widgets/proxmoxfusion/component", () => {
             disk: 1,
             maxdisk: 2,
           },
+          { type: "qemu", node: "zeus", template: 0, status: "running" },
+          { type: "qemu", node: "zeus", template: 0, status: "stopped" },
+          { type: "qemu", node: "zeus", template: 1, status: "stopped" },
+          { type: "lxc", node: "zeus", template: 0, status: "running" },
+          { type: "lxc", node: "zeus", template: 0, status: "running" },
+          { type: "qemu", node: "apollo", template: 0, status: "running" },
         ],
       },
       error: undefined,
@@ -69,6 +75,17 @@ describe("widgets/proxmoxfusion/component", () => {
     expect(screen.getByText("42%")).toBeInTheDocument();
     expect(screen.getByText("50%")).toBeInTheDocument();
     expect(screen.getByText("40%")).toBeInTheDocument();
+
+    // Detail figures riding along on the existing cluster/resources payload.
+    expect(screen.getByText("8c")).toBeInTheDocument();
+    expect(screen.getByText("4000000000/8000000000")).toBeInTheDocument();
+    expect(screen.getByText("200000000000/500000000000")).toBeInTheDocument();
+
+    // Guest counts scoped to zeus only — apollo's qemu guest isn't counted.
+    expect(screen.getByText("vms")).toBeInTheDocument();
+    expect(screen.getByText("1/2")).toBeInTheDocument();
+    expect(screen.getByText("lxc")).toBeInTheDocument();
+    expect(screen.getByText("2/2")).toBeInTheDocument();
   });
 
   it("shows an offline state when the matched node is not online", () => {
