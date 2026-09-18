@@ -24,6 +24,7 @@ export default function BookmarksGroup({
   return (
     <div
       key={bookmarks.name}
+      data-group={bookmarks.name}
       className={classNames(
         "bookmark-group flex-1 overflow-hidden",
         layout?.style === "row" ? "basis-full" : "basis-full md:basis-1/4 lg:basis-1/5 xl:basis-1/6",

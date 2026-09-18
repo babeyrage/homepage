@@ -6,109 +6,136 @@
     - Semaphore:
         - icon: sh-semaphore-ui.svg
           href: http://192.168.1.220:3000
+          description: Self-hosted CI/CD pipelines
 
     - Github:
         - icon: si-github
           href: https://github.com/
-    
+          description: Code hosting & repositories
+
     - Proxmox Helper Scripts:
         - icon: proxmox.svg
           href: https://helper-scripts.com/
-    
+          description: Community VE/LXC install scripts
+
     - Cloudflare:
         - icon: cloudflare.svg
           href: https://dash.cloudflare.com/
+          description: DNS, CDN & Zero Trust
 
     - Claude:
         - icon: claude-ai.svg
           href: https://claude.ai/
+          description: Anthropic's AI assistant
 
     - IT Tools:
         - icon: it-tools.svg
           href: https://tools.quantumbyte.dev/
+          description: Self-hosted dev utility belt
 
     - Homepage:
         - icon: homepage.png
           href: https://gethomepage.dev/
+          description: This dashboard's upstream project
 
 - Productivity:
     - Gmail:
         - icon: gmail.svg
           href: https://gmail.com/
+          description: Personal email
 
     - Outlook:
         - icon: sh-microsoft-outlook.svg
           href: https://outlook.office.com/mail/
-    
+          description: Work email & calendar
+
 - Entertainment:
     - YouTube:
         - icon: si-youtube-#FF0000
           href: https://youtube.com/
+          description: Video streaming
 
     - Twitch:
         - icon: si-twitch-#9146FF
           href: https://www.twitch.tv/
+          description: Live streaming
 
     - Reddit:
         - icon: si-reddit-#FF4500
           href: https://www.reddit.com/
+          description: Forums & communities
 
 - Torrents/Indexers:
     - DrukenSlug:
         - icon: /icons/ds-icon.png
           href: https://drunkenslug.com/
+          description: Private torrent tracker
 
     - NZB Geek:
         - icon: /icons/nzbgeek-icon.png
           href: https://nzbgeek.info/dashboard.php
+          description: Usenet indexer
 
     - IPTorrents:
         - abbr: IPT
           href: https://ipt.lol/
+          description: Private torrent tracker
 
 - ESN:
     - PWS:
         - href: https://password.internal.esngroup.com.au
+          description: Internal password vault
     - ProofPoint:
         - abbr: PP
           href: https://us4.proofpointessentials.com/app/login.php
+          description: Email security portal
     - Console:
         - icon: adobe.svg
           href: https://adminconsole.adobe.com/r/
+          description: Adobe admin console
     - GoTo Admin:
         - icon: /icons/goto.png
           href: https://admin.goto.com/
+          description: Remote support admin
     - OKTA:
         - icon: si-okta
           href: https://esngroup-com.okta.com/
+          description: Single sign-on
     - Swoop:
-        - icon: 
+        - icon:
           href: https://portal.swoop.com.au/login
+          description: Payment portal
     - UniFi:
         - icon: unifi.svg
           href: https://account.ui.com/login
+          description: Ubiquiti network controller
 
 - M365:
     - Admin:
         - icon: microsoft-365.svg
           href: https://admin.cloud.microsoft
+          description: Microsoft 365 admin center
 
 - CONNECTWISE:
     - ScreenConnect:
         - icon: screenconnect.svg
           href: https://auth.connectwise.com/Account/Login?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fresponse_type%3Dcode%26client_id%3Drmmau-ESNGroup%26redirect_uri%3Dhttps%253A%252F%252Frmmau-esngroup.screenconnect.com%252F__Authentication%252FConnectWiseAsio%252FLogin%26state%3D%252FHost%2523Support%252FAll%252520Sessions%252F%252Fe31b6c13-58ee-4145-ab08-36f9a5c1e56a%252FStart%26scope%3Dopenid%2520profile%2520email
+          description: ConnectWise remote access
 
 - CYBER:
     - AnyRun:
         - icon:
           href: https://app.any.run/
+          description: Interactive malware sandbox
 
 - DOMAINS/DNS:
     - WHOIS-AU:
         - icon: /icons/whois-au.png
           href: https://whois.auda.org.au/
+          description: AU domain WHOIS lookup
 
 - OSINT:
     - HaveIBeenPwned:
         - icon: si-haveibeenpwned
           href: https://haveibeenpwned.com/
+          description: Breach & credential lookup

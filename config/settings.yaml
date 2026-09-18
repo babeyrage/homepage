@@ -85,14 +85,32 @@ layout:
 
 ###### BOOKMARKS ######
 ### HOMELAB ###
-  DEVELOPER:
+# Keys below must match each group's name in bookmarks.yaml exactly
+# (case-sensitive) — "DEVELOPER"/"ENTERTAINMENT" previously didn't match
+# bookmarks.yaml's "Developer"/"Entertainment", so the tab lookup silently
+# missed and both groups leaked onto every tab instead of staying HOMELAB-only.
+  Developer:
     tab: HOMELAB
-  ENTERTAINMENT:
+    style: row
+    columns: 3
+  Productivity:
     tab: HOMELAB
+    style: row
+    columns: 2
+  Entertainment:
+    tab: HOMELAB
+    style: row
+    columns: 3
+  Torrents/Indexers:
+    tab: HOMELAB
+    style: row
+    columns: 3
 
 ### WORK ###
   ESN:
     tab: WORK
+    style: row
+    columns: 3
   M365:
     tab: WORK
   CONNECTWISE:

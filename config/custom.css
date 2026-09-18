@@ -77,16 +77,34 @@ body, #__next {
 .services-group[data-group="SECURITY INFO"]{ --accent: 251 113 133;} /* rose */
 .services-group.subgroup[data-group="UPCOMING RELEASES"] { --accent: 6 182 212; } /* cyan — explicit default, used by its heading dot */
 
+/* Bookmark groups previously all inherited the bare :root cyan default —
+   give each its own accent too, same mechanism, keyed off bookmarks.yaml's
+   group names (case-sensitive, exactly as authored there). */
+.bookmark-group[data-group="Developer"]        { --accent: 167 139 250; } /* violet */
+.bookmark-group[data-group="Productivity"]     { --accent: 45 212 191;  } /* teal */
+.bookmark-group[data-group="Entertainment"]    { --accent: 232 121 249; } /* fuchsia */
+.bookmark-group[data-group="Torrents/Indexers"]{ --accent: 251 146 60;  } /* orange */
+.bookmark-group[data-group="ESN"]              { --accent: 129 140 248; } /* indigo */
+.bookmark-group[data-group="M365"]             { --accent: 56 189 248;  } /* sky */
+.bookmark-group[data-group="CONNECTWISE"]      { --accent: 250 204 21;  } /* yellow */
+.bookmark-group[data-group="CYBER"]            { --accent: 239 68 68;   } /* red */
+.bookmark-group[data-group="DOMAINS/DNS"]      { --accent: 132 204 22;  } /* lime */
+.bookmark-group[data-group="OSINT"]            { --accent: 168 85 247;  } /* purple */
+
 /* ─── Zone cards — the coloured left-border glass panel per section ───
    This is the signature Fusion element: every top-level section becomes
    its own card (blurred glass background + border + accent-coloured
    left stripe), reusing the --accent scoped above. Subgroups stay plain
    (no nested double-box) except DOTA 2 / PLEX, which are Fusion's
    promoted "signal rail" cards despite being subgroups, and SIGNAL, which
-   is a headerless layout wrapper and must stay a plain flex container. */
+   is a headerless layout wrapper and must stay a plain flex container.
+   .bookmark-group rides the same rule — bookmarks were previously bare
+   lists floating on the page background with no card treatment at all,
+   the one part of the dashboard that hadn't picked up the zone-card look. */
 .services-group:not(.subgroup),
 .services-group.subgroup[data-group="DOTA 2"],
-.services-group.subgroup[data-group="PLEX"] {
+.services-group.subgroup[data-group="PLEX"],
+.bookmark-group {
   background: linear-gradient(180deg, rgb(255 255 255 / 3%), rgb(255 255 255 / 1%)), rgb(0 0 0 / 16%) !important;
   border: 1px solid rgb(var(--card-border)) !important;
   border-left: 3px solid rgb(var(--accent) / 75%) !important;
@@ -304,8 +322,15 @@ body, #__next {
   color: rgb(var(--accent)) !important;
 }
 
+/* Previously hidden outright — the un-styled fallback (a bare hostname,
+   e.g. "github.com") wasn't worth the width. Now that bookmarks.yaml
+   carries real one-line descriptions, show it: small, muted, truncated
+   so it never pushes the name off a narrow card. */
 .bookmark-description {
-  display: none !important;
+  display: block !important;
+  font-size: 0.66rem !important;
+  color: rgb(255 255 255 / 38%) !important;
+  letter-spacing: 0.01em;
 }
 
 .bookmark-icon {
