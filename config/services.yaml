@@ -87,7 +87,7 @@
         proxmoxVMID: "{{HOMEPAGE_VAR_RADARR_VMID}}"
         proxmoxType: lxc
         widget:
-            type: radarr
+            type: radarrfusion
             url: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
             key: "{{HOMEPAGE_VAR_RADARR_API_KEY}}"
 

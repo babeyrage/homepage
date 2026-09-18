@@ -75,6 +75,7 @@ body, #__next {
 .services-group[data-group="HOME NETWORK"]{ --accent: 52 211 153; } /* network green */
 .services-group[data-group="SECURITY"]    { --accent: 251 113 133;} /* rose — overrides inherited green under HOME NETWORK */
 .services-group[data-group="SECURITY INFO"]{ --accent: 251 113 133;} /* rose */
+.services-group.subgroup[data-group="UPCOMING RELEASES"] { --accent: 6 182 212; } /* cyan — explicit default, used by its heading dot */
 
 /* ─── Zone cards — the coloured left-border glass panel per section ───
    This is the signature Fusion element: every top-level section becomes

@@ -117,13 +117,19 @@ export default function Component({ service }) {
     <Container service={service}>
       <div className="flex flex-col w-full">
         <div className="flex items-center justify-between mb-2.5">
-          <span
-            className="widget-zone-label text-[10px] font-semibold uppercase tracking-widest"
-            style={{ color: "rgb(255 255 255 / 42%)" }}
-          >
-            Upcoming Releases
-          </span>
-          <span className="widget-zone-label text-[9px]" style={{ color: "rgb(255 255 255 / 30%)" }}>
+          <div className="flex items-center gap-2">
+            <span
+              className="w-1.5 h-1.5 rounded-full shrink-0"
+              style={{ backgroundColor: "rgb(var(--accent))", boxShadow: "0 0 6px rgb(var(--accent) / 70%)" }}
+            />
+            <span
+              className="widget-zone-label text-[10px] font-semibold uppercase tracking-widest"
+              style={{ color: "rgb(var(--accent))" }}
+            >
+              Upcoming Releases
+            </span>
+          </div>
+          <span className="widget-zone-label text-[9px] text-theme-500 dark:text-theme-400">
             next {widget?.maxEvents ?? 10}
           </span>
         </div>

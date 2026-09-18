@@ -128,6 +128,7 @@ const components = {
   qbittorrent: dynamic(() => import("./qbittorrent/component")),
   qnap: dynamic(() => import("./qnap/component")),
   radarr: dynamic(() => import("./radarr/component")),
+  radarrfusion: dynamic(() => import("./radarrfusion/component")),
   readarr: dynamic(() => import("./readarr/component")),
   romm: dynamic(() => import("./romm/component")),
   rutorrent: dynamic(() => import("./rutorrent/component")),
