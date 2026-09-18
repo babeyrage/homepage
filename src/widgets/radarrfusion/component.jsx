@@ -75,6 +75,7 @@ export default function Component({ service }) {
         <StatTile
           ledColor={ledColor}
           primary={t("common.number", { value: moviesData.missing })}
+          primaryLabel="missing"
           secondary={`${t("common.number", { value: moviesData.wanted })} wanted · ${t("common.number", { value: moviesData.have })} movies`}
           tertiary={`${t("common.number", { value: queuedData.totalCount })} queued${
             failedCount > 0 ? ` · ${t("common.number", { value: failedCount })} failed` : ""

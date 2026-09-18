@@ -76,6 +76,7 @@ describe("widgets/radarrfusion/component", () => {
     renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
 
     expect(screen.getByText("2")).toBeInTheDocument();
+    expect(screen.getByText("missing")).toBeInTheDocument();
     expect(screen.getByText("1 wanted · 3 movies")).toBeInTheDocument();
     expect(screen.getByText("1 queued")).toBeInTheDocument();
 

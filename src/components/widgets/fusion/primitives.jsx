@@ -78,15 +78,21 @@ export function StatRow({ children, divider = true, className = "" }) {
   );
 }
 
-// One consolidated service tile: LED + one bold primary stat, then two
+// One consolidated service tile: LED + one bold primary stat (with an
+// optional unit label right beside it, e.g. "232 missing"), then two
 // supporting detail lines — the shape every MEDIA-zone fork renders
 // (see src/widgets/radarrfusion/component.jsx for the reference use).
+// `w-full` + left alignment fills the tile edge-to-edge, matching the
+// Fusion mockup's dense tiles — `.service-container`'s `justify-content:
+// center` (config/custom.css) would otherwise centre a narrow intrinsic-
+// width tile inside the full-width block slot, leaving large empty
+// gutters on both sides.
 // While `primary` is undefined (and no `error`) it renders a skeleton,
 // matching useWidgetAPI's loading contract.
-export function StatTile({ primary, secondary, tertiary, ledColor = FUSION_COLORS.ok, error }) {
+export function StatTile({ primary, primaryLabel, secondary, tertiary, ledColor = FUSION_COLORS.ok, error }) {
   if (!error && primary === undefined) {
     return (
-      <div className="flex flex-col gap-1.5 px-1 py-1 animate-pulse">
+      <div className="flex flex-col gap-1.5 w-full px-2 py-1.5 animate-pulse">
         <div className="h-4 w-12 rounded-sm bg-theme-300/40 dark:bg-theme-800/40" />
         <div className="h-2.5 w-20 rounded-sm bg-theme-300/30 dark:bg-theme-800/30" />
         <div className="h-2.5 w-16 rounded-sm bg-theme-300/20 dark:bg-theme-800/20" />
@@ -95,15 +101,23 @@ export function StatTile({ primary, secondary, tertiary, ledColor = FUSION_COLOR
   }
 
   return (
-    <div className="flex flex-col gap-0.5 px-1 py-1">
-      <div className="flex items-center gap-1.5">
-        <Led color={error ? FUSION_COLORS.bad : ledColor} />
+    <div className="flex flex-col gap-0.5 w-full px-2 py-1.5">
+      <div className="flex items-baseline gap-1.5">
+        <Led color={error ? FUSION_COLORS.bad : ledColor} className="translate-y-[-2px]" />
         <span
           className="text-[15px] font-extrabold leading-tight tabular-nums"
           style={{ fontFamily: FUSION_MONO }}
         >
           {error ? "—" : primary}
         </span>
+        {!error && primaryLabel && (
+          <span
+            className="text-[9px] font-semibold uppercase tracking-widest text-theme-500 dark:text-theme-400/80"
+            style={{ fontFamily: FUSION_MONO }}
+          >
+            {primaryLabel}
+          </span>
+        )}
       </div>
       <span
         className="text-[10px] leading-snug text-theme-500 dark:text-theme-400"
