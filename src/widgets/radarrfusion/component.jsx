@@ -51,10 +51,12 @@ function isFailed(entry) {
 // Colors the QueueRow status text so an at-a-glance scan of the expanded
 // list can tell active transfers from stalled/pending ones without reading
 // every word: red for failures, blue while actually transferring, amber for
-// anything mid-import, and the row's own neutral default (queued/paused).
+// anything mid-import, slate for a deliberately paused item, and the row's
+// own neutral default for everything else (e.g. queued).
 function getStatusColor(activity, failed) {
   if (failed) return FUSION_COLORS.bad;
   if (activity === "downloading") return FUSION_COLORS.infra;
+  if (activity === "paused") return FUSION_COLORS.paused;
   if (activity?.includes("import") || activity?.includes("pending")) return FUSION_COLORS.warn;
   return undefined;
 }

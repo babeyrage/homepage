@@ -20,6 +20,10 @@ export const FUSION_COLORS = {
   infra: "#5b8def",
   network: "#34d399",
   security: "#fb7185",
+  // Deliberately not red/amber/green/blue — a paused transfer isn't a
+  // problem or progress, so it gets a cool neutral slate rather than
+  // borrowing a color already meaning "active"/"warning"/"failed".
+  paused: "#94a3b8",
 };
 
 // Matches the IBM Plex Mono stack custom.css already loads for
