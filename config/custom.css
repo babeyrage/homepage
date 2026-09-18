@@ -112,6 +112,17 @@ body, #__next {
   backdrop-filter: none !important;
 }
 
+/* ─── Section Gap — every top-level zone card (SIGNAL, MEDIA, INFRASTRUCTURE,
+   HOME NETWORK, SECURITY INFO, NEWS, ...) and bookmark-group row shares one
+   flex-wrap container (#layout-groups) with no gap utility, and each card's
+   padding is internal only (see the zone-card rule above) — so consecutive
+   full-width sections render flush against each other with zero space
+   between them. Match Fusion's 24px rhythm between sections explicitly. */
+.services-group:not(.subgroup),
+.bookmark-group {
+  margin-bottom: 24px !important;
+}
+
 /* SIGNAL's three cards are unequal widths — DOTA 2 wider, PLEX / UPCOMING
    RELEASES slightly narrower — instead of the default equal thirds. The
    grid lives on an inner wrapper div (see components/services/group.jsx),
