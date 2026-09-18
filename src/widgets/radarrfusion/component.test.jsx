@@ -115,7 +115,18 @@ describe("widgets/radarrfusion/component", () => {
     expect(screen.getByText("Queued Movie")).toBeInTheDocument();
     expect(screen.getByText("qBittorrent")).toBeInTheDocument();
     expect(screen.getByText("downloading")).toBeInTheDocument();
-    expect(screen.getByText("10 · 100")).toBeInTheDocument();
+    expect(screen.getByText("10")).toBeInTheDocument();
+    expect(screen.getByText("100")).toBeInTheDocument();
+
+    // Status and speed are the two things this row exists to make legible,
+    // so both get bold accent-colored treatment rather than muted grey text.
+    const status = screen.getByText("downloading");
+    expect(status.className).toMatch(/font-bold/);
+    expect(status.style.color).toBeTruthy();
+
+    const speed = screen.getByText("100");
+    expect(speed.className).toMatch(/font-bold/);
+    expect(speed.style.color).toBeTruthy();
   });
 
   it("paginates the expanded queue instead of rendering it all at once", () => {

@@ -225,7 +225,23 @@ export function getClientColor(name) {
 // One row inside a StatTile's expanded detail list — a single queued/
 // downloading item: title + download-client chip, a thin progress bar,
 // then a status/eta line and a right-aligned size-or-speed line.
-export function QueueRow({ title, client, progress = 0, status, detail, barColor = FUSION_COLORS.infra }) {
+//
+// `status` and `speed` carry the activity signal for the row, so both get
+// bolder, brighter treatment than the row's other supporting text: `status`
+// takes `statusColor` (e.g. blue while downloading, red on failure, left to
+// a neutral-but-still-legible default otherwise) and `speed` is always
+// rendered in the same accent green regardless of state, so a live transfer
+// rate reads instantly against the surrounding muted timeLeft/label text.
+export function QueueRow({
+  title,
+  client,
+  progress = 0,
+  status,
+  statusColor,
+  timeLeft,
+  speed,
+  barColor = FUSION_COLORS.infra,
+}) {
   return (
     <div className="flex flex-col gap-1 py-1.5 border-t border-theme-300/10 dark:border-theme-700/30">
       <div className="flex items-center justify-between gap-2">
@@ -242,12 +258,21 @@ export function QueueRow({ title, client, progress = 0, status, detail, barColor
         )}
       </div>
       <Bar pct={progress} color={barColor} />
-      <div
-        className="flex items-center justify-between gap-2 text-[9px] text-theme-400/70 dark:text-theme-500/60"
-        style={{ fontFamily: FUSION_MONO }}
-      >
-        <span className="truncate">{status}</span>
-        {detail && <span className="shrink-0">{detail}</span>}
+      <div className="flex items-center gap-2 text-[10.5px]" style={{ fontFamily: FUSION_MONO }}>
+        <span
+          className={`font-bold truncate ${statusColor ? "" : "text-theme-600 dark:text-theme-300"}`}
+          style={statusColor ? { color: statusColor } : undefined}
+        >
+          {status}
+        </span>
+        {timeLeft && (
+          <span className="shrink-0 text-theme-400/70 dark:text-theme-500/60">{timeLeft}</span>
+        )}
+        {speed && (
+          <span className="shrink-0 ml-auto font-bold tabular-nums" style={{ color: FUSION_COLORS.ok }}>
+            {speed}
+          </span>
+        )}
       </div>
     </div>
   );

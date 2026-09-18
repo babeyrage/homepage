@@ -48,6 +48,17 @@ function isFailed(entry) {
   );
 }
 
+// Colors the QueueRow status text so an at-a-glance scan of the expanded
+// list can tell active transfers from stalled/pending ones without reading
+// every word: red for failures, blue while actually transferring, amber for
+// anything mid-import, and the row's own neutral default (queued/paused).
+function getStatusColor(activity, failed) {
+  if (failed) return FUSION_COLORS.bad;
+  if (activity === "downloading") return FUSION_COLORS.infra;
+  if (activity?.includes("import") || activity?.includes("pending")) return FUSION_COLORS.warn;
+  return undefined;
+}
+
 export default function Component({ service }) {
   const { t } = useTranslation();
   const { widget } = service;
@@ -110,6 +121,8 @@ export default function Component({ service }) {
               ? t("common.byterate", { value: queueEntry.sizeLeft / timeLeftSeconds })
               : null;
           const timeLeft = timeLeftSeconds ? t("common.duration", { value: timeLeftSeconds }) : null;
+          const activity = getActivity(queueEntry.status, queueEntry.trackedDownloadState);
+          const failed = isFailed(queueEntry);
 
           return (
             <QueueRow
@@ -117,9 +130,11 @@ export default function Component({ service }) {
               title={moviesData.all.find((entry) => entry.id === queueEntry.movieId)?.title ?? t("radarr.unknown")}
               client={queueEntry.downloadClient}
               progress={getProgress(queueEntry.sizeLeft, queueEntry.size)}
-              status={getActivity(queueEntry.status, queueEntry.trackedDownloadState)}
-              detail={[timeLeft, speed].filter(Boolean).join(" · ") || null}
-              barColor={isFailed(queueEntry) ? FUSION_COLORS.bad : FUSION_COLORS.infra}
+              status={activity}
+              statusColor={getStatusColor(activity, failed)}
+              timeLeft={timeLeft}
+              speed={speed}
+              barColor={failed ? FUSION_COLORS.bad : FUSION_COLORS.infra}
             />
           );
         })}
