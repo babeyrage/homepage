@@ -118,6 +118,82 @@ describe("widgets/radarrfusion/component", () => {
     expect(screen.getByText("10 · 100")).toBeInTheDocument();
   });
 
+  it("paginates the expanded queue instead of rendering it all at once", () => {
+    const queueDetails = Array.from({ length: 7 }, (_, index) => ({
+      movieId: index,
+      sizeLeft: 0,
+      size: 0,
+      status: "paused",
+      trackedDownloadState: "queued",
+      downloadClient: "SABnzbd",
+    }));
+    const movies = queueDetails.map((entry) => ({ id: entry.movieId, title: `Movie ${entry.movieId}` }));
+
+    useWidgetAPI.mockImplementation((_widget, endpoint) => {
+      if (endpoint === "movie") return { data: { wanted: 0, missing: 0, have: 0, all: movies }, error: undefined };
+      if (endpoint === "queue/status") return { data: { totalCount: 7 }, error: undefined };
+      if (endpoint === "queue/details") return { data: queueDetails, error: undefined };
+      return { data: undefined, error: undefined };
+    });
+
+    const service = { widget: { type: "radarrfusion" } };
+    renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
+
+    fireEvent.click(screen.getByText("7 queued"));
+
+    // Page size is 5: first page shows movies 0-4, not 5 or 6.
+    expect(screen.getByText("Movie 0")).toBeInTheDocument();
+    expect(screen.getByText("Movie 4")).toBeInTheDocument();
+    expect(screen.queryByText("Movie 5")).not.toBeInTheDocument();
+    expect(screen.getByText("1 / 2")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("›"));
+
+    expect(screen.queryByText("Movie 0")).not.toBeInTheDocument();
+    expect(screen.getByText("Movie 5")).toBeInTheDocument();
+    expect(screen.getByText("Movie 6")).toBeInTheDocument();
+    expect(screen.getByText("2 / 2")).toBeInTheDocument();
+  });
+
+  it("gives different download clients visually distinct chip colors", () => {
+    useWidgetAPI.mockImplementation((_widget, endpoint) => {
+      if (endpoint === "movie")
+        return {
+          data: {
+            wanted: 0,
+            missing: 0,
+            have: 0,
+            all: [
+              { id: 1, title: "Torrent Movie" },
+              { id: 2, title: "Usenet Movie" },
+            ],
+          },
+          error: undefined,
+        };
+      if (endpoint === "queue/status") return { data: { totalCount: 2 }, error: undefined };
+      if (endpoint === "queue/details")
+        return {
+          data: [
+            { movieId: 1, sizeLeft: 0, size: 0, status: "paused", trackedDownloadState: "queued", downloadClient: "qBittorrent" },
+            { movieId: 2, sizeLeft: 0, size: 0, status: "paused", trackedDownloadState: "queued", downloadClient: "SABnzbd" },
+          ],
+          error: undefined,
+        };
+      return { data: undefined, error: undefined };
+    });
+
+    const service = { widget: { type: "radarrfusion" } };
+    renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
+
+    fireEvent.click(screen.getByText("2 queued"));
+
+    const qbitColor = screen.getByText("qBittorrent").style.color;
+    const sabColor = screen.getByText("SABnzbd").style.color;
+    expect(qbitColor).toBeTruthy();
+    expect(sabColor).toBeTruthy();
+    expect(qbitColor).not.toBe(sabColor);
+  });
+
   it("shows a failed badge when a queue entry has failed", () => {
     useWidgetAPI.mockImplementation((_widget, endpoint) => {
       if (endpoint === "movie") return { data: { wanted: 0, missing: 1, have: 5, all: [] }, error: undefined };

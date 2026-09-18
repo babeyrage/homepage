@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { useTranslation } from "next-i18next/pages";
 
-import { StatTile, QueueRow, Chip, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
+import { StatTile, QueueRow, QueuePager, Chip, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
 
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 import parseTimeSpan from "utils/parse-timespan";
+
+// Rows per expanded page — keeps a large queue from turning the tile into
+// an unbounded scroll; paged via QueuePager instead.
+const QUEUE_PAGE_SIZE = 5;
 
 function getProgress(sizeLeft, size) {
   if (!Number.isFinite(size) || size <= 0) return 0;
@@ -48,6 +52,7 @@ export default function Component({ service }) {
   const { t } = useTranslation();
   const { widget } = service;
   const [expanded, setExpanded] = useState(false);
+  const [page, setPage] = useState(0);
 
   const { data: moviesData, error: moviesError } = useWidgetAPI(widget, "movie");
   const { data: queuedData, error: queuedError } = useWidgetAPI(widget, "queue/status");
@@ -70,6 +75,10 @@ export default function Component({ service }) {
   const failedCount = queueDetailsData.filter(isFailed).length;
   const ledColor = moviesData.missing === 0 ? FUSION_COLORS.ok : failedCount > 0 ? FUSION_COLORS.bad : FUSION_COLORS.warn;
 
+  const pageCount = Math.max(1, Math.ceil(queueDetailsData.length / QUEUE_PAGE_SIZE));
+  const safePage = Math.min(page, pageCount - 1);
+  const pageEntries = queueDetailsData.slice(safePage * QUEUE_PAGE_SIZE, safePage * QUEUE_PAGE_SIZE + QUEUE_PAGE_SIZE);
+
   return (
     <>
       <Container service={service}>
@@ -86,12 +95,15 @@ export default function Component({ service }) {
           }
           expandable={hasQueue}
           expanded={expanded}
-          onToggleExpand={() => setExpanded((value) => !value)}
+          onToggleExpand={() => {
+            setExpanded((value) => !value);
+            setPage(0);
+          }}
         />
       </Container>
       {hasQueue &&
         expanded &&
-        queueDetailsData.map((queueEntry) => {
+        pageEntries.map((queueEntry) => {
           const timeLeftSeconds = queueEntry.timeLeft ? parseTimeSpan(queueEntry.timeLeft) : null;
           const speed =
             timeLeftSeconds && queueEntry.sizeLeft
@@ -111,6 +123,14 @@ export default function Component({ service }) {
             />
           );
         })}
+      {hasQueue && expanded && (
+        <QueuePager
+          page={safePage}
+          pageCount={pageCount}
+          onPrev={() => setPage((value) => Math.max(0, value - 1))}
+          onNext={() => setPage((value) => Math.min(pageCount - 1, value + 1))}
+        />
+      )}
     </>
   );
 }

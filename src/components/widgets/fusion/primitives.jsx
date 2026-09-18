@@ -187,6 +187,41 @@ export function StatTile({
   );
 }
 
+// Known download-client brand colours, loosely matched to each client's own
+// mark so the chips read as distinct at a glance. Matching is substring-based
+// against a lowercased name (e.g. "qBittorrent 4.6" still hits "qbittorrent"),
+// since widgets report whatever instance name the user configured.
+const CLIENT_COLORS = {
+  qbittorrent: "#3b82f6",
+  deluge: "#22c55e",
+  transmission: "#ef4444",
+  sabnzbd: "#f5a524",
+  nzbget: "#a855f7",
+  rutorrent: "#06b6d4",
+  flood: "#ec4899",
+  jdownloader: "#eab308",
+  "download station": "#0ea5e9",
+};
+
+// Unknown/unlisted clients still deserve a stable, distinct colour rather
+// than all collapsing into one grey — hashed into this fallback palette so
+// the same client name always lands on the same colour.
+const CLIENT_FALLBACK_PALETTE = ["#3b82f6", "#22c55e", "#ef4444", "#f5a524", "#a855f7", "#06b6d4", "#ec4899", "#eab308"];
+
+export function getClientColor(name) {
+  if (!name) return FUSION_COLORS.infra;
+  const key = name.toLowerCase().trim();
+  if (CLIENT_COLORS[key]) return CLIENT_COLORS[key];
+  const matchKey = Object.keys(CLIENT_COLORS).find((k) => key.includes(k));
+  if (matchKey) return CLIENT_COLORS[matchKey];
+
+  let hash = 0;
+  for (let i = 0; i < key.length; i += 1) {
+    hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+  }
+  return CLIENT_FALLBACK_PALETTE[hash % CLIENT_FALLBACK_PALETTE.length];
+}
+
 // One row inside a StatTile's expanded detail list — a single queued/
 // downloading item: title + download-client chip, a thin progress bar,
 // then a status/eta line and a right-aligned size-or-speed line.
@@ -201,7 +236,7 @@ export function QueueRow({ title, client, progress = 0, status, detail, barColor
           {title}
         </span>
         {client && (
-          <Chip color={FUSION_COLORS.infra} className="shrink-0">
+          <Chip color={getClientColor(client)} className="shrink-0">
             {client}
           </Chip>
         )}
@@ -214,6 +249,39 @@ export function QueueRow({ title, client, progress = 0, status, detail, barColor
         <span className="truncate">{status}</span>
         {detail && <span className="shrink-0">{detail}</span>}
       </div>
+    </div>
+  );
+}
+
+// Prev/page/next footer for a paginated QueueRow list — keeps a long queue
+// from turning the expanded tile into an unbounded scroll of rows. Renders
+// nothing for a single page, so callers can include it unconditionally.
+export function QueuePager({ page, pageCount, onPrev, onNext }) {
+  if (pageCount <= 1) return null;
+  return (
+    <div
+      className="flex items-center justify-center gap-3 py-1.5 border-t border-theme-300/10 dark:border-theme-700/30 text-[9.5px] text-theme-400/70 dark:text-theme-500/60"
+      style={{ fontFamily: FUSION_MONO }}
+    >
+      <button
+        type="button"
+        onClick={onPrev}
+        disabled={page === 0}
+        className="px-1.5 disabled:opacity-30 disabled:cursor-not-allowed hover:text-theme-300 dark:hover:text-theme-300 transition-colors"
+      >
+        ‹
+      </button>
+      <span className="tabular-nums">
+        {page + 1} / {pageCount}
+      </span>
+      <button
+        type="button"
+        onClick={onNext}
+        disabled={page === pageCount - 1}
+        className="px-1.5 disabled:opacity-30 disabled:cursor-not-allowed hover:text-theme-300 dark:hover:text-theme-300 transition-colors"
+      >
+        ›
+      </button>
     </div>
   );
 }
