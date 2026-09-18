@@ -1,6 +1,6 @@
 import { useTranslation } from "next-i18next/pages";
 
-import { StatTile, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
+import { StatTile, FUSION_COLORS, useLastUpdatedLabel } from "../../components/widgets/fusion/primitives";
 
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
@@ -10,6 +10,7 @@ export default function Component({ service }) {
   const { widget } = service;
 
   const { data, error } = useWidgetAPI(widget, "overview");
+  const updatedAgo = useLastUpdatedLabel(data);
 
   if (error) {
     return <Container service={service} error={error} />;
@@ -41,6 +42,7 @@ export default function Component({ service }) {
             ? `${t("common.number", { value: errors })} errors · ${t("common.number", { value: warnings })} warnings`
             : undefined
         }
+        updatedAgo={updatedAgo}
       />
     </Container>
   );

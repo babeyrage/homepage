@@ -63,4 +63,34 @@ describe("widgets/rommfusion/component", () => {
 
     expect(screen.getByText("nope")).toBeInTheDocument();
   });
+
+  it("defaults to an ok LED with no configured threshold", () => {
+    useWidgetAPI.mockReturnValue({
+      data: { PLATFORMS: 1, ROMS: 2, SAVES: 3, STATES: 4, FILESIZE: 5 },
+      error: undefined,
+    });
+
+    const { container } = renderWithProviders(<Component service={{ widget: { type: "rommfusion" } }} />, {
+      settings: { hideErrors: false },
+    });
+
+    expect(container.querySelector("span")).toHaveStyle({ backgroundColor: "#34d399" });
+  });
+
+  it("lets a service.widget.highlight config override the default ok LED color", () => {
+    useWidgetAPI.mockReturnValue({
+      data: { PLATFORMS: 1, ROMS: 2, SAVES: 3, STATES: 4, FILESIZE: 5 },
+      error: undefined,
+    });
+
+    const service = {
+      widget: {
+        type: "rommfusion",
+        highlight: { roms: { numeric: { when: "gt", value: 1, level: "warn" } } },
+      },
+    };
+    const { container } = renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
+
+    expect(container.querySelector("span")).toHaveStyle({ backgroundColor: "#f5a524" });
+  });
 });

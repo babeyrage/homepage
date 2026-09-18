@@ -1,6 +1,6 @@
 import { useTranslation } from "next-i18next/pages";
 
-import { StatTile, Chip, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
+import { StatTile, Chip, FUSION_COLORS, useLastUpdatedLabel } from "../../components/widgets/fusion/primitives";
 
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
@@ -10,6 +10,7 @@ export default function Component({ service }) {
   const { widget } = service;
 
   const { data, error } = useWidgetAPI(widget, "datastores");
+  const updatedAgo = useLastUpdatedLabel(data);
 
   if (error) {
     return <Container service={service} error={error} />;
@@ -62,6 +63,7 @@ export default function Component({ service }) {
         tertiaryBadge={
           !notFound && datastore.immutable_backup?.enabled ? <Chip color={FUSION_COLORS.ok}>immutable</Chip> : undefined
         }
+        updatedAgo={updatedAgo}
       />
     </Container>
   );

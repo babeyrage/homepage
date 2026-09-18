@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "next-i18next/pages";
 
-import { StatTile, QueueRow, QueuePager, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
+import {
+  StatTile,
+  QueueRow,
+  QueuePager,
+  FUSION_COLORS,
+  useLastUpdatedLabel,
+} from "../../components/widgets/fusion/primitives";
 
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
@@ -48,6 +54,7 @@ export default function Component({ service }) {
   const { data: activityData, error: activityError } = useWidgetAPI(widget, "streams", {
     refreshInterval: 5000,
   });
+  const updatedAgo = useLastUpdatedLabel(activityData);
 
   if (activityError) {
     return <Container service={service} error={activityError} />;
@@ -87,6 +94,7 @@ export default function Component({ service }) {
             setExpanded((value) => !value);
             setPage(0);
           }}
+          updatedAgo={updatedAgo}
         />
       </Container>
       {hasSessions &&

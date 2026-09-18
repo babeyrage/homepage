@@ -1,6 +1,6 @@
 import { useTranslation } from "next-i18next/pages";
 
-import { StatTile, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
+import { StatTile, FUSION_COLORS, useLastUpdatedLabel } from "../../components/widgets/fusion/primitives";
 
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
@@ -20,6 +20,7 @@ export default function Component({ service }) {
   const { widget } = service;
 
   const { data: queueData, error: queueError } = useWidgetAPI(widget, "queue");
+  const updatedAgo = useLastUpdatedLabel(queueData);
 
   if (queueError) {
     return <Container service={service} error={queueError} />;
@@ -44,6 +45,7 @@ export default function Component({ service }) {
         primaryLabel="queue"
         secondary={`↓ ${t("common.byterate", { value: fromUnits(queue.speed) })}`}
         tertiary={queue.noofslots > 0 ? queue.timeleft : undefined}
+        updatedAgo={updatedAgo}
       />
     </Container>
   );

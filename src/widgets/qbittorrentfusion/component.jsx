@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "next-i18next/pages";
 
-import { StatTile, QueueRow, QueuePager, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
+import {
+  StatTile,
+  QueueRow,
+  QueuePager,
+  FUSION_COLORS,
+  useLastUpdatedLabel,
+} from "../../components/widgets/fusion/primitives";
 
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
@@ -48,6 +54,7 @@ export default function Component({ service }) {
   const [page, setPage] = useState(0);
 
   const { data: torrentData, error: torrentError } = useWidgetAPI(widget, "torrents");
+  const updatedAgo = useLastUpdatedLabel(torrentData);
 
   if (torrentError) {
     return <Container service={service} error={torrentError} />;
@@ -110,6 +117,7 @@ export default function Component({ service }) {
             setExpanded((value) => !value);
             setPage(0);
           }}
+          updatedAgo={updatedAgo}
         />
       </Container>
       {hasLeech &&

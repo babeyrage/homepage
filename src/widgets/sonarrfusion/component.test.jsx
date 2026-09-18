@@ -26,28 +26,38 @@ describe("widgets/sonarrfusion/component", () => {
   });
 
   it("renders a consolidated stat tile with the queue collapsed by default", () => {
+    const wantedResult = { data: { totalRecords: 12 }, error: undefined };
+    const queueResult = { data: { totalRecords: 2 }, error: undefined };
+    const seriesResult = {
+      data: [
+        { id: 1, title: "Show A" },
+        { id: 2, title: "Show B" },
+      ],
+      error: undefined,
+    };
+    const queueDetailsResult = {
+      data: [
+        {
+          seriesId: 1,
+          episodeId: 10,
+          episodeTitle: "Pilot",
+          sizeLeft: 0,
+          size: 0,
+          status: "downloading",
+          trackedDownloadState: "downloading",
+          downloadClient: "qBittorrent",
+        },
+      ],
+      error: undefined,
+    };
+    const emptyResult = { data: undefined, error: undefined };
+
     useWidgetAPI.mockImplementation((_widget, endpoint) => {
-      if (endpoint === "wanted/missing") return { data: { totalRecords: 12 }, error: undefined };
-      if (endpoint === "queue") return { data: { totalRecords: 2 }, error: undefined };
-      if (endpoint === "series")
-        return { data: [{ id: 1, title: "Show A" }, { id: 2, title: "Show B" }], error: undefined };
-      if (endpoint === "queue/details")
-        return {
-          data: [
-            {
-              seriesId: 1,
-              episodeId: 10,
-              episodeTitle: "Pilot",
-              sizeLeft: 0,
-              size: 0,
-              status: "downloading",
-              trackedDownloadState: "downloading",
-              downloadClient: "qBittorrent",
-            },
-          ],
-          error: undefined,
-        };
-      return { data: undefined, error: undefined };
+      if (endpoint === "wanted/missing") return wantedResult;
+      if (endpoint === "queue") return queueResult;
+      if (endpoint === "series") return seriesResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      return emptyResult;
     });
 
     const service = { widget: { type: "sonarrfusion" } };
@@ -61,28 +71,33 @@ describe("widgets/sonarrfusion/component", () => {
   });
 
   it("expands to reveal queue rows with download client and speed on click", () => {
+    const wantedResult = { data: { totalRecords: 12 }, error: undefined };
+    const queueResult = { data: { totalRecords: 1 }, error: undefined };
+    const seriesResult = { data: [{ id: 1, title: "Show A" }], error: undefined };
+    const queueDetailsResult = {
+      data: [
+        {
+          seriesId: 1,
+          episodeId: 10,
+          episodeTitle: "Pilot",
+          sizeLeft: 1000,
+          size: 2000,
+          status: "downloading",
+          trackedDownloadState: "downloading",
+          downloadClient: "qBittorrent",
+          timeLeft: "00:00:10",
+        },
+      ],
+      error: undefined,
+    };
+    const emptyResult = { data: undefined, error: undefined };
+
     useWidgetAPI.mockImplementation((_widget, endpoint) => {
-      if (endpoint === "wanted/missing") return { data: { totalRecords: 12 }, error: undefined };
-      if (endpoint === "queue") return { data: { totalRecords: 1 }, error: undefined };
-      if (endpoint === "series") return { data: [{ id: 1, title: "Show A" }], error: undefined };
-      if (endpoint === "queue/details")
-        return {
-          data: [
-            {
-              seriesId: 1,
-              episodeId: 10,
-              episodeTitle: "Pilot",
-              sizeLeft: 1000,
-              size: 2000,
-              status: "downloading",
-              trackedDownloadState: "downloading",
-              downloadClient: "qBittorrent",
-              timeLeft: "00:00:10",
-            },
-          ],
-          error: undefined,
-        };
-      return { data: undefined, error: undefined };
+      if (endpoint === "wanted/missing") return wantedResult;
+      if (endpoint === "queue") return queueResult;
+      if (endpoint === "series") return seriesResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      return emptyResult;
     });
 
     const service = { widget: { type: "sonarrfusion" } };
@@ -96,27 +111,32 @@ describe("widgets/sonarrfusion/component", () => {
   });
 
   it("shows a failed badge when a queue entry has failed", () => {
+    const wantedResult = { data: { totalRecords: 3 }, error: undefined };
+    const queueResult = { data: { totalRecords: 1 }, error: undefined };
+    const seriesResult = { data: [], error: undefined };
+    const queueDetailsResult = {
+      data: [
+        {
+          seriesId: 5,
+          episodeId: 50,
+          episodeTitle: "Bad Episode",
+          sizeLeft: 50,
+          size: 100,
+          status: "failed",
+          trackedDownloadState: "failedPending",
+          downloadClient: "SABnzbd",
+        },
+      ],
+      error: undefined,
+    };
+    const emptyResult = { data: undefined, error: undefined };
+
     useWidgetAPI.mockImplementation((_widget, endpoint) => {
-      if (endpoint === "wanted/missing") return { data: { totalRecords: 3 }, error: undefined };
-      if (endpoint === "queue") return { data: { totalRecords: 1 }, error: undefined };
-      if (endpoint === "series") return { data: [], error: undefined };
-      if (endpoint === "queue/details")
-        return {
-          data: [
-            {
-              seriesId: 5,
-              episodeId: 50,
-              episodeTitle: "Bad Episode",
-              sizeLeft: 50,
-              size: 100,
-              status: "failed",
-              trackedDownloadState: "failedPending",
-              downloadClient: "SABnzbd",
-            },
-          ],
-          error: undefined,
-        };
-      return { data: undefined, error: undefined };
+      if (endpoint === "wanted/missing") return wantedResult;
+      if (endpoint === "queue") return queueResult;
+      if (endpoint === "series") return seriesResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      return emptyResult;
     });
 
     const service = { widget: { type: "sonarrfusion" } };

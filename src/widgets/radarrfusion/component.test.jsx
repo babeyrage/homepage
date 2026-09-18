@@ -26,44 +26,52 @@ describe("widgets/radarrfusion/component", () => {
   });
 
   it("renders a consolidated stat tile with the queue collapsed by default", () => {
+    // Built once and reused by reference across every mock call within this
+    // test, matching real SWR's guarantee of a stable `data` reference
+    // between renders when the underlying cache entry hasn't changed —
+    // useLastUpdatedLabel relies on that same guarantee to detect an actual
+    // data change rather than re-triggering on every render.
+    const movieResult = {
+      data: {
+        wanted: 1,
+        missing: 2,
+        have: 3,
+        all: [
+          { id: 10, title: "Queued Movie" },
+          { id: 11, title: "Imported Movie" },
+        ],
+      },
+      error: undefined,
+    };
+    const queueStatusResult = { data: { totalCount: 1 }, error: undefined };
+    const queueDetailsResult = {
+      data: [
+        {
+          movieId: 10,
+          sizeLeft: 0,
+          size: 0,
+          status: "queued",
+          trackedDownloadState: "downloading",
+          downloadClient: "qBittorrent",
+        },
+        {
+          movieId: 11,
+          sizeLeft: 0,
+          size: 100,
+          status: "completed",
+          trackedDownloadState: "importPending",
+          downloadClient: "SABnzbd",
+        },
+      ],
+      error: undefined,
+    };
+    const emptyResult = { data: undefined, error: undefined };
+
     useWidgetAPI.mockImplementation((_widget, endpoint) => {
-      if (endpoint === "movie")
-        return {
-          data: {
-            wanted: 1,
-            missing: 2,
-            have: 3,
-            all: [
-              { id: 10, title: "Queued Movie" },
-              { id: 11, title: "Imported Movie" },
-            ],
-          },
-          error: undefined,
-        };
-      if (endpoint === "queue/status") return { data: { totalCount: 1 }, error: undefined };
-      if (endpoint === "queue/details")
-        return {
-          data: [
-            {
-              movieId: 10,
-              sizeLeft: 0,
-              size: 0,
-              status: "queued",
-              trackedDownloadState: "downloading",
-              downloadClient: "qBittorrent",
-            },
-            {
-              movieId: 11,
-              sizeLeft: 0,
-              size: 100,
-              status: "completed",
-              trackedDownloadState: "importPending",
-              downloadClient: "SABnzbd",
-            },
-          ],
-          error: undefined,
-        };
-      return { data: undefined, error: undefined };
+      if (endpoint === "movie") return movieResult;
+      if (endpoint === "queue/status") return queueStatusResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      return emptyResult;
     });
 
     const service = { widget: { type: "radarrfusion" } };
@@ -80,29 +88,32 @@ describe("widgets/radarrfusion/component", () => {
   });
 
   it("expands to reveal queue rows with download client and speed on click", () => {
+    const movieResult = {
+      data: { wanted: 1, missing: 2, have: 3, all: [{ id: 10, title: "Queued Movie" }] },
+      error: undefined,
+    };
+    const queueStatusResult = { data: { totalCount: 1 }, error: undefined };
+    const queueDetailsResult = {
+      data: [
+        {
+          movieId: 10,
+          sizeLeft: 1000,
+          size: 2000,
+          status: "downloading",
+          trackedDownloadState: "downloading",
+          downloadClient: "qBittorrent",
+          timeLeft: "00:00:10",
+        },
+      ],
+      error: undefined,
+    };
+    const emptyResult = { data: undefined, error: undefined };
+
     useWidgetAPI.mockImplementation((_widget, endpoint) => {
-      if (endpoint === "movie")
-        return {
-          data: { wanted: 1, missing: 2, have: 3, all: [{ id: 10, title: "Queued Movie" }] },
-          error: undefined,
-        };
-      if (endpoint === "queue/status") return { data: { totalCount: 1 }, error: undefined };
-      if (endpoint === "queue/details")
-        return {
-          data: [
-            {
-              movieId: 10,
-              sizeLeft: 1000,
-              size: 2000,
-              status: "downloading",
-              trackedDownloadState: "downloading",
-              downloadClient: "qBittorrent",
-              timeLeft: "00:00:10",
-            },
-          ],
-          error: undefined,
-        };
-      return { data: undefined, error: undefined };
+      if (endpoint === "movie") return movieResult;
+      if (endpoint === "queue/status") return queueStatusResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      return emptyResult;
     });
 
     const service = { widget: { type: "radarrfusion" } };
@@ -139,12 +150,16 @@ describe("widgets/radarrfusion/component", () => {
       downloadClient: "SABnzbd",
     }));
     const movies = queueDetails.map((entry) => ({ id: entry.movieId, title: `Movie ${entry.movieId}` }));
+    const movieResult = { data: { wanted: 0, missing: 0, have: 0, all: movies }, error: undefined };
+    const queueStatusResult = { data: { totalCount: 7 }, error: undefined };
+    const queueDetailsResult = { data: queueDetails, error: undefined };
+    const emptyResult = { data: undefined, error: undefined };
 
     useWidgetAPI.mockImplementation((_widget, endpoint) => {
-      if (endpoint === "movie") return { data: { wanted: 0, missing: 0, have: 0, all: movies }, error: undefined };
-      if (endpoint === "queue/status") return { data: { totalCount: 7 }, error: undefined };
-      if (endpoint === "queue/details") return { data: queueDetails, error: undefined };
-      return { data: undefined, error: undefined };
+      if (endpoint === "movie") return movieResult;
+      if (endpoint === "queue/status") return queueStatusResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      return emptyResult;
     });
 
     const service = { widget: { type: "radarrfusion" } };
@@ -167,30 +182,33 @@ describe("widgets/radarrfusion/component", () => {
   });
 
   it("gives different download clients visually distinct chip colors", () => {
+    const movieResult = {
+      data: {
+        wanted: 0,
+        missing: 0,
+        have: 0,
+        all: [
+          { id: 1, title: "Torrent Movie" },
+          { id: 2, title: "Usenet Movie" },
+        ],
+      },
+      error: undefined,
+    };
+    const queueStatusResult = { data: { totalCount: 2 }, error: undefined };
+    const queueDetailsResult = {
+      data: [
+        { movieId: 1, sizeLeft: 0, size: 0, status: "paused", trackedDownloadState: "queued", downloadClient: "qBittorrent" },
+        { movieId: 2, sizeLeft: 0, size: 0, status: "paused", trackedDownloadState: "queued", downloadClient: "SABnzbd" },
+      ],
+      error: undefined,
+    };
+    const emptyResult = { data: undefined, error: undefined };
+
     useWidgetAPI.mockImplementation((_widget, endpoint) => {
-      if (endpoint === "movie")
-        return {
-          data: {
-            wanted: 0,
-            missing: 0,
-            have: 0,
-            all: [
-              { id: 1, title: "Torrent Movie" },
-              { id: 2, title: "Usenet Movie" },
-            ],
-          },
-          error: undefined,
-        };
-      if (endpoint === "queue/status") return { data: { totalCount: 2 }, error: undefined };
-      if (endpoint === "queue/details")
-        return {
-          data: [
-            { movieId: 1, sizeLeft: 0, size: 0, status: "paused", trackedDownloadState: "queued", downloadClient: "qBittorrent" },
-            { movieId: 2, sizeLeft: 0, size: 0, status: "paused", trackedDownloadState: "queued", downloadClient: "SABnzbd" },
-          ],
-          error: undefined,
-        };
-      return { data: undefined, error: undefined };
+      if (endpoint === "movie") return movieResult;
+      if (endpoint === "queue/status") return queueStatusResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      return emptyResult;
     });
 
     const service = { widget: { type: "radarrfusion" } };
@@ -206,24 +224,28 @@ describe("widgets/radarrfusion/component", () => {
   });
 
   it("shows a failed badge when a queue entry has failed", () => {
+    const movieResult = { data: { wanted: 0, missing: 1, have: 5, all: [] }, error: undefined };
+    const queueStatusResult = { data: { totalCount: 1 }, error: undefined };
+    const queueDetailsResult = {
+      data: [
+        {
+          movieId: 20,
+          sizeLeft: 50,
+          size: 100,
+          status: "failed",
+          trackedDownloadState: "failedPending",
+          downloadClient: "SABnzbd",
+        },
+      ],
+      error: undefined,
+    };
+    const emptyResult = { data: undefined, error: undefined };
+
     useWidgetAPI.mockImplementation((_widget, endpoint) => {
-      if (endpoint === "movie") return { data: { wanted: 0, missing: 1, have: 5, all: [] }, error: undefined };
-      if (endpoint === "queue/status") return { data: { totalCount: 1 }, error: undefined };
-      if (endpoint === "queue/details")
-        return {
-          data: [
-            {
-              movieId: 20,
-              sizeLeft: 50,
-              size: 100,
-              status: "failed",
-              trackedDownloadState: "failedPending",
-              downloadClient: "SABnzbd",
-            },
-          ],
-          error: undefined,
-        };
-      return { data: undefined, error: undefined };
+      if (endpoint === "movie") return movieResult;
+      if (endpoint === "queue/status") return queueStatusResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      return emptyResult;
     });
 
     const service = { widget: { type: "radarrfusion" } };

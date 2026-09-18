@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { useTranslation } from "next-i18next/pages";
 
-import { StatTile, QueueRow, QueuePager, Chip, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
+import {
+  StatTile,
+  QueueRow,
+  QueuePager,
+  Chip,
+  FUSION_COLORS,
+  useLastUpdatedLabel,
+} from "../../components/widgets/fusion/primitives";
 
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
@@ -74,6 +81,7 @@ export default function Component({ service }) {
   const { data: queuedData, error: queuedError } = useWidgetAPI(widget, "queue");
   const { data: seriesData, error: seriesError } = useWidgetAPI(widget, "series");
   const { data: queueDetailsData, error: queueDetailsError } = useWidgetAPI(widget, "queue/details");
+  const updatedAgo = useLastUpdatedLabel(wantedData);
 
   if (wantedError || queuedError || seriesError || queueDetailsError) {
     const finalError = wantedError ?? queuedError ?? seriesError ?? queueDetailsError;
@@ -117,6 +125,7 @@ export default function Component({ service }) {
             setExpanded((value) => !value);
             setPage(0);
           }}
+          updatedAgo={updatedAgo}
         />
       </Container>
       {hasQueue &&

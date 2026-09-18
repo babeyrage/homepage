@@ -11,6 +11,12 @@
 // inline style, since Tailwind's JIT can't resolve arbitrary runtime hex
 // values from className alone.
 
+import { useContext, useState } from "react";
+
+import { BlockHighlightContext } from "components/services/widget/highlight-context";
+import { evaluateHighlight } from "utils/highlights";
+import useCurrentTime from "utils/hooks/use-current-time";
+
 export const FUSION_COLORS = {
   ok: "#34d399",
   warn: "#f5a524",
@@ -29,6 +35,83 @@ export const FUSION_COLORS = {
 // Matches the IBM Plex Mono stack custom.css already loads for
 // stat/label text across the rest of the Fusion redesign.
 export const FUSION_MONO = '"IBM Plex Mono", ui-monospace, "SF Mono", "Cascadia Code", "Fira Code", monospace';
+
+const HIGHLIGHT_LEVEL_COLORS = {
+  good: FUSION_COLORS.ok,
+  warn: FUSION_COLORS.warn,
+  danger: FUSION_COLORS.bad,
+};
+
+// Reuses the same declarative `widget.highlight` YAML (services.yaml) that
+// stock Block components read via BlockHighlightContext (see
+// components/services/widget/block.jsx), so a fusion tile's LED threshold
+// is configurable the same way instead of inventing a second config
+// surface. `fieldKey` is checked against both its bare form and
+// `<widgetType>.<fieldKey>` (utils/highlights.js normalizes both), so a
+// plain name like "ping" or "outdated" works directly. Returns `fallback`
+// when nothing is configured for this field — callers still compute their
+// own sane built-in default and pass it as `fallback`.
+export function useHighlightColor(fieldKey, value, fallback = null) {
+  const highlightConfig = useContext(BlockHighlightContext);
+  const result = evaluateHighlight(fieldKey, value, highlightConfig);
+  return result?.level ? (HIGHLIGHT_LEVEL_COLORS[result.level] ?? fallback) : fallback;
+}
+
+// A fusion widget's top-level `Component` function runs *before* Container
+// mounts — Container is returned as JSX from Component, not an ancestor of
+// it, so a hook reading BlockHighlightContext directly in Component's own
+// body always sees the default (null) context and never observes the
+// per-service config Container builds from service.widget.highlight.
+// Render this as one of Container's children instead: `children` receives a
+// `getColor(fieldKey, value, fallback)` callback resolved against the real
+// context at that point in the tree, which a single wrapper can service for
+// any number of fields (see patchmonfusion for a multi-field example).
+export function HighlightColors({ children }) {
+  const highlightConfig = useContext(BlockHighlightContext);
+  const getColor = (fieldKey, value, fallback = null) => {
+    const result = evaluateHighlight(fieldKey, value, highlightConfig);
+    return result?.level ? (HIGHLIGHT_LEVEL_COLORS[result.level] ?? fallback) : fallback;
+  };
+  return children(getColor);
+}
+
+const AGE_TICK_MS = 10000;
+
+function formatAge(seconds) {
+  if (seconds < 10) return "just now";
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.round(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.round(minutes / 60);
+  return `${hours}h ago`;
+}
+
+// Tracks how long it's been since `data` last changed (a new SWR payload
+// arrived) and formats it as a compact "12s ago" / "4m ago" / "2h ago"
+// label, so a card can show it's not silently displaying a stale number.
+// Built on the same useCurrentTime external-store clock the rest of the app
+// uses for ticking values, rather than calling Date.now() during render
+// (react-hooks/purity forbids that) or setting state from inside a
+// useEffect body (react-hooks/set-state-in-effect flags that as a
+// cascading-render anti-pattern) — capturing `now` when `data` changes is
+// React's documented "adjust state during render" pattern instead, guarded
+// so it only fires once per actual data change. Capture is deferred until
+// the clock has ticked at least once (`now != null`) so it isn't stuck at
+// null if data arrives before mount. Returns undefined until data has
+// arrived at least once.
+export function useLastUpdatedLabel(data) {
+  const now = useCurrentTime(AGE_TICK_MS);
+  const [updatedAt, setUpdatedAt] = useState(null);
+  const [prevData, setPrevData] = useState(data);
+
+  if (data !== prevData && now != null) {
+    setPrevData(data);
+    setUpdatedAt(data !== undefined ? now : null);
+  }
+
+  if (updatedAt == null || now == null) return undefined;
+  return formatAge(Math.max(0, Math.round((now - updatedAt) / 1000)));
+}
 
 export function Led({ color = FUSION_COLORS.ok, glow = false, className = "" }) {
   return (
@@ -122,6 +205,7 @@ export function StatTile({
   tertiary,
   tertiaryBadge,
   ledColor = FUSION_COLORS.ok,
+  updatedAgo,
   error,
   expandable = false,
   expanded = false,
@@ -167,12 +251,22 @@ export function StatTile({
           </span>
         )}
       </div>
-      <span
-        className="text-[10px] leading-snug text-theme-500 dark:text-theme-400"
-        style={{ fontFamily: FUSION_MONO }}
-      >
-        {error ? "API error" : secondary}
-      </span>
+      <div className="flex items-center justify-between gap-2">
+        <span
+          className="text-[10px] leading-snug text-theme-500 dark:text-theme-400 truncate"
+          style={{ fontFamily: FUSION_MONO }}
+        >
+          {error ? "API error" : secondary}
+        </span>
+        {!error && updatedAgo && (
+          <span
+            className="text-[9px] leading-snug text-theme-400/50 dark:text-theme-500/40 shrink-0"
+            style={{ fontFamily: FUSION_MONO }}
+          >
+            {updatedAgo}
+          </span>
+        )}
+      </div>
       {(tertiary || error) &&
         (canExpand ? (
           <button

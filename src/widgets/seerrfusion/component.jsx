@@ -1,6 +1,6 @@
 import { useTranslation } from "next-i18next/pages";
 
-import { StatTile, Chip, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
+import { StatTile, Chip, FUSION_COLORS, useLastUpdatedLabel } from "../../components/widgets/fusion/primitives";
 
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
@@ -21,6 +21,7 @@ export default function Component({ service }) {
 
   const { data: statsData, error: statsError } = useWidgetAPI(widget, "request/count");
   const { data: issueData, error: issueError } = useWidgetAPI(widget, isIssueEnabled ? "issue/count" : "");
+  const updatedAgo = useLastUpdatedLabel(statsData);
 
   if (statsError || (isIssueEnabled && issueError)) {
     return <Container service={containerService} error={statsError ?? issueError} />;
@@ -57,6 +58,7 @@ export default function Component({ service }) {
             : undefined
         }
         tertiaryBadge={isIssueEnabled && openIssues > 0 && <Chip color={FUSION_COLORS.bad}>open</Chip>}
+        updatedAgo={updatedAgo}
       />
     </Container>
   );

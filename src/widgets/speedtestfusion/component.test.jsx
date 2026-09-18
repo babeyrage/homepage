@@ -50,4 +50,48 @@ describe("widgets/speedtestfusion/component", () => {
 
     expect(screen.getByText("nope")).toBeInTheDocument();
   });
+
+  it("shows a bad LED when ping is above 150ms", () => {
+    useWidgetAPI.mockReturnValue({ data: { data: { download: 10, upload: 20, ping: 200 } }, error: undefined });
+
+    const { container } = renderWithProviders(<Component service={{ widget: { type: "speedtestfusion" } }} />, {
+      settings: { hideErrors: false },
+    });
+
+    expect(container.querySelector("span")).toHaveStyle({ backgroundColor: "#fb7185" });
+  });
+
+  it("shows a warn LED when ping is between 50ms and 150ms", () => {
+    useWidgetAPI.mockReturnValue({ data: { data: { download: 10, upload: 20, ping: 80 } }, error: undefined });
+
+    const { container } = renderWithProviders(<Component service={{ widget: { type: "speedtestfusion" } }} />, {
+      settings: { hideErrors: false },
+    });
+
+    expect(container.querySelector("span")).toHaveStyle({ backgroundColor: "#f5a524" });
+  });
+
+  it("shows an ok LED when ping is 50ms or under", () => {
+    useWidgetAPI.mockReturnValue({ data: { data: { download: 10, upload: 20, ping: 20 } }, error: undefined });
+
+    const { container } = renderWithProviders(<Component service={{ widget: { type: "speedtestfusion" } }} />, {
+      settings: { hideErrors: false },
+    });
+
+    expect(container.querySelector("span")).toHaveStyle({ backgroundColor: "#34d399" });
+  });
+
+  it("lets a service.widget.highlight config override the built-in ping LED color", () => {
+    useWidgetAPI.mockReturnValue({ data: { data: { download: 10, upload: 20, ping: 20 } }, error: undefined });
+
+    const service = {
+      widget: {
+        type: "speedtestfusion",
+        highlight: { ping: { numeric: { when: "gte", value: 10, level: "danger" } } },
+      },
+    };
+    const { container } = renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
+
+    expect(container.querySelector("span")).toHaveStyle({ backgroundColor: "#fb7185" });
+  });
 });

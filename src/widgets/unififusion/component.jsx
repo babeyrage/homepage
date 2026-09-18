@@ -1,6 +1,6 @@
 import { useTranslation } from "next-i18next/pages";
 
-import { StatTile, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
+import { StatTile, FUSION_COLORS, useLastUpdatedLabel } from "../../components/widgets/fusion/primitives";
 
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
@@ -10,6 +10,7 @@ export default function Component({ service }) {
   const { widget } = service;
 
   const { data, error } = useWidgetAPI(widget, "stat/sites");
+  const updatedAgo = useLastUpdatedLabel(data);
 
   if (error) {
     return <Container service={service} error={error} />;
@@ -48,7 +49,7 @@ export default function Component({ service }) {
   if (!(wan?.show || lan?.show || wlan?.show || uptime)) {
     return (
       <Container service={service}>
-        <StatTile ledColor={FUSION_COLORS.warn} primary="—" secondary={t("unifi.empty_data")} />
+        <StatTile ledColor={FUSION_COLORS.warn} primary="—" secondary={t("unifi.empty_data")} updatedAgo={updatedAgo} />
       </Container>
     );
   }
@@ -75,6 +76,7 @@ export default function Component({ service }) {
         primaryLabel="clients"
         secondary={uptime ?? undefined}
         tertiary={statusParts.length > 0 ? statusParts.join(" · ") : undefined}
+        updatedAgo={updatedAgo}
       />
     </Container>
   );

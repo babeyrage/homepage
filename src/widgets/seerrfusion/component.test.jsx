@@ -15,10 +15,24 @@ describe("widgets/seerrfusion/component", () => {
     vi.clearAllMocks();
   });
 
+  // Results are built once and returned by reference on every mock call
+  // (keyed by endpoint) rather than via a fixed-length mockReturnValueOnce
+  // queue, matching real SWR's stable-`data`-reference guarantee and not
+  // assuming an exact render count — useLastUpdatedLabel's useCurrentTime
+  // dependency legitimately triggers one extra render pass on mount (React
+  // re-renders once more when useSyncExternalStore's snapshot changes
+  // between render and the commit-phase subscribe call), so a queue sized
+  // for exactly one render's worth of calls is the wrong assumption here.
+  function mockEndpoints(statsResult, issueResult) {
+    useWidgetAPI.mockImplementation((_widget, endpoint) => {
+      if (endpoint === "request/count") return statsResult;
+      if (endpoint === "issue/count") return issueResult;
+      return { data: undefined, error: undefined }; // issue/count disabled (endpoint = "")
+    });
+  }
+
   it("renders a skeleton tile while loading", () => {
-    useWidgetAPI
-      .mockReturnValueOnce({ data: undefined, error: undefined }) // request/count
-      .mockReturnValueOnce({ data: undefined, error: undefined }); // issue/count disabled
+    mockEndpoints({ data: undefined, error: undefined }, { data: undefined, error: undefined });
 
     const { container } = renderWithProviders(
       <Component service={{ widget: { type: "seerrfusion", url: "http://x" } }} />,
@@ -29,9 +43,7 @@ describe("widgets/seerrfusion/component", () => {
   });
 
   it("renders a consolidated stat tile with default fields (no issues)", () => {
-    useWidgetAPI
-      .mockReturnValueOnce({ data: { pending: 3, approved: 5, completed: 40 }, error: undefined })
-      .mockReturnValueOnce({ data: undefined, error: undefined }); // issue/count disabled (endpoint = "")
+    mockEndpoints({ data: { pending: 3, approved: 5, completed: 40 }, error: undefined }, { data: undefined, error: undefined });
 
     const service = { widget: { type: "seerrfusion", url: "http://x" } };
     renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
@@ -43,9 +55,7 @@ describe("widgets/seerrfusion/component", () => {
   });
 
   it("falls back from completed to available on older Seerr responses", () => {
-    useWidgetAPI
-      .mockReturnValueOnce({ data: { pending: 1, approved: 2, available: 9 }, error: undefined })
-      .mockReturnValueOnce({ data: undefined, error: undefined });
+    mockEndpoints({ data: { pending: 1, approved: 2, available: 9 }, error: undefined }, { data: undefined, error: undefined });
 
     const service = { widget: { type: "seerrfusion", url: "http://x", fields: ["pending", "approved", "completed"] } };
     renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
@@ -54,9 +64,7 @@ describe("widgets/seerrfusion/component", () => {
   });
 
   it("shows open/total issues and a badge when issues are enabled and open > 0", () => {
-    useWidgetAPI
-      .mockReturnValueOnce({ data: { pending: 0, approved: 2, completed: 4 }, error: undefined })
-      .mockReturnValueOnce({ data: { open: 1, total: 2 }, error: undefined });
+    mockEndpoints({ data: { pending: 0, approved: 2, completed: 4 }, error: undefined }, { data: { open: 1, total: 2 }, error: undefined });
 
     const service = {
       widget: { type: "seerrfusion", url: "http://x", fields: ["pending", "approved", "completed", "issues"] },
@@ -69,9 +77,10 @@ describe("widgets/seerrfusion/component", () => {
   });
 
   it("renders error UI when issues are enabled and issue/count errors", () => {
-    useWidgetAPI
-      .mockReturnValueOnce({ data: { pending: 0, approved: 0, available: 0 }, error: undefined })
-      .mockReturnValueOnce({ data: undefined, error: { message: "nope" } });
+    mockEndpoints(
+      { data: { pending: 0, approved: 0, available: 0 }, error: undefined },
+      { data: undefined, error: { message: "nope" } },
+    );
 
     renderWithProviders(
       <Component service={{ widget: { type: "seerrfusion", url: "http://x", fields: ["issues"] } }} />,

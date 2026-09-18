@@ -77,4 +77,47 @@ describe("widgets/patchmonfusion/component", () => {
 
     expect(screen.getByText("nope")).toBeInTheDocument();
   });
+
+  it("shows an ok LED when nothing is outdated, rebooting or insecure", () => {
+    useWidgetAPI.mockReturnValue({
+      data: { total: 1, hosts: [{ updates_count: 0, needs_reboot: false, security_updates_count: 0 }] },
+      error: undefined,
+    });
+
+    const { container } = renderWithProviders(<Component service={{ widget: { type: "patchmonfusion" } }} />, {
+      settings: { hideErrors: false },
+    });
+
+    expect(container.querySelector("span")).toHaveStyle({ backgroundColor: "#34d399" });
+  });
+
+  it("shows a bad LED when hosts have pending security updates", () => {
+    useWidgetAPI.mockReturnValue({
+      data: { total: 1, hosts: [{ updates_count: 1, needs_reboot: false, security_updates_count: 1 }] },
+      error: undefined,
+    });
+
+    const { container } = renderWithProviders(<Component service={{ widget: { type: "patchmonfusion" } }} />, {
+      settings: { hideErrors: false },
+    });
+
+    expect(container.querySelector("span")).toHaveStyle({ backgroundColor: "#fb7185" });
+  });
+
+  it("lets a service.widget.highlight config override the built-in outdated LED color", () => {
+    useWidgetAPI.mockReturnValue({
+      data: { total: 1, hosts: [{ updates_count: 0, needs_reboot: false, security_updates_count: 0 }] },
+      error: undefined,
+    });
+
+    const service = {
+      widget: {
+        type: "patchmonfusion",
+        highlight: { outdated: { numeric: { when: "gte", value: 0, level: "danger" } } },
+      },
+    };
+    const { container } = renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
+
+    expect(container.querySelector("span")).toHaveStyle({ backgroundColor: "#fb7185" });
+  });
 });
