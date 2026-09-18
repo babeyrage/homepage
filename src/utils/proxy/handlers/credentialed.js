@@ -135,7 +135,7 @@ export default async function credentialedProxyHandler(req, res, map) {
         headers.Authorization = widget.key;
       } else if (widget.type === "gitlab") {
         headers["PRIVATE-TOKEN"] = widget.key;
-      } else if (widget.type === "speedtest") {
+      } else if (["speedtest", "speedtestfusion"].includes(widget.type)) {
         if (widget.key) {
           // v1 does not require a key
           headers.Authorization = `Bearer ${widget.key}`;

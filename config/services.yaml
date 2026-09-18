@@ -307,7 +307,7 @@
             proxmoxVMID: "{{HOMEPAGE_VAR_PIHOLE_VMID}}"
             proxmoxType: lxc
             widget:
-                type: pihole
+                type: piholefusion
                 url: http://{{HOMEPAGE_VAR_PIHOLE_URL}}
                 version: 6
 
@@ -318,7 +318,7 @@
             proxmoxVMID: "{{HOMEPAGE_VAR_TRAEFIK_VMID}}"
             proxmoxType: lxc
             widget:
-                type: traefik
+                type: traefikfusion
                 url: http://{{HOMEPAGE_VAR_TRAEFIK_URL}}:{{HOMEPAGE_VAR_TRAEFIK_PORT}}
                 # username: "{{HOMEPAGE_VAR_TRAEFIK_USER}}"
                 # password: "{{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}"
@@ -330,7 +330,7 @@
             proxmoxVMID: "{{HOMEPAGE_VAR_SPEEDTEST_VMID}}"
             proxmoxType: lxc
             widget:
-                type: speedtest
+                type: speedtestfusion
                 url: http://{{HOMEPAGE_VAR_SPEEDTEST_URL}}:{{HOMEPAGE_VAR_SPEEDTEST_PORT}}
                 version: 2
                 key: "{{HOMEPAGE_VAR_SPEEDTEST_API_KEY}}"
@@ -342,7 +342,7 @@
             proxmoxVMID: "{{HOMEPAGE_VAR_UNIFI_VMID}}"
             proxmoxType: lxc
             widget:
-                type: unifi
+                type: unififusion
                 url: https://{{HOMEPAGE_VAR_UNIFI_URL}}:{{HOMEPAGE_VAR_UNIFI_PORT}}
                 key: "{{HOMEPAGE_VAR_UNIFI_API_KEY}}"
 

@@ -544,7 +544,7 @@ export function cleanServiceGroups(groups) {
           if (server) widget.server = server;
           if (container) widget.container = container;
         }
-        if (type === "unifi") {
+        if (type === "unifi" || type === "unififusion") {
           if (site) widget.site = site;
         }
         if (type === "portainer") {
@@ -631,7 +631,9 @@ export function cleanServiceGroups(groups) {
             "netalertx",
             "pfsense",
             "pihole",
+            "piholefusion",
             "speedtest",
+            "speedtestfusion",
             "wgeasy",
             "grafana",
             "gluetun",
@@ -697,7 +699,7 @@ export function cleanServiceGroups(groups) {
         if (type === "healthchecks") {
           if (uuid !== undefined) widget.uuid = uuid;
         }
-        if (type === "speedtest") {
+        if (type === "speedtest" || type === "speedtestfusion") {
           if (bitratePrecision !== undefined) {
             widget.bitratePrecision = parseInt(bitratePrecision, 10);
           }

@@ -108,6 +108,7 @@ import peanut from "./peanut/widget";
 import pfsense from "./pfsense/widget";
 import photoprism from "./photoprism/widget";
 import pihole from "./pihole/widget";
+import piholefusion from "./piholefusion/widget";
 import plantit from "./plantit/widget";
 import plex from "./plex/widget";
 import plexrecent from "./plexrecent/widget";
@@ -142,6 +143,7 @@ import sonarr from "./sonarr/widget";
 import sonarrfusion from "./sonarrfusion/widget";
 import sparkyfitness from "./sparkyfitness/widget";
 import speedtest from "./speedtest/widget";
+import speedtestfusion from "./speedtestfusion/widget";
 import spoolman from "./spoolman/widget";
 import sportarr from "./sportarr/widget";
 import stash from "./stash/widget";
@@ -158,11 +160,13 @@ import technitium from "./technitium/widget";
 import tracearr from "./tracearr/widget";
 import tracearrfusion from "./tracearrfusion/widget";
 import traefik from "./traefik/widget";
+import traefikfusion from "./traefikfusion/widget";
 import transmission from "./transmission/widget";
 import trilium from "./trilium/widget";
 import truenas from "./truenas/widget";
 import tubearchivist from "./tubearchivist/widget";
 import unifi from "./unifi/widget";
+import unififusion from "./unififusion/widget";
 import unifi_drive from "./unifi_drive/widget";
 import unmanic from "./unmanic/widget";
 import unraid from "./unraid/widget";
@@ -295,6 +299,7 @@ const widgets = {
   proxmoxbackupserver,
   pialert: netalertx,
   pihole,
+  piholefusion,
   plantit,
   plex,
   plexrecent,
@@ -328,6 +333,7 @@ const widgets = {
   sonarrfusion,
   sparkyfitness,
   speedtest,
+  speedtestfusion,
   spoolman,
   sportarr,
   stash,
@@ -344,11 +350,13 @@ const widgets = {
   tracearr,
   tracearrfusion,
   traefik,
+  traefikfusion,
   transmission,
   trilium,
   tubearchivist,
   truenas,
   unifi,
+  unififusion,
   unifi_console: unifi,
   unifi_drive,
   unmanic,
