@@ -6,17 +6,17 @@
     - NVD CVEs:
         href: https://nvd.nist.gov/vuln/search#/nvd/home?resultType=records
         widget:
-            type: nvd
+            type: nvdfusion
             limit: 20
 
     - CISA KEV:
         widget:
-            type: cisa
+            type: cisafusion
             limit: 20
 
     - Calendar:
         widget:
-            type: calendar
+            type: calendarfusion
             firstDayInWeek: monday
             view: monthly
             maxEvents: 10
@@ -91,17 +91,6 @@
             url: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
             key: "{{HOMEPAGE_VAR_RADARR_API_KEY}}"
 
-    - Radarr:
-        icon: radarr.svg
-        href: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
-        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-        proxmoxVMID: "{{HOMEPAGE_VAR_RADARR_VMID}}"
-        proxmoxType: lxc
-        widget:
-            type: radarr
-            url: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
-            key: "{{HOMEPAGE_VAR_RADARR_API_KEY}}"
-
     - Sonarr:
         icon: sonarr.svg
         href: http://{{HOMEPAGE_VAR_SONARR_URL}}:{{HOMEPAGE_VAR_SONARR_PORT}}
@@ -109,7 +98,7 @@
         proxmoxVMID: "{{HOMEPAGE_VAR_SONARR_VMID}}"
         proxmoxType: lxc
         widget:
-            type: sonarr
+            type: sonarrfusion
             url: http://{{HOMEPAGE_VAR_SONARR_URL}}:{{HOMEPAGE_VAR_SONARR_PORT}}
             key: "{{HOMEPAGE_VAR_SONARR_API_KEY}}"
 
@@ -120,7 +109,7 @@
         proxmoxVMID: "{{HOMEPAGE_VAR_SEERR_VMID}}"
         proxmoxType: lxc
         widget:
-            type: jellyseerr
+            type: seerrfusion
             url: http://{{HOMEPAGE_VAR_SEERR_URL}}:{{HOMEPAGE_VAR_SEERR_PORT}}
             key: "{{HOMEPAGE_VAR_SEERR_API_KEY}}"
 
@@ -131,7 +120,7 @@
         proxmoxVMID: "{{HOMEPAGE_VAR_PROWLARR_VMID}}"
         proxmoxType: lxc
         widget:
-            type: prowlarr
+            type: prowlarrfusion
             url: http://{{HOMEPAGE_VAR_PROWLARR_URL}}:{{HOMEPAGE_VAR_PROWLARR_PORT}}
             key: "{{HOMEPAGE_VAR_PROWLARR_API_KEY}}"
 
@@ -142,7 +131,7 @@
         proxmoxVMID: "{{HOMEPAGE_VAR_TRACEARR_VMID}}"
         proxmoxType: lxc
         widget:
-            type: tracearr
+            type: tracearrfusion
             url: http://{{HOMEPAGE_VAR_TRACEARR_URL}}:{{HOMEPAGE_VAR_TRACEARR_PORT}}
             key: "{{HOMEPAGE_VAR_TRACEARR_API_KEY}}"
             view: both
@@ -156,10 +145,10 @@
         proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
         proxmoxVMID: "{{HOMEPAGE_VAR_ROMM_VMID}}"
         proxmoxType: lxc
-        widget:
-            type: romm
-            url: http://{{HOMEPAGE_VAR_ROMM_URL}}:{{HOMEPAGE_VAR_ROMM_PORT}}
-            fields: ["platforms", "totalRoms", "saves", "states"]
+        # widget:
+        #     type: rommfusion
+        #     url: http://{{HOMEPAGE_VAR_ROMM_URL}}:{{HOMEPAGE_VAR_ROMM_PORT}}
+        #     fields: ["platforms", "totalRoms", "saves", "states"]
 
     # - Immich:
     #     icon: immich.svg
@@ -235,7 +224,7 @@
             icon: proxmox.svg
             href: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
             widget:
-                type: proxmox
+                type: proxmoxfusion
                 url: https://{{HOMEPAGE_VAR_ZUES_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
                 username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
                 password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
@@ -245,7 +234,7 @@
             icon: proxmox.svg
             href: https://{{HOMEPAGE_VAR_APOLLO_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
             widget:
-                type: proxmox
+                type: proxmoxfusion
                 url: https://{{HOMEPAGE_VAR_APOLLO_PROX_URL}}:{{HOMEPAGE_VAR_PROXMOX_PORT}}
                 username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
                 password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
@@ -258,22 +247,32 @@
         - Zues PBS:
             icon: proxmox.svg
             href: https://dashboard.remote-backups.com/
+            widget:
+                type: pbsfusion
+                url: https://api.remote-backups.com
+                key: "{{HOMEPAGE_VAR_REMOTE_BACKUPS_API_KEY}}"
+                datastoreName: ragenetwork-offsite-zues
 
         - Apollo PBS:
             icon: proxmox.svg
             href: https://dashboard.remote-backups.com/
-
-        - Backrest:
-            icon: backrest.svg
-            href: http://{{HOMEPAGE_VAR_BACKREST_URL}}:{{HOMEPAGE_VAR_BACKREST_PORT}}
-            proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
-            proxmoxVMID: "{{HOMEPAGE_VAR_BACKREST_VMID}}"
-            proxmoxType: lxc
             widget:
-                type: backrest
-                url: http://{{HOMEPAGE_VAR_BACKREST_URL}}:{{HOMEPAGE_VAR_BACKREST_PORT}}
-                username: "{{HOMEPAGE_VAR_BACKREST_USER}}"
-                password: "{{HOMEPAGE_VAR_BACKREST_PASSWORD}}"
+                type: pbsfusion
+                url: https://api.remote-backups.com
+                key: "{{HOMEPAGE_VAR_REMOTE_BACKUPS_API_KEY}}"
+                datastoreName: ragenetwork-offsite-apollo
+
+        # - Backrest:
+        #     icon: backrest.svg
+        #     href: http://{{HOMEPAGE_VAR_BACKREST_URL}}:{{HOMEPAGE_VAR_BACKREST_PORT}}
+        #     proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        #     proxmoxVMID: "{{HOMEPAGE_VAR_BACKREST_VMID}}"
+        #     proxmoxType: lxc
+        #     widget:
+        #         type: backrestfusion
+        #         url: http://{{HOMEPAGE_VAR_BACKREST_URL}}:{{HOMEPAGE_VAR_BACKREST_PORT}}
+        #         username: "{{HOMEPAGE_VAR_BACKREST_USER}}"
+        #         password: "{{HOMEPAGE_VAR_BACKREST_PASSWORD}}"
 
 - HOME NETWORK:
     - DOWNLOADS:
@@ -284,7 +283,7 @@
             proxmoxVMID: "{{HOMEPAGE_VAR_QBIT_VMID}}"
             proxmoxType: lxc
             widget:
-                type: qbittorrent
+                type: qbittorrentfusion
                 url: http://{{HOMEPAGE_VAR_QBIT_URL}}:{{HOMEPAGE_VAR_QBIT_PORT}}
                 username: "{{HOMEPAGE_VAR_QBIT_USER}}"
                 password: "{{HOMEPAGE_VAR_QBIT_PASSWORD}}"
@@ -296,7 +295,7 @@
             proxmoxVMID: "{{HOMEPAGE_VAR_SABZNDB_VMID}}"
             proxmoxType: lxc
             widget:
-                type: sabnzbd
+                type: sabnzbdfusion
                 url: http://{{HOMEPAGE_VAR_SABZNDB_URL}}:{{HOMEPAGE_VAR_SABZNDB_PORT}}
                 key: "{{HOMEPAGE_VAR_SABZNDB_API_KEY}}"
 
@@ -373,7 +372,7 @@
             proxmoxVMID: "{{HOMEPAGE_VAR_PATCHMON_VMID}}"
             proxmoxType: lxc
             widget:
-                type: patchmon
+                type: patchmonfusion
                 url: http://{{HOMEPAGE_VAR_PATCHMON_URL}}:{{HOMEPAGE_VAR_PATCHMON_PORT}}
                 username: "{{HOMEPAGE_VAR_PATCHMON_TOKEN_KEY}}"
                 password: "{{HOMEPAGE_VAR_PATCHMON_TOKEN_SECRET}}"

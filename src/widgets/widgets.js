@@ -8,16 +8,19 @@ import authentik from "./authentik/widget";
 import autobrr from "./autobrr/widget";
 import azuredevops from "./azuredevops/widget";
 import backrest from "./backrest/widget";
+import backrestfusion from "./backrestfusion/widget";
 import bazarr from "./bazarr/widget";
 import beszel from "./beszel/widget";
 import booklore from "./booklore/widget";
 import caddy from "./caddy/widget";
 import calendar from "./calendar/widget";
+import calendarfusion from "./calendarfusion/widget";
 import calibreweb from "./calibreweb/widget";
 import changedetectionio from "./changedetectionio/widget";
 import channelsdvrserver from "./channelsdvrserver/widget";
 import checkmk from "./checkmk/widget";
 import cisa from "./cisa/widget";
+import cisafusion from "./cisafusion/widget";
 import cloudflared from "./cloudflared/widget";
 import coinmarketcap from "./coinmarketcap/widget";
 import crowdsec from "./crowdsec/widget";
@@ -88,6 +91,7 @@ import nextdns from "./nextdns/widget";
 import npm from "./npm/widget";
 import ntfy from "./ntfy/widget";
 import nvd from "./nvd/widget";
+import nvdfusion from "./nvdfusion/widget";
 import nzbget from "./nzbget/widget";
 import octoprint from "./octoprint/widget";
 import omada from "./omada/widget";
@@ -99,6 +103,7 @@ import opnsense from "./opnsense/widget";
 import pangolin from "./pangolin/widget";
 import paperlessngx from "./paperlessngx/widget";
 import patchmon from "./patchmon/widget";
+import patchmonfusion from "./patchmonfusion/widget";
 import peanut from "./peanut/widget";
 import pfsense from "./pfsense/widget";
 import photoprism from "./photoprism/widget";
@@ -110,23 +115,31 @@ import portainer from "./portainer/widget";
 import prometheus from "./prometheus/widget";
 import prometheusmetric from "./prometheusmetric/widget";
 import prowlarr from "./prowlarr/widget";
+import prowlarrfusion from "./prowlarrfusion/widget";
 import proxmox from "./proxmox/widget";
 import proxmoxbackupserver from "./proxmoxbackupserver/widget";
+import proxmoxfusion from "./proxmoxfusion/widget";
+import pbsfusion from "./pbsfusion/widget";
 import pterodactyl from "./pterodactyl/widget";
 import pulse from "./pulse/widget";
 import pyload from "./pyload/widget";
 import qbittorrent from "./qbittorrent/widget";
+import qbittorrentfusion from "./qbittorrentfusion/widget";
 import qnap from "./qnap/widget";
 import radarr from "./radarr/widget";
 import radarrfusion from "./radarrfusion/widget";
 import readarr from "./readarr/widget";
 import romm from "./romm/widget";
+import rommfusion from "./rommfusion/widget";
 import rutorrent from "./rutorrent/widget";
 import sabnzbd from "./sabnzbd/widget";
+import sabnzbdfusion from "./sabnzbdfusion/widget";
 import scrutiny from "./scrutiny/widget";
 import seerr from "./seerr/widget";
+import seerrfusion from "./seerrfusion/widget";
 import slskd from "./slskd/widget";
 import sonarr from "./sonarr/widget";
+import sonarrfusion from "./sonarrfusion/widget";
 import sparkyfitness from "./sparkyfitness/widget";
 import speedtest from "./speedtest/widget";
 import spoolman from "./spoolman/widget";
@@ -143,6 +156,7 @@ import tautulli from "./tautulli/widget";
 import tdarr from "./tdarr/widget";
 import technitium from "./technitium/widget";
 import tracearr from "./tracearr/widget";
+import tracearrfusion from "./tracearrfusion/widget";
 import traefik from "./traefik/widget";
 import transmission from "./transmission/widget";
 import trilium from "./trilium/widget";
@@ -176,6 +190,7 @@ const widgets = {
   autobrr,
   azuredevops,
   backrest,
+  backrestfusion,
   bazarr,
   booklore,
   beszel,
@@ -185,6 +200,7 @@ const widgets = {
   channelsdvrserver,
   checkmk,
   cisa,
+  cisafusion,
   cloudflared,
   coinmarketcap,
   crowdsec,
@@ -225,6 +241,7 @@ const widgets = {
   homebridge,
   healthchecks,
   ical: calendar,
+  calendarfusion,
   immich,
   jackett,
   jdownloader,
@@ -258,6 +275,7 @@ const widgets = {
   npm,
   ntfy,
   nvd,
+  nvdfusion,
   nzbget,
   octoprint,
   omada,
@@ -270,6 +288,7 @@ const widgets = {
   paperlessngx,
   pangolin,
   patchmon,
+  patchmonfusion,
   peanut,
   pfsense,
   photoprism,
@@ -283,22 +302,30 @@ const widgets = {
   prometheus,
   prometheusmetric,
   prowlarr,
+  prowlarrfusion,
   proxmox,
+  proxmoxfusion,
+  pbsfusion,
   pterodactyl,
   pulse,
   pyload,
   qbittorrent,
+  qbittorrentfusion,
   qnap,
   radarr,
   radarrfusion,
   readarr,
   romm,
+  rommfusion,
   rutorrent,
   sabnzbd,
+  sabnzbdfusion,
   scrutiny,
   seerr,
+  seerrfusion,
   slskd,
   sonarr,
+  sonarrfusion,
   sparkyfitness,
   speedtest,
   spoolman,
@@ -315,6 +342,7 @@ const widgets = {
   technitium,
   tdarr,
   tracearr,
+  tracearrfusion,
   traefik,
   transmission,
   trilium,

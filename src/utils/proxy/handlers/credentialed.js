@@ -65,6 +65,7 @@ export default async function credentialedProxyHandler(req, res, map) {
           "tailscale",
           "tandoor",
           "tracearr",
+          "tracearrfusion",
           "pterodactyl",
           "vikunja",
           "firefly",
@@ -77,13 +78,15 @@ export default async function credentialedProxyHandler(req, res, map) {
         } else {
           headers.Authorization = basicAuthHeader(widget);
         }
+      } else if (widget.type === "pbsfusion") {
+        headers.Authorization = `Bearer ${widget.key}`;
       } else if (["ntfy", "whatsupdocker"].includes(widget.type)) {
         if (widget.key) {
           headers.Authorization = `Bearer ${widget.key}`;
         } else if (widget.username && widget.password) {
           headers.Authorization = basicAuthHeader(widget);
         }
-      } else if (widget.type === "proxmox") {
+      } else if (["proxmox", "proxmoxfusion"].includes(widget.type)) {
         headers.Authorization = `PVEAPIToken=${widget.username}=${widget.password}`;
       } else if (widget.type === "proxmoxbackupserver") {
         delete headers["Content-Type"];
@@ -108,7 +111,7 @@ export default async function credentialedProxyHandler(req, res, map) {
         }
       } else if (widget.type === "azuredevops") {
         headers.Authorization = `Basic ${Buffer.from(`$:${widget.key}`).toString("base64")}`;
-      } else if (widget.type === "patchmon") {
+      } else if (["patchmon", "patchmonfusion"].includes(widget.type)) {
         headers.Authorization = basicAuthHeader(widget);
       } else if (widget.type === "glances") {
         headers.Authorization = basicAuthHeader(widget);

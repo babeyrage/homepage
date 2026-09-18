@@ -67,6 +67,10 @@ layout:
       tab: HOMELAB
       style: column
 
+    SECURITY:
+      tab: HOMELAB
+      style: column
+
   SECURITY INFO:
     tab: WORK
     header: false

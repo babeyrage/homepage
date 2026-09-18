@@ -433,6 +433,9 @@ export function cleanServiceGroups(groups) {
           // proxmoxbackupserver
           datastore,
 
+          // pbsfusion
+          datastoreName,
+
           // speedtest
           bitratePrecision,
 
@@ -533,7 +536,7 @@ export function cleanServiceGroups(groups) {
           widget.limit24h = !!limit24h;
         }
 
-        if (["cisa", "nvd"].includes(type)) {
+        if (["cisa", "nvd", "cisafusion", "nvdfusion"].includes(type)) {
           if (limit !== undefined) widget.limit = parseInt(limit, 10);
         }
 
@@ -547,11 +550,14 @@ export function cleanServiceGroups(groups) {
         if (type === "portainer") {
           if (kubernetes) widget.kubernetes = !!JSON.parse(kubernetes);
         }
-        if (type === "proxmox") {
+        if (type === "proxmox" || type === "proxmoxfusion") {
           if (node) widget.node = node;
         }
         if (type === "proxmoxbackupserver") {
           if (datastore) widget.datastore = datastore;
+        }
+        if (type === "pbsfusion") {
+          if (datastoreName) widget.datastoreName = datastoreName;
         }
         if (type === "komodo") {
           if (showSummary !== undefined) widget.showSummary = !!JSON.parse(showSummary);
@@ -572,7 +578,7 @@ export function cleanServiceGroups(groups) {
           if (allowScrolling) widget.allowScrolling = allowScrolling;
           if (refreshInterval) widget.refreshInterval = refreshInterval;
         }
-        if (["deluge", "qbittorrent"].includes(type)) {
+        if (["deluge", "qbittorrent", "qbittorrentfusion"].includes(type)) {
           if (enableLeechProgress !== undefined) widget.enableLeechProgress = JSON.parse(enableLeechProgress);
           if (enableLeechSize !== undefined) widget.enableLeechSize = JSON.parse(enableLeechSize);
         }
@@ -584,16 +590,16 @@ export function cleanServiceGroups(groups) {
           if (enableBlocks !== undefined) widget.enableBlocks = JSON.parse(enableBlocks);
           if (enableNowPlaying !== undefined) widget.enableNowPlaying = JSON.parse(enableNowPlaying);
         }
-        if (["emby", "jellyfin", "tautulli", "tracearr"].includes(type)) {
+        if (["emby", "jellyfin", "tautulli", "tracearr", "tracearrfusion"].includes(type)) {
           if (expandOneStreamToTwoRows !== undefined)
             widget.expandOneStreamToTwoRows = !!JSON.parse(expandOneStreamToTwoRows);
           if (showEpisodeNumber !== undefined) widget.showEpisodeNumber = !!JSON.parse(showEpisodeNumber);
           if (enableUser !== undefined) widget.enableUser = !!JSON.parse(enableUser);
         }
-        if (type === "tracearr") {
+        if (type === "tracearr" || type === "tracearrfusion") {
           if (view !== undefined) widget.view = view;
         }
-        if (["sonarr", "radarr"].includes(type)) {
+        if (["sonarr", "radarr", "sonarrfusion", "radarrfusion"].includes(type)) {
           if (enableQueue !== undefined) widget.enableQueue = JSON.parse(enableQueue);
         }
         if (type === "truenas") {
@@ -661,7 +667,7 @@ export function cleanServiceGroups(groups) {
           if (display) widget.display = display;
           if (refreshInterval) widget.refreshInterval = refreshInterval;
         }
-        if (type === "calendar" || type === "upcomingreleases") {
+        if (type === "calendar" || type === "calendarfusion" || type === "upcomingreleases") {
           if (integrations) {
             if (Array.isArray(integrations)) {
               widget.integrations = integrations.map((integration) => {
