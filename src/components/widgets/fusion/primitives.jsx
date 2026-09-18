@@ -39,11 +39,12 @@ export function Led({ color = FUSION_COLORS.ok, glow = false, className = "" }) 
   );
 }
 
-export function MonoLabel({ children, color, className = "" }) {
+export function MonoLabel({ children, color, className = "", title }) {
   return (
     <span
       className={`text-[9px] font-semibold uppercase tracking-widest ${className}`}
       style={{ fontFamily: FUSION_MONO, color }}
+      title={title}
     >
       {children}
     </span>

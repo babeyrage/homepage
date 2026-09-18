@@ -71,7 +71,7 @@ describe("widgets/proxmoxfusion/component", () => {
     expect(screen.getByText("uptime")).toBeInTheDocument();
     expect(screen.getByText("cpu")).toBeInTheDocument();
     expect(screen.getByText("ram")).toBeInTheDocument();
-    expect(screen.getByText("disk")).toBeInTheDocument();
+    expect(screen.getByText("root")).toBeInTheDocument();
     expect(screen.getByText("42%")).toBeInTheDocument();
     expect(screen.getByText("50%")).toBeInTheDocument();
     expect(screen.getByText("40%")).toBeInTheDocument();

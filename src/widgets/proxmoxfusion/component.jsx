@@ -18,11 +18,13 @@ function barColorForPct(pct) {
 // `detail` is an optional secondary figure shown beside the percentage —
 // e.g. absolute used/total bytes, or a core count — sourced from fields the
 // cluster/resources response already carries, so it costs no extra request.
-function ResourceBar({ label, pct, detail }) {
+// `title` is an optional tooltip on the label itself, for a metric whose
+// name alone is ambiguous (e.g. "root" vs. the node's real storage pools).
+function ResourceBar({ label, pct, detail, title }) {
   return (
     <div className="flex flex-col gap-0.5 w-full">
       <div className="flex items-center justify-between gap-2">
-        <MonoLabel>{label}</MonoLabel>
+        <MonoLabel title={title}>{label}</MonoLabel>
         <span className="flex items-baseline gap-1.5" style={{ fontFamily: FUSION_MONO }}>
           {detail && (
             <span className="text-[9px] tabular-nums text-theme-400/70 dark:text-theme-500/60">{detail}</span>
@@ -121,7 +123,8 @@ export default function Component({ service }) {
           detail={online ? `${t("common.bytes", { value: node.mem })}/${t("common.bytes", { value: node.maxmem })}` : undefined}
         />
         <ResourceBar
-          label="disk"
+          label="root"
+          title="Root filesystem usage — not the node's storage pools (ZFS/LVM/Ceph/etc.), where VM and LXC disks actually live"
           pct={diskPct}
           detail={online ? `${t("common.bytes", { value: node.disk })}/${t("common.bytes", { value: node.maxdisk })}` : undefined}
         />
