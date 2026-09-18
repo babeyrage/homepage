@@ -78,6 +78,20 @@ export function StatRow({ children, divider = true, className = "" }) {
   );
 }
 
+// Small rotating caret — indicates a tertiary line is expandable. `expanded`
+// flips it from pointing right (collapsed) to down (open).
+function Chevron({ expanded = false, className = "" }) {
+  return (
+    <svg
+      viewBox="0 0 10 10"
+      className={`w-2 h-2 shrink-0 transition-transform duration-150 ${expanded ? "rotate-90" : ""} ${className}`}
+      style={{ fill: "currentColor" }}
+    >
+      <path d="M2 1 L8 5 L2 9 Z" />
+    </svg>
+  );
+}
+
 // One consolidated service tile: LED + one bold primary stat (with an
 // optional unit label right beside it, e.g. "232 missing"), then two
 // supporting detail lines — the shape every MEDIA-zone fork renders
@@ -89,7 +103,25 @@ export function StatRow({ children, divider = true, className = "" }) {
 // gutters on both sides.
 // While `primary` is undefined (and no `error`) it renders a skeleton,
 // matching useWidgetAPI's loading contract.
-export function StatTile({ primary, primaryLabel, secondary, tertiary, ledColor = FUSION_COLORS.ok, error }) {
+//
+// The tertiary line can double as a disclosure control: pass `expandable`
+// (with `expanded`/`onToggleExpand`) to render it as a button with a
+// caret, so a fork can reveal a detail list (e.g. queue rows) beneath the
+// tile without needing its own separate toggle affordance. `tertiaryBadge`
+// renders a node (typically a <Chip>) after the tertiary text — used for
+// things that deserve visual weight beyond plain text, like a failed count.
+export function StatTile({
+  primary,
+  primaryLabel,
+  secondary,
+  tertiary,
+  tertiaryBadge,
+  ledColor = FUSION_COLORS.ok,
+  error,
+  expandable = false,
+  expanded = false,
+  onToggleExpand,
+}) {
   if (!error && primary === undefined) {
     return (
       <div className="flex flex-col gap-1.5 w-full px-2 py-1.5 animate-pulse">
@@ -99,6 +131,17 @@ export function StatTile({ primary, primaryLabel, secondary, tertiary, ledColor 
       </div>
     );
   }
+
+  const canExpand = expandable && !error;
+  const tertiaryInner = (tertiary || error) && (
+    <>
+      <span className="truncate">{error ? String(error) : tertiary}</span>
+      {!error && tertiaryBadge}
+      {canExpand && <Chevron expanded={expanded} className="ml-auto" />}
+    </>
+  );
+  const tertiaryClassName =
+    "flex items-center gap-1 w-full text-[9.5px] leading-snug text-theme-400/70 dark:text-theme-500/60";
 
   return (
     <div className="flex flex-col gap-0.5 w-full px-2 py-1.5">
@@ -125,14 +168,52 @@ export function StatTile({ primary, primaryLabel, secondary, tertiary, ledColor 
       >
         {error ? "API error" : secondary}
       </span>
-      {(tertiary || error) && (
+      {(tertiary || error) &&
+        (canExpand ? (
+          <button
+            type="button"
+            onClick={onToggleExpand}
+            className={`${tertiaryClassName} text-left cursor-pointer hover:text-theme-300 dark:hover:text-theme-300 transition-colors`}
+            style={{ fontFamily: FUSION_MONO }}
+          >
+            {tertiaryInner}
+          </button>
+        ) : (
+          <span className={tertiaryClassName} style={{ fontFamily: FUSION_MONO }}>
+            {tertiaryInner}
+          </span>
+        ))}
+    </div>
+  );
+}
+
+// One row inside a StatTile's expanded detail list — a single queued/
+// downloading item: title + download-client chip, a thin progress bar,
+// then a status/eta line and a right-aligned size-or-speed line.
+export function QueueRow({ title, client, progress = 0, status, detail, barColor = FUSION_COLORS.infra }) {
+  return (
+    <div className="flex flex-col gap-1 py-1.5 border-t border-theme-300/10 dark:border-theme-700/30">
+      <div className="flex items-center justify-between gap-2">
         <span
-          className="text-[9.5px] leading-snug text-theme-400/70 dark:text-theme-500/60"
+          className="text-[10.5px] font-semibold leading-tight truncate"
           style={{ fontFamily: FUSION_MONO }}
         >
-          {error ? String(error) : tertiary}
+          {title}
         </span>
-      )}
+        {client && (
+          <Chip color={FUSION_COLORS.infra} className="shrink-0">
+            {client}
+          </Chip>
+        )}
+      </div>
+      <Bar pct={progress} color={barColor} />
+      <div
+        className="flex items-center justify-between gap-2 text-[9px] text-theme-400/70 dark:text-theme-500/60"
+        style={{ fontFamily: FUSION_MONO }}
+      >
+        <span className="truncate">{status}</span>
+        {detail && <span className="shrink-0">{detail}</span>}
+      </div>
     </div>
   );
 }

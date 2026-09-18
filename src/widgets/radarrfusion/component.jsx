@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { useTranslation } from "next-i18next/pages";
 
-import QueueEntry from "../../components/widgets/queue/queueEntry";
-import { StatTile, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
+import { StatTile, QueueRow, Chip, FUSION_COLORS } from "../../components/widgets/fusion/primitives";
 
 import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
@@ -47,6 +47,7 @@ function isFailed(entry) {
 export default function Component({ service }) {
   const { t } = useTranslation();
   const { widget } = service;
+  const [expanded, setExpanded] = useState(false);
 
   const { data: moviesData, error: moviesError } = useWidgetAPI(widget, "movie");
   const { data: queuedData, error: queuedError } = useWidgetAPI(widget, "queue/status");
@@ -65,7 +66,7 @@ export default function Component({ service }) {
     );
   }
 
-  const enableQueue = widget?.enableQueue && Array.isArray(queueDetailsData) && queueDetailsData.length > 0;
+  const hasQueue = Array.isArray(queueDetailsData) && queueDetailsData.length > 0;
   const failedCount = queueDetailsData.filter(isFailed).length;
   const ledColor = moviesData.missing === 0 ? FUSION_COLORS.ok : failedCount > 0 ? FUSION_COLORS.bad : FUSION_COLORS.warn;
 
@@ -77,23 +78,39 @@ export default function Component({ service }) {
           primary={t("common.number", { value: moviesData.missing })}
           primaryLabel="missing"
           secondary={`${t("common.number", { value: moviesData.wanted })} wanted · ${t("common.number", { value: moviesData.have })} movies`}
-          tertiary={`${t("common.number", { value: queuedData.totalCount })} queued${
-            failedCount > 0 ? ` · ${t("common.number", { value: failedCount })} failed` : ""
-          }`}
+          tertiary={`${t("common.number", { value: queuedData.totalCount })} queued`}
+          tertiaryBadge={
+            failedCount > 0 && (
+              <Chip color={FUSION_COLORS.bad}>{t("common.number", { value: failedCount })} failed</Chip>
+            )
+          }
+          expandable={hasQueue}
+          expanded={expanded}
+          onToggleExpand={() => setExpanded((value) => !value)}
         />
       </Container>
-      {enableQueue &&
-        queueDetailsData.map((queueEntry) => (
-          <QueueEntry
-            progress={getProgress(queueEntry.sizeLeft, queueEntry.size)}
-            timeLeft={
-              queueEntry.timeLeft ? t("common.duration", { value: parseTimeSpan(queueEntry.timeLeft) }) : null
-            }
-            title={moviesData.all.find((entry) => entry.id === queueEntry.movieId)?.title ?? t("radarr.unknown")}
-            activity={getActivity(queueEntry.status, queueEntry.trackedDownloadState)}
-            key={`${queueEntry.movieId}-${queueEntry.sizeLeft}`}
-          />
-        ))}
+      {hasQueue &&
+        expanded &&
+        queueDetailsData.map((queueEntry) => {
+          const timeLeftSeconds = queueEntry.timeLeft ? parseTimeSpan(queueEntry.timeLeft) : null;
+          const speed =
+            timeLeftSeconds && queueEntry.sizeLeft
+              ? t("common.byterate", { value: queueEntry.sizeLeft / timeLeftSeconds })
+              : null;
+          const timeLeft = timeLeftSeconds ? t("common.duration", { value: timeLeftSeconds }) : null;
+
+          return (
+            <QueueRow
+              key={`${queueEntry.movieId}-${queueEntry.sizeLeft}`}
+              title={moviesData.all.find((entry) => entry.id === queueEntry.movieId)?.title ?? t("radarr.unknown")}
+              client={queueEntry.downloadClient}
+              progress={getProgress(queueEntry.sizeLeft, queueEntry.size)}
+              status={getActivity(queueEntry.status, queueEntry.trackedDownloadState)}
+              detail={[timeLeft, speed].filter(Boolean).join(" · ") || null}
+              barColor={isFailed(queueEntry) ? FUSION_COLORS.bad : FUSION_COLORS.infra}
+            />
+          );
+        })}
     </>
   );
 }
