@@ -342,7 +342,7 @@ export function QueueRow({
   barColor = FUSION_COLORS.infra,
 }) {
   return (
-    <div className="flex flex-col gap-1 py-1.5 border-t border-theme-300/10 dark:border-theme-700/30">
+    <div className="flex flex-col gap-1 px-2 py-1.5 border-t border-theme-300/10 dark:border-theme-700/30">
       <div className="flex items-center justify-between gap-2">
         <span
           className="text-[10.5px] font-semibold leading-tight truncate"
@@ -384,7 +384,7 @@ export function QueuePager({ page, pageCount, onPrev, onNext }) {
   if (pageCount <= 1) return null;
   return (
     <div
-      className="flex items-center justify-center gap-3 py-1.5 border-t border-theme-300/10 dark:border-theme-700/30 text-[9.5px] text-theme-400/70 dark:text-theme-500/60"
+      className="flex items-center justify-center gap-3 px-2 py-1.5 border-t border-theme-300/10 dark:border-theme-700/30 text-[9.5px] text-theme-400/70 dark:text-theme-500/60"
       style={{ fontFamily: FUSION_MONO }}
     >
       <button

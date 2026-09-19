@@ -38,7 +38,7 @@ function KevItem({ item }) {
 
   return (
     <div
-      className="bg-theme-200/50 dark:bg-theme-900/20 rounded-sm mx-1 my-0.5 pl-2 pr-2 py-1 flex items-center gap-2 text-xs border-l-2 border-red-500"
+      className="bg-theme-200/50 dark:bg-theme-900/20 rounded-sm mx-1 my-0.5 pl-2 pr-2 py-1.5 flex items-center gap-2 text-xs border-l-2 border-red-500"
       title={item.description}
     >
       <span className="text-theme-400 dark:text-theme-500 shrink-0 w-12 tabular-nums" style={{ fontFamily: FUSION_MONO }}>
@@ -113,7 +113,7 @@ export default function Component({ service }) {
           ))}
         </div>
 
-        <div className="flex justify-end px-2 py-1">
+        <div className="flex justify-end px-2 py-1.5">
           <PillSelector label="Show" options={LIMIT_PRESETS} value={limit} onChange={setLimit} />
         </div>
       </div>
