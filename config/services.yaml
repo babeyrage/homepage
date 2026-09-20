@@ -145,10 +145,8 @@
         proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
         proxmoxVMID: "{{HOMEPAGE_VAR_ROMM_VMID}}"
         proxmoxType: lxc
-        # widget:
-        #     type: rommfusion
-        #     url: http://{{HOMEPAGE_VAR_ROMM_URL}}:{{HOMEPAGE_VAR_ROMM_PORT}}
-        #     fields: ["platforms", "totalRoms", "saves", "states"]
+        # 
+        
 
     # - Immich:
     #     icon: immich.svg
@@ -229,6 +227,19 @@
                 username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
                 password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
                 node: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+                highlight:
+                    cpu:
+                        numeric:
+                            - { when: gt, value: 60, level: warn }
+                            - { when: gt, value: 85, level: danger }
+                    ram:
+                        numeric:
+                            - { when: gt, value: 60, level: warn }
+                            - { when: gt, value: 85, level: danger }
+                    disk:
+                        numeric:
+                            - { when: gt, value: 60, level: warn }
+                            - { when: gt, value: 85, level: danger }
 
         - Apollo Proxmox:
             icon: proxmox.svg
@@ -239,6 +250,19 @@
                 username: "{{HOMEPAGE_VAR_PROXMOX_TOKEN}}"
                 password: "{{HOMEPAGE_VAR_PROXMOX_SECRET}}"
                 node: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+                highlight:
+                    cpu:
+                        numeric:
+                            - { when: gt, value: 60, level: warn }
+                            - { when: gt, value: 85, level: danger }
+                    ram:
+                        numeric:
+                            - { when: gt, value: 60, level: warn }
+                            - { when: gt, value: 85, level: danger }
+                    disk:
+                        numeric:
+                            - { when: gt, value: 60, level: warn }
+                            - { when: gt, value: 85, level: danger }
 
         - VPS:
             icon: sh-univention-corporate-server.svg

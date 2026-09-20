@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 
 import KubernetesStatus from "./kubernetes-status";
 import Ping from "./ping";
-import ProxmoxStatus from "./proxmox-status";
+import ProxmoxStatusFusion from "./proxmox-status-fusion";
 import SiteMonitor from "./site-monitor";
 import Status from "./status";
 import Widget from "./widget";
@@ -130,7 +130,7 @@ export default function Item({ service, groupName, useEqualHeights }) {
                 onClick={() => (statsOpen ? closeStats() : setStatsOpen(true))}
                 className="shrink-0 flex items-center justify-center cursor-pointer service-tag service-proxmoxstatus"
               >
-                <ProxmoxStatus service={service} style={statusStyle} />
+                <ProxmoxStatusFusion service={service} style={statusStyle} />
                 <span className="sr-only">View Proxmox stats</span>
               </button>
             )}

@@ -49,8 +49,8 @@ vi.mock("./kubernetes-status", () => ({
     return <div data-testid="kubernetes-status" />;
   },
 }));
-vi.mock("./proxmox-status", () => ({
-  default: function ProxmoxStatusMock() {
+vi.mock("./proxmox-status-fusion", () => ({
+  default: function ProxmoxStatusFusionMock() {
     return <div data-testid="proxmox-status" />;
   },
 }));
