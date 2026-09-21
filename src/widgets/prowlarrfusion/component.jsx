@@ -51,7 +51,7 @@ export default function Component({ service }) {
         primaryLabel="grabs"
         secondary={`${t("common.number", { value: numberOfQueries })} queries`}
         tertiary={`${t("common.number", { value: numberOfFailedGrabs })} failed grabs · ${t("common.number", { value: numberOfFailedQueries })} failed queries`}
-        tertiaryBadge={updateAvailable && <Chip color={FUSION_COLORS.warn}>update</Chip>}
+        cornerBadge={updateAvailable && <Chip color={FUSION_COLORS.warn}>update</Chip>}
         updatedAgo={updatedAgo}
       />
     </Container>

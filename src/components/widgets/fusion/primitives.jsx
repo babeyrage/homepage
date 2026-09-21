@@ -198,12 +198,16 @@ function Chevron({ expanded = false, className = "" }) {
 // tile without needing its own separate toggle affordance. `tertiaryBadge`
 // renders a node (typically a <Chip>) after the tertiary text — used for
 // things that deserve visual weight beyond plain text, like a failed count.
+// `cornerBadge` renders a node pinned to the tile's top-right corner instead
+// — for a status that's about the tile as a whole (e.g. an update being
+// available) rather than tied to the tertiary stat specifically.
 export function StatTile({
   primary,
   primaryLabel,
   secondary,
   tertiary,
   tertiaryBadge,
+  cornerBadge,
   ledColor = FUSION_COLORS.ok,
   updatedAgo,
   error,
@@ -233,7 +237,8 @@ export function StatTile({
     "flex items-center gap-1 w-full text-[9.5px] leading-snug text-theme-400/70 dark:text-theme-500/60";
 
   return (
-    <div className="flex flex-col gap-0.5 w-full px-2 py-1.5">
+    <div className="relative flex flex-col gap-0.5 w-full px-2 py-1.5">
+      {!error && cornerBadge && <div className="absolute top-1 right-1.5">{cornerBadge}</div>}
       <div className="flex items-baseline gap-1.5">
         <Led color={error ? FUSION_COLORS.bad : ledColor} className="translate-y-[-2px]" />
         <span

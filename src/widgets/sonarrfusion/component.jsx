@@ -120,13 +120,11 @@ export default function Component({ service }) {
           secondary={`${t("common.number", { value: seriesData.length })} series`}
           tertiary={`${t("common.number", { value: queuedData.totalRecords })} queued`}
           tertiaryBadge={
-            <>
-              {failedCount > 0 && (
-                <Chip color={FUSION_COLORS.bad}>{t("common.number", { value: failedCount })} failed</Chip>
-              )}
-              {updateAvailable && <Chip color={FUSION_COLORS.warn}>update</Chip>}
-            </>
+            failedCount > 0 && (
+              <Chip color={FUSION_COLORS.bad}>{t("common.number", { value: failedCount })} failed</Chip>
+            )
           }
+          cornerBadge={updateAvailable && <Chip color={FUSION_COLORS.warn}>update</Chip>}
           expandable={hasQueue}
           expanded={expanded}
           onToggleExpand={() => {
