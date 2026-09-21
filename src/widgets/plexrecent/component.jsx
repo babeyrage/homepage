@@ -33,6 +33,16 @@ function ZoneLabel({ children }) {
   );
 }
 
+// How many leading posters in each horizontally-scrolling row load eagerly.
+// Next 16 deprecated `priority` (which preloads a single `<link>` in <head>)
+// in favor of plain `loading="eager"` for exactly this multi-candidate case —
+// its own docs call out "multiple images that could be considered the LCP
+// element depending on the viewport" as a reason to avoid preload. Several
+// cards are visible in the row before any horizontal scroll, so eager-load
+// all of them rather than just the first, whichever one the browser actually
+// measures as largest keeps getting flagged as a lazy-loaded LCP image.
+const EAGER_ITEM_COUNT = 4;
+
 // Shared heading style used across all section/row headings
 const headingCls = 'text-[9px] font-semibold uppercase tracking-wide text-theme-500 dark:text-theme-400';
 // Muted label style for popup metadata keys
@@ -112,7 +122,7 @@ function RecentRow({ title, items = [], type }) {
           className="flex gap-3 overflow-x-auto scroll-smooth scrollbar-thin scrollbar-thumb-theme-600/30 pb-1 pr-2"
         >
           {items.map((item, i) => (
-            <RecentItem key={item.id} item={item} type={type} priority={i === 0} />
+            <RecentItem key={item.id} item={item} type={type} eager={i < EAGER_ITEM_COUNT} />
           ))}
         </div>
         <button
@@ -128,7 +138,7 @@ function RecentRow({ title, items = [], type }) {
   );
 }
 
-function RecentItem({ item, type, priority = false }) {
+function RecentItem({ item, type, eager = false }) {
   const [show, setShow] = useState(false);
   const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
   const triggerRef = useRef(null);
@@ -182,8 +192,7 @@ function RecentItem({ item, type, priority = false }) {
           width={100}
           height={150}
           className="rounded shadow object-cover w-full h-37.5"
-          priority={priority}
-          loading={priority ? undefined : 'lazy'}
+          loading={eager ? 'eager' : 'lazy'}
           referrerPolicy="no-referrer"
           onError={() => setImgSrc('/no-thumb.png')}
         />
