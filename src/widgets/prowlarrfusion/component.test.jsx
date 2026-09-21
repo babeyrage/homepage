@@ -45,6 +45,46 @@ describe("widgets/prowlarrfusion/component", () => {
     expect(screen.getByText("2 failed grabs · 1 failed queries")).toBeInTheDocument();
   });
 
+  it("shows an update badge when the newest reported version isn't installed", () => {
+    const grabsResult = {
+      data: { indexers: [{ numberOfGrabs: 1, numberOfQueries: 1, numberOfFailedGrabs: 0, numberOfFailedQueries: 0 }] },
+      error: undefined,
+    };
+    const updateResult = { data: [{ version: "1.28.0", installed: false }], error: undefined };
+    const emptyResult = { data: undefined, error: undefined };
+
+    useWidgetAPI.mockImplementation((_widget, endpoint) => {
+      if (endpoint === "indexerstats") return grabsResult;
+      if (endpoint === "update") return updateResult;
+      return emptyResult;
+    });
+
+    const service = { widget: { type: "prowlarrfusion" } };
+    renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
+
+    expect(screen.getByText("update")).toBeInTheDocument();
+  });
+
+  it("hides the update badge once the newest reported version is installed", () => {
+    const grabsResult = {
+      data: { indexers: [{ numberOfGrabs: 1, numberOfQueries: 1, numberOfFailedGrabs: 0, numberOfFailedQueries: 0 }] },
+      error: undefined,
+    };
+    const updateResult = { data: [{ version: "1.28.0", installed: true }], error: undefined };
+    const emptyResult = { data: undefined, error: undefined };
+
+    useWidgetAPI.mockImplementation((_widget, endpoint) => {
+      if (endpoint === "indexerstats") return grabsResult;
+      if (endpoint === "update") return updateResult;
+      return emptyResult;
+    });
+
+    const service = { widget: { type: "prowlarrfusion" } };
+    renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
+
+    expect(screen.queryByText("update")).not.toBeInTheDocument();
+  });
+
   it("renders error UI when the indexerstats request errors", () => {
     useWidgetAPI.mockReturnValue({ data: undefined, error: { message: "nope" } });
 

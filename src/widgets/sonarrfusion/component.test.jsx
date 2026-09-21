@@ -145,4 +145,50 @@ describe("widgets/sonarrfusion/component", () => {
     expect(screen.getByText("1 queued")).toBeInTheDocument();
     expect(screen.getByText("1 failed")).toBeInTheDocument();
   });
+
+  it("shows an update badge when the newest reported version isn't installed", () => {
+    const wantedResult = { data: { totalRecords: 0 }, error: undefined };
+    const queueResult = { data: { totalRecords: 0 }, error: undefined };
+    const seriesResult = { data: [], error: undefined };
+    const queueDetailsResult = { data: [], error: undefined };
+    const updateResult = { data: [{ version: "4.0.9", installed: false }], error: undefined };
+    const emptyResult = { data: undefined, error: undefined };
+
+    useWidgetAPI.mockImplementation((_widget, endpoint) => {
+      if (endpoint === "wanted/missing") return wantedResult;
+      if (endpoint === "queue") return queueResult;
+      if (endpoint === "series") return seriesResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      if (endpoint === "update") return updateResult;
+      return emptyResult;
+    });
+
+    const service = { widget: { type: "sonarrfusion" } };
+    renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
+
+    expect(screen.getByText("update")).toBeInTheDocument();
+  });
+
+  it("hides the update badge once the newest reported version is installed", () => {
+    const wantedResult = { data: { totalRecords: 0 }, error: undefined };
+    const queueResult = { data: { totalRecords: 0 }, error: undefined };
+    const seriesResult = { data: [], error: undefined };
+    const queueDetailsResult = { data: [], error: undefined };
+    const updateResult = { data: [{ version: "4.0.9", installed: true }], error: undefined };
+    const emptyResult = { data: undefined, error: undefined };
+
+    useWidgetAPI.mockImplementation((_widget, endpoint) => {
+      if (endpoint === "wanted/missing") return wantedResult;
+      if (endpoint === "queue") return queueResult;
+      if (endpoint === "series") return seriesResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      if (endpoint === "update") return updateResult;
+      return emptyResult;
+    });
+
+    const service = { widget: { type: "sonarrfusion" } };
+    renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
+
+    expect(screen.queryByText("update")).not.toBeInTheDocument();
+  });
 });

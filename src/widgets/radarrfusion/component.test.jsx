@@ -197,8 +197,22 @@ describe("widgets/radarrfusion/component", () => {
     const queueStatusResult = { data: { totalCount: 2 }, error: undefined };
     const queueDetailsResult = {
       data: [
-        { movieId: 1, sizeLeft: 0, size: 0, status: "paused", trackedDownloadState: "queued", downloadClient: "qBittorrent" },
-        { movieId: 2, sizeLeft: 0, size: 0, status: "paused", trackedDownloadState: "queued", downloadClient: "SABnzbd" },
+        {
+          movieId: 1,
+          sizeLeft: 0,
+          size: 0,
+          status: "paused",
+          trackedDownloadState: "queued",
+          downloadClient: "qBittorrent",
+        },
+        {
+          movieId: 2,
+          sizeLeft: 0,
+          size: 0,
+          status: "paused",
+          trackedDownloadState: "queued",
+          downloadClient: "SABnzbd",
+        },
       ],
       error: undefined,
     };
@@ -253,5 +267,47 @@ describe("widgets/radarrfusion/component", () => {
 
     expect(screen.getByText("1 queued")).toBeInTheDocument();
     expect(screen.getByText("1 failed")).toBeInTheDocument();
+  });
+
+  it("shows an update badge when the newest reported version isn't installed", () => {
+    const movieResult = { data: { wanted: 0, missing: 0, have: 5, all: [] }, error: undefined };
+    const queueStatusResult = { data: { totalCount: 0 }, error: undefined };
+    const queueDetailsResult = { data: [], error: undefined };
+    const updateResult = { data: [{ version: "5.9.0", installed: false }], error: undefined };
+    const emptyResult = { data: undefined, error: undefined };
+
+    useWidgetAPI.mockImplementation((_widget, endpoint) => {
+      if (endpoint === "movie") return movieResult;
+      if (endpoint === "queue/status") return queueStatusResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      if (endpoint === "update") return updateResult;
+      return emptyResult;
+    });
+
+    const service = { widget: { type: "radarrfusion" } };
+    renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
+
+    expect(screen.getByText("update")).toBeInTheDocument();
+  });
+
+  it("hides the update badge once the newest reported version is installed", () => {
+    const movieResult = { data: { wanted: 0, missing: 0, have: 5, all: [] }, error: undefined };
+    const queueStatusResult = { data: { totalCount: 0 }, error: undefined };
+    const queueDetailsResult = { data: [], error: undefined };
+    const updateResult = { data: [{ version: "5.9.0", installed: true }], error: undefined };
+    const emptyResult = { data: undefined, error: undefined };
+
+    useWidgetAPI.mockImplementation((_widget, endpoint) => {
+      if (endpoint === "movie") return movieResult;
+      if (endpoint === "queue/status") return queueStatusResult;
+      if (endpoint === "queue/details") return queueDetailsResult;
+      if (endpoint === "update") return updateResult;
+      return emptyResult;
+    });
+
+    const service = { widget: { type: "radarrfusion" } };
+    renderWithProviders(<Component service={service} />, { settings: { hideErrors: false } });
+
+    expect(screen.queryByText("update")).not.toBeInTheDocument();
   });
 });

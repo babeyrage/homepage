@@ -71,6 +71,14 @@ const widget = {
       endpoint: "calendar",
       params: ["start", "end", "unmonitored"],
     },
+    update: {
+      // Same endpoint Radarr's own UI polls for its sidebar "update available"
+      // badge — array, newest version first; data[0].installed is false when
+      // an update hasn't been installed yet. Radarr reports every entry as
+      // installed when it detects it's running in Docker (self-update is
+      // disabled there), so the badge only lights up for native installs.
+      endpoint: "update",
+    },
   },
 };
 

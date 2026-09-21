@@ -1,18 +1,18 @@
-import { useState } from "react";
 import { useTranslation } from "next-i18next/pages";
+import { useState } from "react";
 
 import {
-  StatTile,
-  QueueRow,
-  QueuePager,
   Chip,
   FUSION_COLORS,
+  QueuePager,
+  QueueRow,
+  StatTile,
   useLastUpdatedLabel,
 } from "../../components/widgets/fusion/primitives";
 
 import Container from "components/services/widget/container";
-import useWidgetAPI from "utils/proxy/use-widget-api";
 import parseTimeSpan from "utils/parse-timespan";
+import useWidgetAPI from "utils/proxy/use-widget-api";
 
 // Rows per expanded page — keeps a large queue from turning the tile into
 // an unbounded scroll; paged via QueuePager instead.
@@ -77,6 +77,10 @@ export default function Component({ service }) {
   const { data: moviesData, error: moviesError } = useWidgetAPI(widget, "movie");
   const { data: queuedData, error: queuedError } = useWidgetAPI(widget, "queue/status");
   const { data: queueDetailsData, error: queueDetailsError } = useWidgetAPI(widget, "queue/details");
+  // Not folded into the error/loading gates below — an update check failing
+  // (or being unsupported) shouldn't block the rest of the tile, it just
+  // means no badge.
+  const { data: updateData } = useWidgetAPI(widget, "update");
   const updatedAgo = useLastUpdatedLabel(moviesData);
 
   if (moviesError || queuedError || queueDetailsError) {
@@ -94,7 +98,9 @@ export default function Component({ service }) {
 
   const hasQueue = Array.isArray(queueDetailsData) && queueDetailsData.length > 0;
   const failedCount = queueDetailsData.filter(isFailed).length;
-  const ledColor = moviesData.missing === 0 ? FUSION_COLORS.ok : failedCount > 0 ? FUSION_COLORS.bad : FUSION_COLORS.warn;
+  const ledColor =
+    moviesData.missing === 0 ? FUSION_COLORS.ok : failedCount > 0 ? FUSION_COLORS.bad : FUSION_COLORS.warn;
+  const updateAvailable = Array.isArray(updateData) && updateData.length > 0 && !updateData[0].installed;
 
   const pageCount = Math.max(1, Math.ceil(queueDetailsData.length / QUEUE_PAGE_SIZE));
   const safePage = Math.min(page, pageCount - 1);
@@ -110,9 +116,12 @@ export default function Component({ service }) {
           secondary={`${t("common.number", { value: moviesData.wanted })} wanted · ${t("common.number", { value: moviesData.have })} movies`}
           tertiary={`${t("common.number", { value: queuedData.totalCount })} queued`}
           tertiaryBadge={
-            failedCount > 0 && (
-              <Chip color={FUSION_COLORS.bad}>{t("common.number", { value: failedCount })} failed</Chip>
-            )
+            <>
+              {failedCount > 0 && (
+                <Chip color={FUSION_COLORS.bad}>{t("common.number", { value: failedCount })} failed</Chip>
+              )}
+              {updateAvailable && <Chip color={FUSION_COLORS.warn}>update</Chip>}
+            </>
           }
           expandable={hasQueue}
           expanded={expanded}

@@ -73,6 +73,14 @@ const widget = {
       endpoint: "calendar",
       params: ["start", "end", "unmonitored", "includeSeries", "includeEpisodeFile", "includeEpisodeImages"],
     },
+    update: {
+      // Same endpoint Sonarr's own UI polls for its sidebar "update available"
+      // badge — array, newest version first; data[0].installed is false when
+      // an update hasn't been installed yet. Sonarr reports every entry as
+      // installed when it detects it's running in Docker (self-update is
+      // disabled there), so the badge only lights up for native installs.
+      endpoint: "update",
+    },
   },
 };
 
