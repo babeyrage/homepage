@@ -44,6 +44,22 @@ const widget = {
                 v30?.cvssData?.baseScore ??
                 v2?.cvssData?.baseScore ??
                 null;
+              const vectorString =
+                v31?.cvssData?.vectorString ??
+                v30?.cvssData?.vectorString ??
+                v2?.cvssData?.vectorString ??
+                null;
+              // Weaknesses list CWE entries alongside filler ones like
+              // "NVD-CWE-noinfo"/"NVD-CWE-Other" — only real CWE-#### ids are
+              // useful to show, so filter and dedupe down to those.
+              const cwes = [
+                ...new Set(
+                  (cve.weaknesses ?? [])
+                    .flatMap((w) => w.description ?? [])
+                    .filter((d) => d.lang === "en" && /^CWE-\d+$/.test(d.value))
+                    .map((d) => d.value),
+                ),
+              ];
               const description = cve.descriptions?.find((d) => d.lang === "en")?.value ?? "";
               return {
                 id: cve.id,
@@ -51,6 +67,8 @@ const widget = {
                 severity,
                 score,
                 description,
+                vectorString,
+                cwe: cwes.join(", ") || null,
               };
             }),
         };

@@ -167,8 +167,10 @@ export function StatRow({ children, divider = true, className = "" }) {
 }
 
 // Small rotating caret — indicates a tertiary line is expandable. `expanded`
-// flips it from pointing right (collapsed) to down (open).
-function Chevron({ expanded = false, className = "" }) {
+// flips it from pointing right (collapsed) to down (open). Exported so forks
+// with their own list-row layout (e.g. cisafusion/nvdfusion's per-item
+// expand) can reuse the same affordance instead of a one-off caret.
+export function Chevron({ expanded = false, className = "" }) {
   return (
     <svg
       viewBox="0 0 10 10"

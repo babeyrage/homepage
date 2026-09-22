@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "next-i18next/pages";
 
 import Container from "components/services/widget/container";
-import { Led, MonoLabel, FUSION_COLORS, FUSION_MONO } from "components/widgets/fusion/primitives";
+import { Led, MonoLabel, Chevron, FUSION_COLORS, FUSION_MONO } from "components/widgets/fusion/primitives";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 
 const SEVERITIES = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"];
@@ -91,38 +91,113 @@ function PillSelector({ label, options, value, onChange, format }) {
   );
 }
 
-function CveItem({ cve }) {
+// CVSS v3.x/v2 metric abbreviations -> human labels. Lets the expanded row
+// show the vector string (e.g. "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H")
+// as readable chips instead of forcing people to know the notation.
+const CVSS_METRICS = {
+  AV: { label: "Attack vector", N: "Network", A: "Adjacent", L: "Local", P: "Physical" },
+  AC: { label: "Attack complexity", L: "Low", H: "High" },
+  PR: { label: "Privileges required", N: "None", L: "Low", H: "High" },
+  UI: { label: "User interaction", N: "None", R: "Required" },
+  S: { label: "Scope", U: "Unchanged", C: "Changed" },
+  C: { label: "Confidentiality", N: "None", L: "Low", H: "High" },
+  I: { label: "Integrity", N: "None", L: "Low", H: "High" },
+  A: { label: "Availability", N: "None", L: "Low", H: "High" },
+  Au: { label: "Authentication", N: "None", S: "Single", M: "Multiple" },
+};
+
+function parseCvssVector(vectorString) {
+  return vectorString
+    .split("/")
+    .map((segment) => segment.split(":"))
+    .filter(([key, value]) => CVSS_METRICS[key]?.[value])
+    .map(([key, value]) => ({ key, label: CVSS_METRICS[key].label, value: CVSS_METRICS[key][value] }));
+}
+
+// Collapsed row adds a CWE tag when one's available. Clicking anywhere
+// outside the CVE-ID link expands the row to reveal the full description
+// plus the CVSS vector (as labeled chips, not raw notation) and CWE —
+// richer detail than the hover-only tooltip this used to be limited to
+// (see nvd/widget.js for the mapping).
+function CveItem({ cve, expanded, onToggle }) {
   const date = new Date(cve.published).toLocaleDateString(undefined, { month: "short", day: "numeric" });
   const accent = severityAccent[cve.severity] ?? severityAccent.UNKNOWN;
   return (
-    <div
-      className={`bg-theme-200/50 dark:bg-theme-900/20 rounded-sm mx-1 my-0.5 pl-2 pr-2 py-1.5 flex items-center gap-2 text-xs ${accent}`}
-      title={cve.description}
-    >
-      <span className="text-theme-400 dark:text-theme-500 shrink-0 w-12 tabular-nums" style={{ fontFamily: FUSION_MONO }}>
-        {date}
-      </span>
-      <a
-        href={`https://nvd.nist.gov/vuln/detail/${cve.id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-semibold text-theme-700 dark:text-theme-200 flex-1 hover:underline truncate"
-        style={{ fontFamily: FUSION_MONO }}
-        onClick={(e) => e.stopPropagation()}
+    <div className={`bg-theme-200/50 dark:bg-theme-900/20 rounded-sm mx-1 my-0.5 ${accent}`}>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onToggle}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onToggle();
+          }
+        }}
+        className="flex items-center gap-2 pl-2 pr-2 py-1.5 text-xs cursor-pointer"
       >
-        {cve.id}
-      </a>
-      <div className="flex items-center gap-1.5 shrink-0">
-        {cve.score !== null && (
+        <span className="text-theme-400 dark:text-theme-500 shrink-0 w-12 tabular-nums" style={{ fontFamily: FUSION_MONO }}>
+          {date}
+        </span>
+        <a
+          href={`https://nvd.nist.gov/vuln/detail/${cve.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold text-theme-700 dark:text-theme-200 flex-1 hover:underline truncate"
+          style={{ fontFamily: FUSION_MONO }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {cve.id}
+        </a>
+        {cve.cwe && (
           <span
-            className="tabular-nums font-bold text-theme-600 dark:text-theme-300 w-7 text-right"
+            className="hidden sm:inline text-theme-400 dark:text-theme-500 tabular-nums truncate max-w-24"
             style={{ fontFamily: FUSION_MONO }}
           >
-            {cve.score.toFixed(1)}
+            {cve.cwe}
           </span>
         )}
-        <SeverityBadge severity={cve.severity} />
+        <div className="flex items-center gap-1.5 shrink-0">
+          {cve.score !== null && (
+            <span
+              className="tabular-nums font-bold text-theme-600 dark:text-theme-300 w-7 text-right"
+              style={{ fontFamily: FUSION_MONO }}
+            >
+              {cve.score.toFixed(1)}
+            </span>
+          )}
+          <SeverityBadge severity={cve.severity} />
+          <Chevron expanded={expanded} />
+        </div>
       </div>
+      {expanded && (
+        <div className="px-2 pb-2 pl-14 -mt-0.5 text-xs space-y-1.5">
+          <p className="leading-relaxed text-theme-600 dark:text-theme-300">{cve.description}</p>
+          {(cve.cwe || cve.vectorString) && (
+            <div className="flex flex-wrap gap-1" title={cve.vectorString || undefined}>
+              {cve.cwe && (
+                <span
+                  className="inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium ring-1 ring-inset bg-theme-500/10 text-theme-500 dark:text-theme-400 ring-theme-500/20"
+                  style={{ fontFamily: FUSION_MONO }}
+                >
+                  {cve.cwe}
+                </span>
+              )}
+              {cve.vectorString &&
+                parseCvssVector(cve.vectorString).map(({ key, label, value }) => (
+                  <span
+                    key={key}
+                    title={label}
+                    className="inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium ring-1 ring-inset bg-theme-500/10 text-theme-500 dark:text-theme-400 ring-theme-500/20"
+                    style={{ fontFamily: FUSION_MONO }}
+                  >
+                    {key}: {value}
+                  </span>
+                ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -133,6 +208,7 @@ export default function Component({ service }) {
 
   const [activeSeverities, setActiveSeverities] = useState(new Set(["CRITICAL", "HIGH"]));
   const [limit, setLimit] = useState(widget.limit ?? 10);
+  const [expandedId, setExpandedId] = useState(null);
   const days = widget.days ?? 1;
 
   const toggleSeverity = (severity) => {
@@ -215,7 +291,12 @@ export default function Component({ service }) {
 
         <div className="flex flex-col w-full">
           {vulnerabilities.map((cve) => (
-            <CveItem key={cve.id} cve={cve} />
+            <CveItem
+              key={cve.id}
+              cve={cve}
+              expanded={expandedId === cve.id}
+              onToggle={() => setExpandedId((current) => (current === cve.id ? null : cve.id))}
+            />
           ))}
         </div>
 

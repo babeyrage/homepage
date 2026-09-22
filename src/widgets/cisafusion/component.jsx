@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "next-i18next/pages";
 
 import Container from "components/services/widget/container";
-import { Led, MonoLabel, Chip, FUSION_COLORS, FUSION_MONO } from "components/widgets/fusion/primitives";
+import { Led, MonoLabel, Chip, Chevron, FUSION_COLORS, FUSION_MONO } from "components/widgets/fusion/primitives";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 
 const LIMIT_PRESETS = [5, 10, 20, 50];
@@ -31,43 +31,71 @@ function PillSelector({ label, options, value, onChange }) {
   );
 }
 
-function KevItem({ item }) {
+// Collapsed row shows the vulnerability name (more legible at a glance than
+// the raw vendor/product pairing) instead of a hover-only description.
+// Clicking anywhere outside the CVE-ID link expands the row to reveal the
+// full description, vendor/product, and CISA's required remediation action —
+// all already fetched (see cisa/widget.js) but previously unused.
+function KevItem({ item, expanded, onToggle }) {
   const date = new Date(item.dateAdded).toLocaleDateString(undefined, { month: "short", day: "numeric" });
   const due = new Date(item.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" });
   const overdue = new Date(item.dueDate) < new Date();
 
   return (
-    <div
-      className="bg-theme-200/50 dark:bg-theme-900/20 rounded-sm mx-1 my-0.5 pl-2 pr-2 py-1.5 flex items-center gap-2 text-xs border-l-2 border-red-500"
-      title={item.description}
-    >
-      <span className="text-theme-400 dark:text-theme-500 shrink-0 w-12 tabular-nums" style={{ fontFamily: FUSION_MONO }}>
-        {date}
-      </span>
-      <div className="flex-1 min-w-0">
-        <a
-          href={`https://nvd.nist.gov/vuln/detail/${item.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-semibold text-theme-700 dark:text-theme-200 hover:underline"
-          style={{ fontFamily: FUSION_MONO }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {item.id}
-        </a>
-        <div className="text-theme-500 dark:text-theme-400 truncate">
-          {item.vendor} — {item.product}
-        </div>
-      </div>
-      <div className="flex flex-col items-end gap-0.5 shrink-0">
-        {item.ransomware && <Chip color="#a855f7">Ransomware</Chip>}
-        <span
-          className="text-xs tabular-nums"
-          style={{ fontFamily: FUSION_MONO, color: overdue ? FUSION_COLORS.bad : undefined }}
-        >
-          Due {due}
+    <div className="bg-theme-200/50 dark:bg-theme-900/20 rounded-sm mx-1 my-0.5 border-l-2 border-red-500">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onToggle}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onToggle();
+          }
+        }}
+        className="flex items-center gap-2 pl-2 pr-2 py-1.5 text-xs cursor-pointer"
+      >
+        <span className="text-theme-400 dark:text-theme-500 shrink-0 w-12 tabular-nums" style={{ fontFamily: FUSION_MONO }}>
+          {date}
         </span>
+        <div className="flex-1 min-w-0">
+          <a
+            href={`https://nvd.nist.gov/vuln/detail/${item.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-theme-700 dark:text-theme-200 hover:underline"
+            style={{ fontFamily: FUSION_MONO }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {item.id}
+          </a>
+          <div className="text-theme-500 dark:text-theme-400 truncate">{item.name}</div>
+        </div>
+        <div className="flex flex-col items-end gap-0.5 shrink-0">
+          {item.ransomware && <Chip color="#a855f7">Ransomware</Chip>}
+          <span
+            className="text-xs tabular-nums"
+            style={{ fontFamily: FUSION_MONO, color: overdue ? FUSION_COLORS.bad : undefined }}
+          >
+            Due {due}
+          </span>
+        </div>
+        <Chevron expanded={expanded} />
       </div>
+      {expanded && (
+        <div className="px-2 pb-1.5 pl-14 -mt-0.5 text-xs text-theme-500 dark:text-theme-400 space-y-1">
+          <div>
+            {item.vendor} — {item.product}
+          </div>
+          <p>{item.description}</p>
+          {item.requiredAction && (
+            <p>
+              <span className="font-semibold text-theme-600 dark:text-theme-300">Required action: </span>
+              {item.requiredAction}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -77,6 +105,7 @@ export default function Component({ service }) {
   const { widget } = service;
 
   const [limit, setLimit] = useState(widget.limit ?? 10);
+  const [expandedId, setExpandedId] = useState(null);
 
   const { data, error } = useWidgetAPI(widget, "kev", { refreshInterval: 3600000 });
 
@@ -109,7 +138,12 @@ export default function Component({ service }) {
 
         <div className="flex flex-col w-full">
           {items.map((item) => (
-            <KevItem key={item.id} item={item} />
+            <KevItem
+              key={item.id}
+              item={item}
+              expanded={expandedId === item.id}
+              onToggle={() => setExpandedId((current) => (current === item.id ? null : item.id))}
+            />
           ))}
         </div>
 
