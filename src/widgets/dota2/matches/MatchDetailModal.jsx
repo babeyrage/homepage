@@ -3,12 +3,57 @@ import { createPortal } from "react-dom";
 import { GiBackpack } from "react-icons/gi";
 import useSWR from "swr";
 
-import { ErrorState, ItemSlot, LevelRing, LogoBox, PulseRow } from "../ui/primitives";
+import { ItemSlot, LevelRing, LogoBox } from "../ui/primitives";
 import { fmtDuration, fmtK, useBodyScrollLock, useEscapeToClose } from "../ui/utils";
 
 // ── Match detail modal ────────────────────────────────────────────────────────
+// KDA/Farm/Damage come straight off CitoAPI's playerStats — already resolved by
+// the parent SeriesRow's match_detail fetch, no network call needed here. Only
+// Items/level/net-worth need OpenDota, keyed by the game's openDotaMatchId and
+// merged onto CitoAPI rows by accountId; that lookup is best-effort and never
+// blocks the rest of the table from rendering.
 
 const STAT_TABS = ["KDA", "Farm", "Damage", "Items"];
+
+const EMPTY_ITEMS = Array(6).fill(null);
+const EMPTY_BACKPACK = Array(3).fill(null);
+
+function buildPlayer(p, heroes, enrichment) {
+  const hero = heroes[p.heroId] ?? { name: p.heroName, img: null };
+  const extra = enrichment?.players?.[String(p.accountId)];
+  return {
+    accountId: p.accountId,
+    hero,
+    proName: p.playerName,
+    kills: p.kills ?? 0,
+    deaths: p.deaths ?? 0,
+    assists: p.assists ?? 0,
+    lastHits: p.lastHits ?? 0,
+    denies: p.denies ?? 0,
+    gpm: p.gpm ?? 0,
+    xpm: p.xpm ?? 0,
+    heroDamage: p.heroDamage ?? 0,
+    towerDamage: p.towerDamage ?? 0,
+    benchmarkPercentiles: p.benchmarkPercentiles ?? null,
+    level: extra?.level ?? null,
+    netWorth: extra?.netWorth ?? null,
+    items: extra?.items ?? EMPTY_ITEMS,
+    backpack: extra?.backpack ?? EMPTY_BACKPACK,
+    neutral: extra?.neutral ?? null,
+  };
+}
+
+// Small colour-coded dot indicating a stat's percentile vs. other pros at the same role/bracket.
+function PercentileDot({ pct }) {
+  if (pct === null || pct === undefined) return null;
+  const color = pct >= 75 ? "bg-emerald-400" : pct >= 40 ? "bg-amber-400" : "bg-red-400";
+  return (
+    <span
+      className={`inline-block w-1 h-1 rounded-full ${color} ml-1 align-middle`}
+      title={`${Math.round(pct)}th percentile`}
+    />
+  );
+}
 
 export function PlayerTableRow({ player }) {
   return (
@@ -23,10 +68,8 @@ export function PlayerTableRow({ player }) {
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-[11px] font-semibold text-theme-200 truncate leading-tight">{player.hero.name || "—"}</span>
-            {(player.proName || player.personaname) && (
-              <span className="text-[9px] text-theme-500 truncate leading-tight">
-                {player.proName ?? player.personaname}
-              </span>
+            {player.proName && (
+              <span className="text-[9px] text-theme-500 truncate leading-tight">{player.proName}</span>
             )}
           </div>
         </div>
@@ -34,7 +77,7 @@ export function PlayerTableRow({ player }) {
       {/* LVL */}
       <td className="text-center px-1 w-9">
         <div className="flex justify-center">
-          <LevelRing level={player.level} />
+          <LevelRing level={player.level ?? 0} />
         </div>
       </td>
       {/* K */}
@@ -46,11 +89,15 @@ export function PlayerTableRow({ player }) {
       {/* LH / DN */}
       <td className="text-center px-1 w-14 text-[10px] text-theme-400 tabular-nums whitespace-nowrap">{player.lastHits}/{player.denies}</td>
       {/* NET */}
-      <td className="text-center px-1 w-14 text-[11px] font-semibold text-amber-400 tabular-nums">{fmtK(player.netWorth)}</td>
+      <td className="text-center px-1 w-14 text-[11px] font-semibold text-amber-400 tabular-nums">{player.netWorth != null ? fmtK(player.netWorth) : "—"}</td>
       {/* GPM / XPM */}
-      <td className="text-center px-1 w-16 text-[10px] text-theme-400 tabular-nums whitespace-nowrap">{player.gpm}/{player.xpm}</td>
+      <td className="text-center px-1 w-16 text-[10px] text-theme-400 tabular-nums whitespace-nowrap">
+        {player.gpm}<PercentileDot pct={player.benchmarkPercentiles?.gpm} />/{player.xpm}<PercentileDot pct={player.benchmarkPercentiles?.xpm} />
+      </td>
       {/* HD */}
-      <td className="text-center px-1 w-14 text-[10px] text-theme-400 tabular-nums">{fmtK(player.heroDamage)}</td>
+      <td className="text-center px-1 w-14 text-[10px] text-theme-400 tabular-nums">
+        {fmtK(player.heroDamage)}<PercentileDot pct={player.benchmarkPercentiles?.heroDamage} />
+      </td>
       {/* TD */}
       <td className="text-center px-1 w-12 text-[10px] text-theme-500 tabular-nums">{player.towerDamage > 0 ? fmtK(player.towerDamage) : "—"}</td>
       {/* ITEMS: 6 main + neutral + backpack row */}
@@ -83,7 +130,7 @@ export function TeamTable({ players, team }) {
       assists:     acc.assists     + p.assists,
       lastHits:    acc.lastHits    + p.lastHits,
       denies:      acc.denies      + p.denies,
-      netWorth:    acc.netWorth    + p.netWorth,
+      netWorth:    acc.netWorth    + (p.netWorth ?? 0),
       heroDamage:  acc.heroDamage  + p.heroDamage,
       towerDamage: acc.towerDamage + p.towerDamage,
     }),
@@ -123,7 +170,7 @@ export function TeamTable({ players, team }) {
           </tr>
         </thead>
         <tbody>
-          {players.map((p) => <PlayerTableRow key={p.slot} player={p} />)}
+          {players.map((p) => <PlayerTableRow key={p.accountId} player={p} />)}
         </tbody>
         <tfoot>
           <tr className="border-t border-theme-700 bg-theme-800/30">
@@ -157,7 +204,7 @@ export function SmallPlayerRow({ player, tab }) {
             )}
           </div>
           <span className="text-[10px] font-medium text-theme-200 truncate">
-            {player.proName ?? player.personaname ?? player.hero.name ?? "—"}
+            {player.proName ?? player.hero.name ?? "—"}
           </span>
         </div>
       </td>
@@ -167,15 +214,17 @@ export function SmallPlayerRow({ player, tab }) {
           <td className="text-center px-1 w-8 text-[11px] font-semibold text-emerald-400 tabular-nums">{player.kills}</td>
           <td className="text-center px-1 w-8 text-[11px] font-semibold text-red-400 tabular-nums">{player.deaths}</td>
           <td className="text-center px-1 w-8 text-[11px] text-theme-300 tabular-nums">{player.assists}</td>
-          <td className="text-center px-1 w-16 text-[11px] font-semibold text-amber-400 tabular-nums">{fmtK(player.netWorth)}</td>
+          <td className="text-center px-1 w-16 text-[11px] font-semibold text-amber-400 tabular-nums">{player.netWorth != null ? fmtK(player.netWorth) : "—"}</td>
         </>
       )}
 
       {tab === "Farm" && (
         <>
           <td className="text-center px-1 w-14 text-[10px] text-theme-400 tabular-nums whitespace-nowrap">{player.lastHits}/{player.denies}</td>
-          <td className="text-center px-1 w-16 text-[10px] text-theme-400 tabular-nums whitespace-nowrap">{player.gpm}/{player.xpm}</td>
-          <td className="text-center px-1 w-16 text-[10px] font-semibold text-amber-400 tabular-nums">{fmtK(player.netWorth)}</td>
+          <td className="text-center px-1 w-16 text-[10px] text-theme-400 tabular-nums whitespace-nowrap">
+            {player.gpm}<PercentileDot pct={player.benchmarkPercentiles?.gpm} />/{player.xpm}<PercentileDot pct={player.benchmarkPercentiles?.xpm} />
+          </td>
+          <td className="text-center px-1 w-16 text-[10px] font-semibold text-amber-400 tabular-nums">{player.netWorth != null ? fmtK(player.netWorth) : "—"}</td>
         </>
       )}
 
@@ -183,7 +232,7 @@ export function SmallPlayerRow({ player, tab }) {
         <>
           <td className="text-center px-1 w-16 text-[10px] text-theme-400 tabular-nums">{fmtK(player.heroDamage)}</td>
           <td className="text-center px-1 w-14 text-[10px] text-theme-500 tabular-nums">{player.towerDamage > 0 ? fmtK(player.towerDamage) : "—"}</td>
-          <td className="text-center px-1 w-16 text-[10px] font-semibold text-amber-400 tabular-nums">{fmtK(player.netWorth)}</td>
+          <td className="text-center px-1 w-16 text-[10px] font-semibold text-amber-400 tabular-nums">{player.netWorth != null ? fmtK(player.netWorth) : "—"}</td>
         </>
       )}
 
@@ -256,38 +305,44 @@ export function SmallTeamTable({ players, team, tab }) {
           </tr>
         </thead>
         <tbody>
-          {players.map((p) => <SmallPlayerRow key={p.slot} player={p} tab={tab} />)}
+          {players.map((p) => <SmallPlayerRow key={p.accountId} player={p} tab={tab} />)}
         </tbody>
       </table>
     </div>
   );
 }
 
-export function MatchDetailModal({ game, series, onClose }) {
-  const { data, error, isLoading, mutate } = useSWR(
-    `/api/widgets/dota2?mode=match&matchId=${game.id}`,
-    { revalidateOnFocus: false },
-  );
-
+export function MatchDetailModal({ game, series, heroes, onClose }) {
   const [activeTab, setActiveTab] = useState("KDA");
 
   useEscapeToClose(onClose);
   useBodyScrollLock();
 
-  const { team1Id, team1Name, team1Logo, team2Name, team2Logo } = series;
-  const t1Won      = game.winnerId === team1Id;
-  const t1IsRadiant = game.team1IsRadiant ?? true;
-  const duration   = fmtDuration(game.length);
+  // Best-effort OpenDota enrichment for items/level/net-worth only — never
+  // blocks the rest of the modal, which is fully populated from `game` already.
+  const { data: enrichment } = useSWR(
+    game.openDotaMatchId ? `/api/widgets/dota2?mode=match&matchId=${game.openDotaMatchId}` : null,
+    { revalidateOnFocus: false },
+  );
 
-  const radiantPlayers = data?.radiantPlayers ?? [];
-  const direPlayers    = data?.direPlayers    ?? [];
+  const { team1Id, team1, team1Logo, team2, team2Logo } = series;
+  const t1Won = game.winnerTeamId === team1Id;
+  const t1IsRadiant = game.radiantTeamId === team1Id;
+  const duration = fmtDuration(game.duration);
+
+  const stats = game.playerStats ?? [];
+  const team1Score = stats.filter((p) => p.teamId === team1Id).reduce((s, p) => s + (p.kills ?? 0), 0);
+  const team2Score = stats.filter((p) => p.teamId !== team1Id).reduce((s, p) => s + (p.kills ?? 0), 0);
+
+  const radiantPlayers = stats.filter((p) => p.isRadiant).map((p) => buildPlayer(p, heroes, enrichment));
+  const direPlayers = stats.filter((p) => !p.isRadiant).map((p) => buildPlayer(p, heroes, enrichment));
 
   const radiantTeam = t1IsRadiant
-    ? { name: team1Name, logo: team1Logo,  won: t1Won,  isRadiant: true }
-    : { name: team2Name, logo: team2Logo,  won: !t1Won, isRadiant: true };
+    ? { name: team1, logo: team1Logo, won: t1Won, isRadiant: true }
+    : { name: team2, logo: team2Logo, won: !t1Won, isRadiant: true };
   const direTeam = t1IsRadiant
-    ? { name: team2Name, logo: team2Logo,  won: !t1Won, isRadiant: false }
-    : { name: team1Name, logo: team1Logo,  won: t1Won,  isRadiant: false };
+    ? { name: team2, logo: team2Logo, won: !t1Won, isRadiant: false }
+    : { name: team1, logo: team1Logo, won: t1Won, isRadiant: false };
 
   return createPortal(
     <div
@@ -302,18 +357,18 @@ export function MatchDetailModal({ game, series, onClose }) {
         <div className="flex items-center gap-4 px-4 py-3 bg-theme-800 border-b border-theme-700 shrink-0">
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <LogoBox src={team1Logo} size="md" />
-            <span className="text-sm font-bold text-theme-100 truncate">{team1Name}</span>
+            <span className="text-sm font-bold text-theme-100 truncate">{team1}</span>
             {t1Won && <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-1.5 py-0.5 rounded shrink-0">Win</span>}
           </div>
           <div className="flex flex-col items-center shrink-0">
             <span className="text-xl font-bold tabular-nums text-theme-100 leading-none">
-              {game.team1Score ?? "—"} – {game.team2Score ?? "—"}
+              {team1Score} – {team2Score}
             </span>
             {duration && <span className="text-[10px] text-theme-500 tabular-nums mt-0.5">{duration}</span>}
           </div>
           <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
             {!t1Won && <span className="text-[8px] font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-1.5 py-0.5 rounded shrink-0">Win</span>}
-            <span className="text-sm font-bold text-theme-100 truncate">{team2Name}</span>
+            <span className="text-sm font-bold text-theme-100 truncate">{team2}</span>
             <LogoBox src={team2Logo} size="md" />
           </div>
           <button
@@ -328,47 +383,37 @@ export function MatchDetailModal({ game, series, onClose }) {
 
         {/* ── Body ── */}
         <div className="flex-1 overflow-auto">
-          {isLoading ? (
-            <div className="flex flex-col gap-1.5 p-4">
-              {Array.from({ length: 10 }).map((_, i) => <PulseRow key={i} />)}
+          {/* Small screens: tab bar + compact tables */}
+          <div className="block sm:hidden">
+            <div className="flex border-b border-theme-700 bg-theme-800/60 sticky top-0 z-10">
+              {STAT_TABS.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setActiveTab(t)}
+                  className={`flex-1 py-2 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
+                    activeTab === t
+                      ? "text-white border-b-2 border-white -mb-px"
+                      : "text-theme-500 hover:text-theme-300"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
             </div>
-          ) : error ? (
-            <ErrorState message="Failed to load match details" onRetry={() => mutate()} />
-          ) : (
-            <>
-              {/* Small screens: tab bar + compact tables */}
-              <div className="block sm:hidden">
-                <div className="flex border-b border-theme-700 bg-theme-800/60 sticky top-0 z-10">
-                  {STAT_TABS.map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => setActiveTab(t)}
-                      className={`flex-1 py-2 text-[10px] font-semibold uppercase tracking-wider transition-colors ${
-                        activeTab === t
-                          ? "text-white border-b-2 border-white -mb-px"
-                          : "text-theme-500 hover:text-theme-300"
-                      }`}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
-                <SmallTeamTable players={radiantPlayers} team={radiantTeam} tab={activeTab} />
-                <div className="border-t-2 border-theme-700" />
-                <SmallTeamTable players={direPlayers} team={direTeam} tab={activeTab} />
-              </div>
+            <SmallTeamTable players={radiantPlayers} team={radiantTeam} tab={activeTab} />
+            <div className="border-t-2 border-theme-700" />
+            <SmallTeamTable players={direPlayers} team={direTeam} tab={activeTab} />
+          </div>
 
-              {/* Large screens: full scrollable table */}
-              <div className="hidden sm:block">
-                <div className="min-w-175">
-                  <TeamTable players={radiantPlayers} team={radiantTeam} />
-                  <div className="border-t-2 border-theme-700" />
-                  <TeamTable players={direPlayers} team={direTeam} />
-                </div>
-              </div>
-            </>
-          )}
+          {/* Large screens: full scrollable table */}
+          <div className="hidden sm:block">
+            <div className="min-w-175">
+              <TeamTable players={radiantPlayers} team={radiantTeam} />
+              <div className="border-t-2 border-theme-700" />
+              <TeamTable players={direPlayers} team={direTeam} />
+            </div>
+          </div>
         </div>
       </div>
     </div>,

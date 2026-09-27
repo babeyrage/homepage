@@ -45,7 +45,7 @@
             href: https://www.dota2.com
             widget:
                 type: dota2
-                key: "{{HOMEPAGE_VAR_PANDASCORE_API_KEY}}"
+                key: "{{HOMEPAGE_VAR_CITOAPI_API_KEY}}"
 
     - PLEX:
         - Plex:

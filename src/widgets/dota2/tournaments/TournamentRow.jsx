@@ -1,18 +1,24 @@
 import { DateTime } from "luxon";
 
-// ── DatDota tournament row ─────────────────────────────────────────────────────
+// ── Tournament row (CitoAPI) ────────────────────────────────────────────────────
+// A single row/badge shape for all three tournament states — status is passed
+// explicitly by the caller (either from tournament.status directly, or the
+// null-status fallback derived in component.jsx from cross-referencing matches).
 
-export function TournamentRow({ tournament, onClick }) {
-  const begin = tournament.first ? DateTime.fromISO(tournament.first) : null;
-  const end = tournament.last ? DateTime.fromISO(tournament.last) : null;
+export function TournamentRow({ tournament, status, onClick }) {
+  const begin = tournament.startsAt ? DateTime.fromISO(tournament.startsAt) : null;
+  const end = tournament.endsAt ? DateTime.fromISO(tournament.endsAt) : null;
 
-  const dateLabel = tournament.isCurrent
-    ? begin && end
-      ? `${begin.toFormat("d MMM")} – ${end.toFormat("d MMM")}`
-      : ""
-    : end
-      ? end.toRelative()
-      : "";
+  const dateLabel =
+    status === "completed"
+      ? end
+        ? end.toRelative()
+        : ""
+      : begin && end
+        ? `${begin.toFormat("d MMM")} – ${end.toFormat("d MMM")}`
+        : begin
+          ? `From ${begin.toFormat("d MMM")}`
+          : "";
 
   return (
     <button
@@ -27,11 +33,19 @@ export function TournamentRow({ tournament, onClick }) {
         )}
       </div>
       <div className="flex shrink-0 items-center gap-1.5">
-        {tournament.tierId === 1 && (
-          <span className="text-[9px] font-semibold text-amber-500 uppercase tracking-wide bg-amber-500/10 px-1 py-px rounded-sm">Prem</span>
+        {status === "live" && (
+          <span className="flex items-center gap-1">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" />
+            </span>
+            <span className="text-[9px] font-bold text-red-500 uppercase tracking-wide">Live</span>
+          </span>
         )}
-        {tournament.tierId === 2 && (
-          <span className="text-[9px] font-semibold text-sky-500 uppercase tracking-wide bg-sky-500/10 px-1 py-px rounded-sm">Pro</span>
+        {status === "upcoming" && (
+          <span className="text-[9px] font-semibold text-sky-500 uppercase tracking-wide bg-sky-500/10 px-1 py-px rounded-sm">
+            Upcoming
+          </span>
         )}
         <span className="text-[10px] text-theme-400 dark:text-theme-500 select-none">▸</span>
       </div>

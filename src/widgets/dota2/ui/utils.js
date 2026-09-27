@@ -1,5 +1,8 @@
 import { DateTime } from "luxon";
 import { useEffect } from "react";
+import useSWR from "swr";
+
+import { getURLSearchParams } from "utils/proxy/api-helpers";
 
 // ── Shared utility functions ──────────────────────────────────────────────────
 
@@ -88,4 +91,24 @@ export function useBodyScrollLock() {
       }
     };
   }, []);
+}
+
+// ── CitoAPI path-parameterised fetches ──────────────────────────────────────
+// The stock useWidgetAPI hook only supports query-param mappings, not the
+// `segments` mechanism the proxy uses for path templating (see widget.js's
+// match_detail mapping) — build the request URL by hand instead, mirroring
+// the pattern used by src/widgets/emby/component.jsx.
+
+export function useMatchDetail(widget, matchId) {
+  const params = matchId ? getURLSearchParams(widget, "match_detail") : null;
+  if (params) params.append("segments", JSON.stringify({ matchId: String(matchId) }));
+  const url = params ? `/api/services/proxy?${params.toString()}` : null;
+  return useSWR(url, { revalidateOnFocus: false });
+}
+
+// Static hero id -> {name, img} lookup, used to render portraits for CitoAPI
+// draft/playerStats entries (which only carry heroId/heroName).
+export function useHeroConstants() {
+  const { data } = useSWR("/api/widgets/dota2?mode=constants", { revalidateOnFocus: false });
+  return data?.heroes ?? {};
 }

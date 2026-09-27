@@ -37,8 +37,9 @@ export function CompletedTournamentsModal({ tournaments, onSelect, onClose }) {
         <div className="overflow-y-auto px-3 py-2">
           {tournaments.map((tournament) => (
             <TournamentRow
-              key={tournament.leagueId}
-              tournament={{ ...tournament, isCurrent: false }}
+              key={tournament.id}
+              tournament={tournament}
+              status="completed"
               onClick={() => onSelect(tournament)}
             />
           ))}

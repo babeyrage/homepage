@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { LogoBox } from "../ui/primitives";
 import { shortRelative } from "../ui/utils";
 
-// ── PandaScore live / upcoming match row ──────────────────────────────────────
+// ── Live / upcoming match row ──────────────────────────────────────────────────
 
 export function MatchRow({ match, live, showAbsolute }) {
   const beginAt = match.beginAt ? DateTime.fromISO(match.beginAt) : null;
@@ -18,7 +18,9 @@ export function MatchRow({ match, live, showAbsolute }) {
           <span className="text-[10px] font-medium text-theme-700 dark:text-theme-200 truncate">{match.team1}</span>
         </div>
 
-        <span className="shrink-0 text-[9px] text-theme-400 dark:text-theme-500 px-0.5">vs</span>
+        <span className="shrink-0 text-[9px] font-semibold tabular-nums text-theme-400 dark:text-theme-500 px-0.5">
+          {live && match.bestOf > 1 ? `${match.team1Score}–${match.team2Score}` : "vs"}
+        </span>
 
         {/* Team 2 */}
         <div className="flex items-center gap-1 flex-1 min-w-0 justify-end">

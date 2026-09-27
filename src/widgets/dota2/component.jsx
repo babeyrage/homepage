@@ -1,14 +1,11 @@
 import { useTranslation } from "next-i18next/pages";
-import { useState } from "react";
-import useSWR from "swr";
+import { useMemo, useState } from "react";
 
 import { SectionLabel, ZoneLabel, MatchPulseRow, TournamentPulseRow } from "./ui/primitives";
 import { formatDayLabel, groupMatchesByDay } from "./ui/utils";
 import { MatchRow } from "./matches/MatchRow";
 import { TournamentRow } from "./tournaments/TournamentRow";
 import { TournamentModal } from "./tournaments/TournamentModal";
-import { UpcomingTournamentRow } from "./tournaments/UpcomingTournamentRow";
-import { UpcomingTournamentModal } from "./tournaments/UpcomingTournamentModal";
 import { CompletedTournamentsModal } from "./modals/CompletedTournamentsModal";
 import { UpcomingMatchesModal } from "./modals/UpcomingMatchesModal";
 
@@ -17,38 +14,56 @@ import Container from "components/services/widget/container";
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+// CitoAPI's own tournament.status is null for a large share of tournaments —
+// fall back to cross-referencing the tournament's id against whichever match
+// list currently references it. A tournament with no live/upcoming match (or
+// no matches at all) is treated as completed.
+function deriveTournamentStatus(tournament, liveMatches, upcomingMatches) {
+  if (tournament.status) return tournament.status;
+  if (liveMatches.some((m) => m.tournamentId === tournament.id)) return "live";
+  if (upcomingMatches.some((m) => m.tournamentId === tournament.id)) return "upcoming";
+  return "completed";
+}
+
 export default function Component({ service }) {
   const { t } = useTranslation();
   const { widget } = service;
 
   const [modalTournament, setModalTournament] = useState(null);
-  const [modalUpcomingTournament, setModalUpcomingTournament] = useState(null);
   const [showAbsoluteTime, setShowAbsoluteTime] = useState(true);
   const [showUpcomingModal, setShowUpcomingModal] = useState(false);
   const [showCompletedModal, setShowCompletedModal] = useState(false);
 
-  // ── PandaScore: live + upcoming matches, upcoming tournaments ─────────────
   const { data: liveData, error: liveError } = useWidgetAPI(widget, "live_matches");
   const { data: upcomingData, error: upcomingError } = useWidgetAPI(widget, "upcoming_matches");
-  const { data: upcomingTournamentsData, error: upcomingTournamentsError } = useWidgetAPI(
-    widget,
-    "upcoming_tournaments",
-  );
-
-  // ── DatDota: current + past tournament listing ────────────────────────────
-  const { data: leaguesData, error: leaguesError } = useSWR("/api/widgets/dota2?mode=leagues", {
-    revalidateOnFocus: false,
-  });
+  const { data: recentData, error: recentError } = useWidgetAPI(widget, "recent_matches");
+  const { data: tournamentsData, error: tournamentsError } = useWidgetAPI(widget, "tournaments");
 
   // ── Derived state ─────────────────────────────────────────────────────────
   const liveMatches = Array.isArray(liveData) ? liveData : [];
   const upcomingMatches = Array.isArray(upcomingData) ? upcomingData : [];
-  const upcomingTournaments = Array.isArray(upcomingTournamentsData) ? upcomingTournamentsData : [];
-  const currentTournaments = Array.isArray(leaguesData?.current) ? leaguesData.current : [];
-  const pastTournaments = Array.isArray(leaguesData?.past) ? leaguesData.past : [];
+  const recentMatches = Array.isArray(recentData) ? recentData : [];
+  const tournaments = Array.isArray(tournamentsData) ? tournamentsData : [];
+
+  const { ongoingTournaments, upcomingTournaments, completedTournaments } = useMemo(() => {
+    const live = Array.isArray(liveData) ? liveData : [];
+    const upcoming = Array.isArray(upcomingData) ? upcomingData : [];
+    const list = Array.isArray(tournamentsData) ? tournamentsData : [];
+
+    const ongoing = [];
+    const scheduled = [];
+    const completed = [];
+    for (const tournament of list) {
+      const status = deriveTournamentStatus(tournament, live, upcoming);
+      if (status === "live") ongoing.push(tournament);
+      else if (status === "upcoming") scheduled.push(tournament);
+      else completed.push(tournament);
+    }
+    return { ongoingTournaments: ongoing, upcomingTournaments: scheduled, completedTournaments: completed };
+  }, [tournamentsData, liveData, upcomingData]);
 
   const matchesLoading = !liveData && !liveError && !upcomingData && !upcomingError;
-  const tournamentsLoading = !leaguesData && !leaguesError && !upcomingTournamentsData && !upcomingTournamentsError;
+  const tournamentsLoading = !tournamentsData && !tournamentsError;
 
   if (liveError && upcomingError && !liveData && !upcomingData) {
     return <Container service={service} error={liveError} />;
@@ -147,46 +162,46 @@ export default function Component({ service }) {
               </>
             ) : (
               <>
-                {/* DatDota current (ongoing) tournaments */}
-                {currentTournaments.length > 0 && (
+                {ongoingTournaments.length > 0 && (
                   <>
                     <SectionLabel>{t("dota2.ongoing", "Ongoing Tournaments")}</SectionLabel>
-                    {currentTournaments.map((tournament) => (
+                    {ongoingTournaments.map((tournament) => (
                       <TournamentRow
-                        key={tournament.leagueId}
-                        tournament={{ ...tournament, isCurrent: true }}
-                        onClick={() => setModalTournament({ ...tournament, isCurrent: true })}
+                        key={tournament.id}
+                        tournament={tournament}
+                        status="live"
+                        onClick={() => setModalTournament({ tournament, status: "live" })}
                       />
                     ))}
                   </>
                 )}
 
-                {/* PandaScore upcoming tournaments */}
                 {upcomingTournaments.length > 0 && (
                   <>
                     <SectionLabel>{t("dota2.upcoming", "Upcoming Tournaments")}</SectionLabel>
                     {upcomingTournaments.map((tournament) => (
-                      <UpcomingTournamentRow
+                      <TournamentRow
                         key={tournament.id}
                         tournament={tournament}
-                        onClick={() => setModalUpcomingTournament(tournament)}
+                        status="upcoming"
+                        onClick={() => setModalTournament({ tournament, status: "upcoming" })}
                       />
                     ))}
                   </>
                 )}
 
-                {/* DatDota past tournaments */}
-                {pastTournaments.length > 0 && (
+                {completedTournaments.length > 0 && (
                   <>
                     <SectionLabel>{t("dota2.completed", "Completed")}</SectionLabel>
-                    {pastTournaments.slice(0, 8).map((tournament) => (
+                    {completedTournaments.slice(0, 8).map((tournament) => (
                       <TournamentRow
-                        key={tournament.leagueId}
-                        tournament={{ ...tournament, isCurrent: false }}
-                        onClick={() => setModalTournament({ ...tournament, isCurrent: false })}
+                        key={tournament.id}
+                        tournament={tournament}
+                        status="completed"
+                        onClick={() => setModalTournament({ tournament, status: "completed" })}
                       />
                     ))}
-                    {pastTournaments.length > 8 && (
+                    {completedTournaments.length > 8 && (
                       <button
                         type="button"
                         onClick={() => setShowCompletedModal(true)}
@@ -198,11 +213,10 @@ export default function Component({ service }) {
                   </>
                 )}
 
-                {!leaguesError &&
-                  !upcomingTournamentsError &&
+                {!tournamentsError &&
+                  ongoingTournaments.length === 0 &&
                   upcomingTournaments.length === 0 &&
-                  currentTournaments.length === 0 &&
-                  pastTournaments.length === 0 && (
+                  completedTournaments.length === 0 && (
                     <div className="text-[10px] text-theme-500 dark:text-theme-400 text-center py-1">
                       {t("dota2.noTournaments", "No tournaments")}
                     </div>
@@ -216,8 +230,8 @@ export default function Component({ service }) {
       {/* ── Completed tournaments modal ───────────────────────────────────── */}
       {showCompletedModal && (
         <CompletedTournamentsModal
-          tournaments={pastTournaments}
-          onSelect={(t) => { setShowCompletedModal(false); setModalTournament({ ...t, isCurrent: false }); }}
+          tournaments={completedTournaments}
+          onSelect={(tournament) => { setShowCompletedModal(false); setModalTournament({ tournament, status: "completed" }); }}
           onClose={() => setShowCompletedModal(false)}
         />
       )}
@@ -232,20 +246,16 @@ export default function Component({ service }) {
         />
       )}
 
-      {/* ── DatDota tournament modal ──────────────────────────────────────── */}
+      {/* ── Tournament modal ─────────────────────────────────────────────── */}
       {modalTournament && (
         <TournamentModal
-          tournament={modalTournament}
-          onClose={() => setModalTournament(null)}
-        />
-      )}
-
-      {/* ── PandaScore upcoming tournament modal ──────────────────────────── */}
-      {modalUpcomingTournament && (
-        <UpcomingTournamentModal
-          tournament={modalUpcomingTournament}
+          tournament={modalTournament.tournament}
+          status={modalTournament.status}
+          liveMatches={liveMatches}
+          upcomingMatches={upcomingMatches}
+          recentMatches={recentMatches}
           widget={widget}
-          onClose={() => setModalUpcomingTournament(null)}
+          onClose={() => setModalTournament(null)}
         />
       )}
     </Container>

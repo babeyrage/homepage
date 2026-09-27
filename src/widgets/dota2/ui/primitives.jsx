@@ -83,7 +83,7 @@ export function TournamentPulseRow() {
 // Static size map — all strings are literals so Tailwind JIT picks them up
 export const LOGO_SIZES = {
   xs: { box: "h-4 w-4", img: "h-3 w-3" },   // per-game rows inside a series
-  sm: { box: "h-5 w-5", img: "h-4 w-4" },   // PandaScore match rows
+  sm: { box: "h-5 w-5", img: "h-4 w-4" },   // match rows
   md: { box: "h-6 w-6", img: "h-5 w-5" },   // series header
   lg: { box: "h-7 w-7", img: "h-6 w-6" },   // teams grid
 };

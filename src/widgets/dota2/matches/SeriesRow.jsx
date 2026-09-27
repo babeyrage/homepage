@@ -1,9 +1,8 @@
 import { DateTime } from "luxon";
 import { useState } from "react";
-import useSWR from "swr";
 
 import { LogoBox } from "../ui/primitives";
-import { fmtDuration } from "../ui/utils";
+import { fmtDuration, useHeroConstants, useMatchDetail } from "../ui/utils";
 
 import { MatchDetailModal } from "./MatchDetailModal";
 
@@ -55,53 +54,53 @@ export function FirstPickBadge() {
 //  col 7: meta          3.5rem  — "Bo3 +/-" / duration
 const SERIES_GRID = "4.5rem 1fr 6px 3rem 6px 1fr 3.5rem";
 
-// ── Shared per-game data + derived state, used by both GameRow and MobileGameRow ──
+// ── Derive per-game presentational state from CitoAPI's draft[]/playerStats[] ──
+// (game is already resolved via the parent's match_detail fetch — no per-game
+// network call needed here, unlike the old OpenDota-backed useGameDetail.)
 
-function useGameDetail(game, team1Id) {
-  const { data, isLoading } = useSWR(
-    `/api/widgets/dota2?mode=match&matchId=${game.id}`,
-    { revalidateOnFocus: false },
-  );
+function deriveGameView(game, team1Id, heroes) {
+  const draft = game.draft ?? [];
+  const picks = draft.filter((d) => d.action === "pick");
+  const toHero = (p) => heroes[p.heroId] ?? { name: p.heroName, img: null };
 
-  const t1Won = game.winnerId === team1Id;
-  const duration = fmtDuration(game.length);
-  const t1IsRadiant = game.team1IsRadiant ?? true;
+  const leftPicks = picks
+    .filter((p) => p.teamId === team1Id)
+    .sort((a, b) => a.order - b.order)
+    .map(toHero);
+  const rightPicks = picks
+    .filter((p) => p.teamId !== team1Id)
+    .sort((a, b) => a.order - b.order)
+    .map(toHero);
 
-  const { radiantPicks, direPicks, firstPickIsRadiant } = data ?? {};
-  const leftPicks  = (t1IsRadiant ? radiantPicks : direPicks) ?? [];
-  const rightPicks = (t1IsRadiant ? direPicks    : radiantPicks) ?? [];
+  const firstPick = picks.length > 0 ? picks.reduce((a, b) => (a.order < b.order ? a : b)) : null;
+  const leftHasFirstPick = !!firstPick && firstPick.teamId === team1Id;
+  const rightHasFirstPick = !!firstPick && firstPick.teamId !== team1Id;
 
-  const showFirstPick = firstPickIsRadiant !== null && firstPickIsRadiant !== undefined;
-  const leftHasFirstPick  = showFirstPick && (t1IsRadiant === firstPickIsRadiant);
-  const rightHasFirstPick = showFirstPick && (t1IsRadiant !== firstPickIsRadiant);
+  const t1IsRadiant = game.radiantTeamId === team1Id;
+
+  const stats = game.playerStats ?? [];
+  const team1Score = stats.filter((p) => p.teamId === team1Id).reduce((sum, p) => sum + (p.kills ?? 0), 0);
+  const team2Score = stats.filter((p) => p.teamId !== team1Id).reduce((sum, p) => sum + (p.kills ?? 0), 0);
 
   return {
-    isLoading: isLoading || !data,
-    t1Won,
-    duration,
+    t1Won: game.winnerTeamId === team1Id,
+    duration: fmtDuration(game.duration),
     t1IsRadiant,
     leftPicks,
     rightPicks,
     leftHasFirstPick,
     rightHasFirstPick,
+    team1Score,
+    team2Score,
   };
 }
 
 // ── Individual game row — single button spanning all columns via subgrid ───────
 // Clicking anywhere on the row opens the match detail modal.
 
-export function GameRow({ game, idx, team1Id, onGameClick }) {
-  const { isLoading, t1Won, duration, t1IsRadiant, leftPicks, rightPicks, leftHasFirstPick, rightHasFirstPick } =
-    useGameDetail(game, team1Id);
-
-  if (isLoading) {
-    return (
-      <div
-        style={{ gridColumn: "1 / -1" }}
-        className="max-sm:hidden h-8 rounded-sm bg-theme-200/30 dark:bg-theme-900/15 animate-pulse my-px"
-      />
-    );
-  }
+export function GameRow({ game, idx, team1Id, heroes, onGameClick }) {
+  const { t1Won, duration, t1IsRadiant, leftPicks, rightPicks, leftHasFirstPick, rightHasFirstPick, team1Score, team2Score } =
+    deriveGameView(game, team1Id, heroes);
 
   return (
     <button
@@ -132,7 +131,7 @@ export function GameRow({ game, idx, team1Id, onGameClick }) {
 
       {/* Col 4: kill score */}
       <span className="text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center py-1 leading-none self-center">
-        {game.team1Score}–{game.team2Score}
+        {team1Score}–{team2Score}
       </span>
 
       {/* Col 5: right win pip */}
@@ -163,18 +162,9 @@ export function GameRow({ game, idx, team1Id, onGameClick }) {
 // ── Mobile game row — single button spanning all columns via subgrid ──────────
 // Clicking anywhere on the row opens the match detail modal.
 
-export function MobileGameRow({ game, idx, team1Id, onGameClick }) {
-  const { isLoading, t1Won, duration, t1IsRadiant, leftPicks, rightPicks, leftHasFirstPick, rightHasFirstPick } =
-    useGameDetail(game, team1Id);
-
-  if (isLoading) {
-    return (
-      <div
-        style={{ gridColumn: "1 / -1" }}
-        className="sm:hidden h-8 rounded-sm bg-theme-200/30 dark:bg-theme-900/15 animate-pulse my-px"
-      />
-    );
-  }
+export function MobileGameRow({ game, idx, team1Id, heroes, onGameClick }) {
+  const { t1Won, duration, t1IsRadiant, leftPicks, rightPicks, leftHasFirstPick, rightHasFirstPick, team1Score, team2Score } =
+    deriveGameView(game, team1Id, heroes);
 
   return (
     <button
@@ -195,7 +185,7 @@ export function MobileGameRow({ game, idx, team1Id, onGameClick }) {
       </div>
       {/* Col 4: kill score */}
       <span className="text-[9px] font-bold tabular-nums text-theme-700 dark:text-theme-200 text-center leading-none self-center">
-        {game.team1Score}–{game.team2Score}
+        {team1Score}–{team2Score}
       </span>
       {/* Col 5: right win pip — same column as series pip */}
       <div className="flex items-center justify-center">
@@ -235,30 +225,30 @@ export function MobileGameRow({ game, idx, team1Id, onGameClick }) {
   );
 }
 
-// ── Series row (OpenDota reconstructed series) ────────────────────────────────
+// ── Series row (CitoAPI match, with games lazily loaded via match_detail) ──────
 
 export function winsNeeded(numberOfGames) {
   return Math.floor((numberOfGames ?? 3) / 2) + 1;
 }
 
-export function SeriesRow({ series }) {
+export function SeriesRow({ series, widget }) {
   const [expanded, setExpanded] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
+  const heroes = useHeroConstants();
 
-  const { team1Id, team1Name, team1Tag, team1Logo, team2Id, team2Name, team2Tag, team2Logo, winnerId, games, numberOfGames } = series;
+  const { data: matchDetail, isLoading } = useMatchDetail(widget, expanded ? series.id : null);
+  const games = matchDetail?.games ?? [];
 
-  const team1Wins = games.filter((g) => g.winnerId === team1Id).length;
-  const team2Wins = games.filter((g) => g.winnerId === team2Id).length;
-  const pipCount = winsNeeded(numberOfGames);
+  const {
+    id, team1Id, team1, team1Tag, team1Logo, team2Id, team2, team2Tag, team2Logo,
+    winnerTeamId, team1Score, team2Score, bestOf, beginAt,
+  } = series;
 
-  const team1Won = winnerId !== null && winnerId === team1Id;
-  const team2Won = winnerId !== null && winnerId === team2Id;
+  const pipCount = winsNeeded(bestOf);
+  const team1Won = winnerTeamId !== null && winnerTeamId === team1Id;
+  const team2Won = winnerTeamId !== null && winnerTeamId === team2Id;
 
-  const lastGame = games.length > 0 ? games[games.length - 1] : null;
-  const finishedAt =
-    lastGame?.startTime && lastGame?.length
-      ? DateTime.fromSeconds(lastGame.startTime + lastGame.length)
-      : null;
+  const finishedAt = beginAt ? DateTime.fromISO(beginAt) : null;
 
   const nameClass = (won) =>
     won
@@ -277,11 +267,23 @@ export function SeriesRow({ series }) {
         className="grid items-center py-1.5 hover:bg-theme-200/50 dark:hover:bg-theme-900/30 transition-colors"
         style={{ gridColumn: "1 / -1", gridTemplateColumns: "subgrid" }}
       >
-        {/* Col 1: FINISHED + date */}
+        {/* Col 1: status label + date — SeriesRow is reused for live series inside
+            TournamentModal, so the label reflects the match's own status rather
+            than assuming "finished". */}
         <div className="flex flex-col items-start min-w-0">
-          <span className="text-[8px] font-bold uppercase tracking-wide text-theme-500 dark:text-theme-400 leading-none">
-            Finished
-          </span>
+          {series.status === "live" ? (
+            <span className="flex items-center gap-1 leading-none">
+              <span className="relative flex h-1.5 w-1.5 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" />
+              </span>
+              <span className="text-[8px] font-bold uppercase tracking-wide text-red-500">Live</span>
+            </span>
+          ) : (
+            <span className="text-[8px] font-bold uppercase tracking-wide text-theme-500 dark:text-theme-400 leading-none">
+              {series.status === "upcoming" ? "Upcoming" : "Finished"}
+            </span>
+          )}
           {finishedAt && (
             <span className="text-[8px] text-theme-400 dark:text-theme-500 leading-none tabular-nums mt-px whitespace-nowrap">
               {finishedAt.toFormat("d MMM, HH:mm")}
@@ -291,8 +293,8 @@ export function SeriesRow({ series }) {
 
         {/* Col 2: team1 name + logo */}
         <div className="flex items-center gap-1.5 justify-end min-w-0">
-          <span className={`${nameClass(team1Won)} text-right sm:hidden`}>{team1Tag || team1Name}</span>
-          <span className={`${nameClass(team1Won)} text-right max-sm:hidden`}>{team1Name}</span>
+          <span className={`${nameClass(team1Won)} text-right sm:hidden`}>{team1Tag || team1}</span>
+          <span className={`${nameClass(team1Won)} text-right max-sm:hidden`}>{team1}</span>
           <LogoBox src={team1Logo} size="md" />
         </div>
 
@@ -301,7 +303,7 @@ export function SeriesRow({ series }) {
           {Array.from({ length: pipCount }, (_, i) => (
             <span
               key={i}
-              className={`block w-1.5 h-1.5 rounded-full ${i < team1Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
+              className={`block w-1.5 h-1.5 rounded-full ${i < team1Score ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
             />
           ))}
         </div>
@@ -316,7 +318,7 @@ export function SeriesRow({ series }) {
           {Array.from({ length: pipCount }, (_, i) => (
             <span
               key={i}
-              className={`block w-1.5 h-1.5 rounded-full ${i < team2Wins ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
+              className={`block w-1.5 h-1.5 rounded-full ${i < team2Score ? "bg-emerald-400 dark:bg-emerald-500" : "bg-theme-300/50 dark:bg-theme-700/50"}`}
             />
           ))}
         </div>
@@ -324,15 +326,15 @@ export function SeriesRow({ series }) {
         {/* Col 6: team2 logo + name */}
         <div className="flex items-center gap-1.5 min-w-0">
           <LogoBox src={team2Logo} size="md" />
-          <span className={`${nameClass(team2Won)} sm:hidden`}>{team2Tag || team2Name}</span>
-          <span className={`${nameClass(team2Won)} max-sm:hidden`}>{team2Name}</span>
+          <span className={`${nameClass(team2Won)} sm:hidden`}>{team2Tag || team2}</span>
+          <span className={`${nameClass(team2Won)} max-sm:hidden`}>{team2}</span>
         </div>
 
         {/* Col 7: Bo3/5 + toggle */}
         <div className="flex items-center justify-between gap-1">
-          {numberOfGames && (
+          {bestOf && (
             <span className="text-[8px] text-theme-400 dark:text-theme-500 tabular-nums leading-none">
-              Bo{numberOfGames}
+              Bo{bestOf}
             </span>
           )}
           <span className="text-sm font-bold text-theme-400 dark:text-theme-500 select-none leading-none">
@@ -347,14 +349,23 @@ export function SeriesRow({ series }) {
           className="grid items-center border-t border-theme-300/20 dark:border-theme-700/20 py-1"
           style={{ gridColumn: "1 / -1", gridTemplateColumns: "subgrid" }}
         >
-          {/* Mobile: Fragment cells sit directly in the subgrid (sm:hidden) */}
-          {games.map((game, idx) => (
-            <MobileGameRow key={`m-${game.id}`} game={game} idx={idx} team1Id={team1Id} onGameClick={setSelectedGame} />
-          ))}
-          {/* Desktop: 7-cell fragments — cells carry max-sm:hidden */}
-          {games.map((game, idx) => (
-            <GameRow key={game.id} game={game} idx={idx} team1Id={team1Id} onGameClick={setSelectedGame} />
-          ))}
+          {isLoading ? (
+            <div
+              style={{ gridColumn: "1 / -1" }}
+              className="h-8 rounded-sm bg-theme-200/30 dark:bg-theme-900/15 animate-pulse my-px"
+            />
+          ) : (
+            <>
+              {/* Mobile: Fragment cells sit directly in the subgrid (sm:hidden) */}
+              {games.map((game, idx) => (
+                <MobileGameRow key={`m-${game.id}`} game={game} idx={idx} team1Id={team1Id} heroes={heroes} onGameClick={setSelectedGame} />
+              ))}
+              {/* Desktop: 7-cell fragments — cells carry max-sm:hidden */}
+              {games.map((game, idx) => (
+                <GameRow key={game.id} game={game} idx={idx} team1Id={team1Id} heroes={heroes} onGameClick={setSelectedGame} />
+              ))}
+            </>
+          )}
         </div>
       )}
 
@@ -362,6 +373,7 @@ export function SeriesRow({ series }) {
         <MatchDetailModal
           game={selectedGame}
           series={series}
+          heroes={heroes}
           onClose={() => setSelectedGame(null)}
         />
       )}
