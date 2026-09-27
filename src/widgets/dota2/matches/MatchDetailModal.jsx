@@ -43,15 +43,18 @@ function buildPlayer(p, heroes, enrichment) {
   };
 }
 
-// Small colour-coded dot indicating a stat's percentile vs. other pros at the same role/bracket.
-function PercentileDot({ pct }) {
+// Colour-coded fill bar indicating a stat's percentile vs. other pros at the same role/bracket.
+function PercentileBar({ pct }) {
   if (pct === null || pct === undefined) return null;
+  const rounded = Math.round(pct);
   const color = pct >= 75 ? "bg-emerald-400" : pct >= 40 ? "bg-amber-400" : "bg-red-400";
   return (
     <span
-      className={`inline-block w-1 h-1 rounded-full ${color} ml-1 align-middle`}
-      title={`${Math.round(pct)}th percentile`}
-    />
+      className="inline-block align-middle w-4 h-1 ml-1 rounded-full bg-theme-700 overflow-hidden"
+      title={`${rounded}th percentile`}
+    >
+      <span className={`block h-full rounded-full ${color}`} style={{ width: `${rounded}%` }} />
+    </span>
   );
 }
 
@@ -92,11 +95,11 @@ export function PlayerTableRow({ player }) {
       <td className="text-center px-1 w-14 text-[11px] font-semibold text-amber-400 tabular-nums">{player.netWorth != null ? fmtK(player.netWorth) : "—"}</td>
       {/* GPM / XPM */}
       <td className="text-center px-1 w-16 text-[10px] text-theme-400 tabular-nums whitespace-nowrap">
-        {player.gpm}<PercentileDot pct={player.benchmarkPercentiles?.gpm} />/{player.xpm}<PercentileDot pct={player.benchmarkPercentiles?.xpm} />
+        {player.gpm}<PercentileBar pct={player.benchmarkPercentiles?.gpm} />/{player.xpm}<PercentileBar pct={player.benchmarkPercentiles?.xpm} />
       </td>
       {/* HD */}
       <td className="text-center px-1 w-14 text-[10px] text-theme-400 tabular-nums">
-        {fmtK(player.heroDamage)}<PercentileDot pct={player.benchmarkPercentiles?.heroDamage} />
+        {fmtK(player.heroDamage)}<PercentileBar pct={player.benchmarkPercentiles?.heroDamage} />
       </td>
       {/* TD */}
       <td className="text-center px-1 w-12 text-[10px] text-theme-500 tabular-nums">{player.towerDamage > 0 ? fmtK(player.towerDamage) : "—"}</td>
@@ -222,7 +225,7 @@ export function SmallPlayerRow({ player, tab }) {
         <>
           <td className="text-center px-1 w-14 text-[10px] text-theme-400 tabular-nums whitespace-nowrap">{player.lastHits}/{player.denies}</td>
           <td className="text-center px-1 w-16 text-[10px] text-theme-400 tabular-nums whitespace-nowrap">
-            {player.gpm}<PercentileDot pct={player.benchmarkPercentiles?.gpm} />/{player.xpm}<PercentileDot pct={player.benchmarkPercentiles?.xpm} />
+            {player.gpm}<PercentileBar pct={player.benchmarkPercentiles?.gpm} />/{player.xpm}<PercentileBar pct={player.benchmarkPercentiles?.xpm} />
           </td>
           <td className="text-center px-1 w-16 text-[10px] font-semibold text-amber-400 tabular-nums">{player.netWorth != null ? fmtK(player.netWorth) : "—"}</td>
         </>
@@ -230,7 +233,9 @@ export function SmallPlayerRow({ player, tab }) {
 
       {tab === "Damage" && (
         <>
-          <td className="text-center px-1 w-16 text-[10px] text-theme-400 tabular-nums">{fmtK(player.heroDamage)}</td>
+          <td className="text-center px-1 w-16 text-[10px] text-theme-400 tabular-nums">
+            {fmtK(player.heroDamage)}<PercentileBar pct={player.benchmarkPercentiles?.heroDamage} />
+          </td>
           <td className="text-center px-1 w-14 text-[10px] text-theme-500 tabular-nums">{player.towerDamage > 0 ? fmtK(player.towerDamage) : "—"}</td>
           <td className="text-center px-1 w-16 text-[10px] font-semibold text-amber-400 tabular-nums">{player.netWorth != null ? fmtK(player.netWorth) : "—"}</td>
         </>
