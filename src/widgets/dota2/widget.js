@@ -39,8 +39,13 @@ function mapMatch(m) {
     id: m.id,
     tournamentId: m.tournamentId,
     leagueName: m.tournamentName ?? "",
-    team1Id: m.team1Id,
-    team2Id: m.team2Id,
+    // CitoAPI's own top-level team1Id/team2Id field is unreliable — it returns
+    // a slug string (e.g. "na-vi") instead of the numeric id for a meaningful
+    // share of matches, even though draft[]/playerStats[]/radiantTeamId always
+    // use the numeric id. The nested team object's own `id` is numeric in every
+    // sample seen, so prefer that and only fall back to the flat field.
+    team1Id: team1.id ?? m.team1Id,
+    team2Id: team2.id ?? m.team2Id,
     team1: m.team1Name ?? team1.name ?? "TBD",
     team2: m.team2Name ?? team2.name ?? "TBD",
     team1Tag: team1.tag ?? "",
@@ -79,6 +84,37 @@ function mapPlayerStat(p) {
     heroDamage: p.heroDamage ?? 0,
     towerDamage: p.towerDamage ?? 0,
     benchmarkPercentiles: p.benchmarkPercentiles ?? null,
+  };
+}
+
+// CitoAPI's per-match team object has two tiers of richness: every team carries
+// the flat identity fields (name/tag/imageUrl/country/worldRanking), but only
+// teams CitoAPI has fully synced ("gosu" profile) also carry a `raw` blob with
+// win/loss/Elo/roster data. Coverage is inconsistent match-to-match — this stays
+// defensive and simply omits sections the thin shape doesn't have.
+function mapTeamProfile(team) {
+  if (!team) return null;
+  const raw = team.raw ?? {};
+  return {
+    name: team.name ?? raw.name ?? null,
+    tag: team.tag ?? raw.tag ?? null,
+    imageUrl: team.imageUrl ?? null,
+    countryName: team.countryName ?? null,
+    countryFlag: raw.country?.flagImageUrl ?? null,
+    worldRanking: team.worldRanking ?? null,
+    winCount: raw.winCount ?? null,
+    lossCount: raw.lossCount ?? null,
+    drawCount: raw.drawCount ?? null,
+    eloRating: raw.eloRating ?? null,
+    winRate: raw.teamPerformance?.winRate ?? null,
+    followerCount: raw.followerCount ?? null,
+    earningPrizeUsd: raw.earningPrize?.prizeAmountUsd ?? null,
+    // toAt is set once a player leaves the roster — null means still active.
+    players: Array.isArray(raw.players)
+      ? raw.players
+          .filter((p) => p.toAt == null)
+          .map((p) => ({ id: p.id, name: p.name ?? null, imageUrl: p.imageUrl ?? null, countryFlag: p.country?.flagImageUrl ?? null }))
+      : [],
   };
 }
 
@@ -142,6 +178,8 @@ const widget = {
         return {
           ...mapMatch(m),
           games: Array.isArray(m.games) ? m.games.map(mapGame) : [],
+          team1Profile: mapTeamProfile(m.team1),
+          team2Profile: mapTeamProfile(m.team2),
         };
       },
     },

@@ -14,15 +14,19 @@ import { SeriesRow } from "../matches/SeriesRow";
 
 const PAGE_SIZE = 10;
 
+// CitoAPI has no standalone "get team by id" endpoint — team profile data only
+// ever comes embedded in a specific match's detail response. Each participant
+// keeps a reference to one match it played (and which side it was on) so the
+// team modal can fetch that match's detail and pull the right team object.
 function collectParticipants(matchLists) {
   const byId = new Map();
   for (const list of matchLists) {
     for (const m of list) {
       if (m.team1Id != null && !byId.has(m.team1Id)) {
-        byId.set(m.team1Id, { teamId: m.team1Id, name: m.team1, logo: m.team1Logo });
+        byId.set(m.team1Id, { teamId: m.team1Id, name: m.team1, logo: m.team1Logo, matchId: m.id, side: "team1" });
       }
       if (m.team2Id != null && !byId.has(m.team2Id)) {
-        byId.set(m.team2Id, { teamId: m.team2Id, name: m.team2, logo: m.team2Logo });
+        byId.set(m.team2Id, { teamId: m.team2Id, name: m.team2, logo: m.team2Logo, matchId: m.id, side: "team2" });
       }
     }
   }
@@ -247,9 +251,11 @@ export function TournamentModal({ tournament, status, liveMatches, upcomingMatch
       {modal}
       {selectedTeam && (
         <TeamModal
-          teamId={selectedTeam.teamId}
+          matchId={selectedTeam.matchId}
+          side={selectedTeam.side}
           teamName={selectedTeam.name}
           teamLogo={selectedTeam.logo}
+          widget={widget}
           onClose={() => setSelectedTeam(null)}
         />
       )}

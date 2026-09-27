@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { useTranslation } from "next-i18next/pages";
 import { useMemo, useState } from "react";
 
@@ -14,6 +15,10 @@ import Container from "components/services/widget/container";
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+// Only surface completed tournaments that wrapped up recently — CitoAPI's
+// listing otherwise goes back indefinitely and buries anything current.
+const COMPLETED_WINDOW_DAYS = 30;
+
 // CitoAPI's own tournament.status is null for a large share of tournaments —
 // fall back to cross-referencing the tournament's id against whichever match
 // list currently references it. A tournament with no live/upcoming match (or
@@ -23,6 +28,15 @@ function deriveTournamentStatus(tournament, liveMatches, upcomingMatches) {
   if (liveMatches.some((m) => m.tournamentId === tournament.id)) return "live";
   if (upcomingMatches.some((m) => m.tournamentId === tournament.id)) return "upcoming";
   return "completed";
+}
+
+// A completed tournament with no end/start date at all can't be judged for
+// recency — exclude it rather than let stale, undated entries pile up.
+function isRecentlyCompleted(tournament, cutoff) {
+  const finished = tournament.endsAt ?? tournament.startsAt;
+  if (!finished) return false;
+  const finishedAt = DateTime.fromISO(finished);
+  return finishedAt.isValid && finishedAt >= cutoff;
 }
 
 export default function Component({ service }) {
@@ -49,6 +63,7 @@ export default function Component({ service }) {
     const live = Array.isArray(liveData) ? liveData : [];
     const upcoming = Array.isArray(upcomingData) ? upcomingData : [];
     const list = Array.isArray(tournamentsData) ? tournamentsData : [];
+    const cutoff = DateTime.now().minus({ days: COMPLETED_WINDOW_DAYS });
 
     const ongoing = [];
     const scheduled = [];
@@ -57,7 +72,7 @@ export default function Component({ service }) {
       const status = deriveTournamentStatus(tournament, live, upcoming);
       if (status === "live") ongoing.push(tournament);
       else if (status === "upcoming") scheduled.push(tournament);
-      else completed.push(tournament);
+      else if (isRecentlyCompleted(tournament, cutoff)) completed.push(tournament);
     }
     return { ongoingTournaments: ongoing, upcomingTournaments: scheduled, completedTournaments: completed };
   }, [tournamentsData, liveData, upcomingData]);
