@@ -91,28 +91,19 @@ layout:
 # missed and both groups leaked onto every tab instead of staying HOMELAB-only.
   Developer:
     tab: HOMELAB
-    style: row
-    columns: 3
   Productivity:
     tab: HOMELAB
-    style: row
-    columns: 2
   Entertainment:
     tab: HOMELAB
-    style: row
-    columns: 3
   Torrents/Indexers:
     tab: HOMELAB
-    style: row
-    columns: 3
 
 ### WORK ###
   ESN:
     tab: WORK
-    style: row
-    columns: 3
-  M365:
+  MICROSOFT:
     tab: WORK
+    icon: microsoft.svg
   CONNECTWISE:
     tab: WORK
   CYBER:

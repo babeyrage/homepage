@@ -110,11 +110,51 @@
           href: https://account.ui.com/login
           description: Ubiquiti network controller
 
-- M365:
-    - Admin:
-        - icon: microsoft-365.svg
+- MICROSOFT:
+    - M365 Admin:
+        - icon: microsoft-365-admin-center.svg
           href: https://admin.cloud.microsoft
           description: Microsoft 365 admin center
+
+    - Entra:
+        - icon: entra-id.svg
+          href: https://entra.microsoft.com
+          description: Identity, users & conditional access
+
+    - Azure:
+        - icon: microsoft-azure.svg
+          href: https://portal.azure.com
+          description: Azure resource management
+
+    - Defender:
+        - icon: microsoft-defender.svg
+          href: https://security.microsoft.com
+          description: Security & incident response
+
+    - Purview:
+        - abbr: PUR
+          href: https://purview.microsoft.com
+          description: Compliance, DLP & eDiscovery
+
+    - Exchange:
+        - icon: microsoft-exchange.svg
+          href: https://admin.exchange.microsoft.com
+          description: Mail flow & mailbox admin
+
+    - Teams:
+        - icon: microsoft-teams.svg
+          href: https://admin.teams.microsoft.com
+          description: Teams admin center
+
+    - SharePoint:
+        - icon: microsoft-sharepoint.svg
+          href: https://admin.microsoft.com/sharepoint
+          description: SharePoint & OneDrive admin
+
+    - Intune:
+        - icon: microsoft-intune.svg
+          href: https://intune.microsoft.com
+          description: Endpoint & device management
 
 - CONNECTWISE:
     - ScreenConnect:
