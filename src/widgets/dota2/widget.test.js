@@ -122,4 +122,122 @@ describe("dota2 widget config", () => {
 
     expect(result).toBeNull();
   });
+
+  it("sums live per-player net worth/last hits by side and orients via mapsToCitoTeam", () => {
+    const result = widget.mappings.recent_matches.map(
+      fixture({
+        data: [
+          {
+            id: 1,
+            team1Id: 2933,
+            team2Id: 2590,
+            live: {
+              gameTime: 1600.4,
+              radiant: { kills: 11, mapsToCitoTeam: "team1" },
+              dire: { kills: 10, mapsToCitoTeam: "team2" },
+              players: [
+                { teamSide: "radiant", netWorth: 22415, lastHits: 450 },
+                { teamSide: "radiant", netWorth: 5810, lastHits: 49 },
+                { teamSide: "dire", netWorth: 14782, lastHits: 258 },
+                { teamSide: "dire", netWorth: 3940, lastHits: 17 },
+              ],
+            },
+          },
+        ],
+      }),
+    );
+
+    const player = (teamSide, netWorth, lastHits) => ({
+      accountId: null,
+      playerName: null,
+      teamTag: null,
+      teamSide,
+      heroId: null,
+      level: 0,
+      kills: 0,
+      deaths: 0,
+      assists: 0,
+      netWorth,
+      gpm: 0,
+      xpm: 0,
+      lastHits,
+      denies: 0,
+      items: [],
+    });
+
+    expect(result[0].live).toEqual({
+      gameTime: 1600.4,
+      radiantIsTeam1: true,
+      radiant: { kills: 11, netWorth: 28225, lastHits: 499 },
+      dire: { kills: 10, netWorth: 18722, lastHits: 275 },
+      players: [
+        player("radiant", 22415, 450),
+        player("radiant", 5810, 49),
+        player("dire", 14782, 258),
+        player("dire", 3940, 17),
+      ],
+    });
+  });
+
+  it("returns a null live block when the match has no game currently in progress", () => {
+    const result = widget.mappings.recent_matches.map(fixture({ data: [{ id: 1 }] }));
+
+    expect(result[0].live).toBeNull();
+  });
+
+  it("maps full per-player live fields, including raw numeric item ids", () => {
+    const result = widget.mappings.recent_matches.map(
+      fixture({
+        data: [
+          {
+            id: 1,
+            live: {
+              gameTime: 900,
+              radiant: { kills: 5, mapsToCitoTeam: "team2" },
+              dire: { kills: 3, mapsToCitoTeam: "team1" },
+              players: [
+                {
+                  accountId: 12345,
+                  playerName: "Miracle-",
+                  teamTag: "NAVI",
+                  teamSide: "radiant",
+                  heroId: 1,
+                  level: 12,
+                  kills: 4,
+                  deaths: 1,
+                  assists: 3,
+                  netWorth: 9000,
+                  gpm: 620,
+                  xpm: 700,
+                  lastHits: 120,
+                  denies: 5,
+                  items: [1, 2, 0, 0, 0, 0],
+                },
+              ],
+            },
+          },
+        ],
+      }),
+    );
+
+    expect(result[0].live.players).toEqual([
+      {
+        accountId: 12345,
+        playerName: "Miracle-",
+        teamTag: "NAVI",
+        teamSide: "radiant",
+        heroId: 1,
+        level: 12,
+        kills: 4,
+        deaths: 1,
+        assists: 3,
+        netWorth: 9000,
+        gpm: 620,
+        xpm: 700,
+        lastHits: 120,
+        denies: 5,
+        items: [1, 2, 0, 0, 0, 0],
+      },
+    ]);
+  });
 });

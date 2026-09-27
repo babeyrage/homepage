@@ -112,3 +112,32 @@ export function useHeroConstants() {
   const { data } = useSWR("/api/widgets/dota2?mode=constants", { revalidateOnFocus: false });
   return data?.heroes ?? {};
 }
+
+// Static item id -> {name, img} lookup for a live game's raw numeric item ids.
+// Same SWR key as useHeroConstants() — dedup'd by SWR into a single request.
+export function useItemConstants() {
+  const { data } = useSWR("/api/widgets/dota2?mode=constants", { revalidateOnFocus: false });
+  return data?.items ?? {};
+}
+
+// Orient a match's live in-game telemetry so "left" always corresponds to
+// team1 and "right" to team2 — Radiant/Dire swap between games within a
+// series, so this is resolved per live snapshot via CitoAPI's own
+// radiantIsTeam1 flag rather than assumed fixed for the series. Also splits
+// out each side's individual players (sorted by net worth) for the live
+// scoreboard, alongside the existing side-total fields.
+export function orientLiveSides(live) {
+  if (!live) return null;
+  const left = live.radiantIsTeam1 ? live.radiant : live.dire;
+  const right = live.radiantIsTeam1 ? live.dire : live.radiant;
+  const leftSide = live.radiantIsTeam1 ? "radiant" : "dire";
+  const rightSide = live.radiantIsTeam1 ? "dire" : "radiant";
+  const players = Array.isArray(live.players) ? live.players : [];
+  const bySide = (side) =>
+    players.filter((p) => p.teamSide === side).sort((a, b) => b.netWorth - a.netWorth);
+  return {
+    gameTime: live.gameTime,
+    left: { ...left, side: leftSide, players: bySide(leftSide) },
+    right: { ...right, side: rightSide, players: bySide(rightSide) },
+  };
+}

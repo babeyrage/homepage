@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { SectionLabel, ZoneLabel, MatchPulseRow, TournamentPulseRow } from "./ui/primitives";
 import { formatDayLabel, groupMatchesByDay } from "./ui/utils";
 import { MatchRow } from "./matches/MatchRow";
+import { LiveMatchPanel } from "./matches/LiveMatchPanel";
 import { TournamentRow } from "./tournaments/TournamentRow";
 import { TournamentModal } from "./tournaments/TournamentModal";
 import { CompletedTournamentsModal } from "./modals/CompletedTournamentsModal";
@@ -47,6 +48,7 @@ export default function Component({ service }) {
   const [showAbsoluteTime, setShowAbsoluteTime] = useState(true);
   const [showUpcomingModal, setShowUpcomingModal] = useState(false);
   const [showCompletedModal, setShowCompletedModal] = useState(false);
+  const [liveMatchPanel, setLiveMatchPanel] = useState(null);
 
   const { data: liveData, error: liveError } = useWidgetAPI(widget, "live_matches");
   const { data: upcomingData, error: upcomingError } = useWidgetAPI(widget, "upcoming_matches");
@@ -106,7 +108,13 @@ export default function Component({ service }) {
                   <>
                     <SectionLabel>{t("dota2.live", "Live Matches")}</SectionLabel>
                     {liveMatches.map((match) => (
-                      <MatchRow key={match.id} match={match} live showAbsolute={false} />
+                      <MatchRow
+                        key={match.id}
+                        match={match}
+                        live
+                        showAbsolute={false}
+                        onClick={match.live ? () => setLiveMatchPanel(match) : undefined}
+                      />
                     ))}
                   </>
                 )}
@@ -259,6 +267,11 @@ export default function Component({ service }) {
           onToggleTime={() => setShowAbsoluteTime((v) => !v)}
           onClose={() => setShowUpcomingModal(false)}
         />
+      )}
+
+      {/* ── Live in-game panel ───────────────────────────────────────────── */}
+      {liveMatchPanel && (
+        <LiveMatchPanel match={liveMatchPanel} onClose={() => setLiveMatchPanel(null)} />
       )}
 
       {/* ── Tournament modal ─────────────────────────────────────────────── */}

@@ -32,6 +32,57 @@ function pickStreamUrl(streamsList) {
   return candidate?.url ?? null;
 }
 
+// CitoAPI's `live` block only exists on a match while one of its games is
+// actually being played (absent between games in a series, and absent once
+// finished). It carries real-time net worth/kills/items per player, keyed by
+// teamSide (radiant/dire) rather than team1/team2 — and unlike the tournament
+// tier this project pulled from CitoAPI's LoL feed, Cito hands back an explicit
+// `mapsToCitoTeam` flag on each side, so which Cito team is currently Radiant
+// doesn't need to be inferred from a name/slug match, just read off directly.
+function mapLivePlayer(p) {
+  return {
+    accountId: p.accountId ?? null,
+    playerName: p.playerName ?? null,
+    teamTag: p.teamTag ?? null,
+    teamSide: p.teamSide,
+    heroId: p.heroId ?? null,
+    level: p.level ?? 0,
+    kills: p.kills ?? 0,
+    deaths: p.deaths ?? 0,
+    assists: p.assists ?? 0,
+    netWorth: p.netWorth ?? 0,
+    gpm: p.gpm ?? 0,
+    xpm: p.xpm ?? 0,
+    lastHits: p.lastHits ?? 0,
+    denies: p.denies ?? 0,
+    // Raw numeric Valve item ids — resolved to {name, img} client-side via
+    // useItemConstants(), same static lookup handleMatch uses for finished
+    // games, since a live game has no OpenDota match to key a per-match
+    // lookup off of yet.
+    items: Array.isArray(p.items) ? p.items : [],
+  };
+}
+
+function mapLiveTelemetry(live) {
+  if (!live) return null;
+  const players = Array.isArray(live.players) ? live.players : [];
+  const sideTotals = (side) => {
+    const sidePlayers = players.filter((p) => p.teamSide === side);
+    return {
+      kills: live[side]?.kills ?? 0,
+      netWorth: sidePlayers.reduce((sum, p) => sum + (p.netWorth ?? 0), 0),
+      lastHits: sidePlayers.reduce((sum, p) => sum + (p.lastHits ?? 0), 0),
+    };
+  };
+  return {
+    gameTime: live.gameTime ?? null,
+    radiantIsTeam1: live.radiant?.mapsToCitoTeam === "team1",
+    radiant: sideTotals("radiant"),
+    dire: sideTotals("dire"),
+    players: players.map(mapLivePlayer),
+  };
+}
+
 function mapMatch(m) {
   const team1 = m.team1 ?? {};
   const team2 = m.team2 ?? {};
@@ -59,6 +110,7 @@ function mapMatch(m) {
     status: m.status ?? null,
     beginAt: m.startsAt,
     streamUrl: pickStreamUrl(m.raw?.streams),
+    live: mapLiveTelemetry(m.live),
   };
 }
 

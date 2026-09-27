@@ -1,15 +1,33 @@
 import { DateTime } from "luxon";
 
 import { LogoBox } from "../ui/primitives";
-import { shortRelative } from "../ui/utils";
+import { orientLiveSides, shortRelative } from "../ui/utils";
 
 // ── Live / upcoming match row ──────────────────────────────────────────────────
 
-export function MatchRow({ match, live, showAbsolute }) {
+// Thin net-worth-share bar shown under a live match row — a compact,
+// always-visible preview of the full LiveMatchPanel's split bar.
+function NetWorthPreview({ live }) {
+  const sides = orientLiveSides(live);
+  if (!sides) return null;
+  const total = sides.left.netWorth + sides.right.netWorth;
+  const leftShare = total > 0 ? (sides.left.netWorth / total) * 100 : 50;
+  return (
+    <div className="flex h-1 gap-0.5 overflow-hidden rounded-full">
+      <div className={`h-full rounded-l-full ${sides.left.side === "radiant" ? "bg-emerald-500" : "bg-red-500"}`} style={{ width: `${leftShare}%` }} />
+      <div className={`h-full rounded-r-full ${sides.right.side === "radiant" ? "bg-emerald-500" : "bg-red-500"}`} style={{ width: `${100 - leftShare}%` }} />
+    </div>
+  );
+}
+
+export function MatchRow({ match, live, showAbsolute, onClick }) {
   const beginAt = match.beginAt ? DateTime.fromISO(match.beginAt) : null;
 
   return (
-    <div className="flex flex-col rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-1 mb-0.5 gap-0.5">
+    <div
+      onClick={onClick}
+      className={`flex flex-col rounded-sm bg-theme-200/50 dark:bg-theme-900/20 px-1.5 py-1 mb-0.5 gap-0.5 ${onClick ? "cursor-pointer hover:bg-theme-200/80 dark:hover:bg-theme-900/40 transition-colors" : ""}`}
+    >
       {/* Team row */}
       <div className="flex items-center gap-1">
         {/* Team 1 */}
@@ -69,6 +87,8 @@ export function MatchRow({ match, live, showAbsolute }) {
           </a>
         )}
       </div>
+
+      {live && match.live && <NetWorthPreview live={match.live} />}
     </div>
   );
 }
