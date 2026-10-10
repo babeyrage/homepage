@@ -103,7 +103,7 @@ export function useMatchDetail(widget, matchId) {
   const params = matchId ? getURLSearchParams(widget, "match_detail") : null;
   if (params) params.append("segments", JSON.stringify({ matchId: String(matchId) }));
   const url = params ? `/api/services/proxy?${params.toString()}` : null;
-  return useSWR(url, { revalidateOnFocus: false });
+  return useSWR(url, { revalidateOnFocus: false, revalidateOnReconnect: false });
 }
 
 // Static hero id -> {name, img} lookup, used to render portraits for CitoAPI

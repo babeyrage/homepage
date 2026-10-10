@@ -1,5 +1,6 @@
+import dota2ProxyHandler, { CITO_API_BASE } from "./proxy";
+
 import { asJson } from "utils/proxy/api-helpers";
-import credentialedProxyHandler from "utils/proxy/handlers/credentialed";
 
 // CitoAPI stream platform codes observed in the wild: 1 = Twitch, 11 = YouTube, 99 = Kick.
 // streamUrl is frequently null for Twitch/YouTube — derive a playable URL from platform + streamId.
@@ -185,8 +186,8 @@ function mapGame(g) {
 }
 
 const widget = {
-  api: "https://api.citoapi.com/api/v1/dota2/{endpoint}",
-  proxyHandler: credentialedProxyHandler,
+  api: `${CITO_API_BASE}/{endpoint}`,
+  proxyHandler: dota2ProxyHandler,
 
   mappings: {
     // Response shape differs from the other list endpoints: array is nested at data.matches.

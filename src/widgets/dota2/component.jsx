@@ -16,6 +16,18 @@ import Container from "components/services/widget/container";
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+// Polling only hits our own /api/services/proxy route — the server-side cache in
+// ../proxy.js decides whether CitoAPI is actually called (it has a 500/month
+// quota). Focus/reconnect revalidation is off because it would fire all four
+// requests every time the tab is refocused. SWR doesn't poll hidden tabs.
+const swrBase = { revalidateOnFocus: false, revalidateOnReconnect: false };
+const POLL = {
+  live: { ...swrBase, refreshInterval: 60 * 1000 },
+  upcoming: { ...swrBase, refreshInterval: 5 * 60 * 1000 },
+  recent: { ...swrBase, refreshInterval: 10 * 60 * 1000 },
+  tournaments: { ...swrBase, refreshInterval: 30 * 60 * 1000 },
+};
+
 // Only surface completed tournaments that wrapped up recently — CitoAPI's
 // listing otherwise goes back indefinitely and buries anything current.
 const COMPLETED_WINDOW_DAYS = 30;
@@ -50,10 +62,15 @@ export default function Component({ service }) {
   const [showCompletedModal, setShowCompletedModal] = useState(false);
   const [liveMatchPanel, setLiveMatchPanel] = useState(null);
 
-  const { data: liveData, error: liveError } = useWidgetAPI(widget, "live_matches");
-  const { data: upcomingData, error: upcomingError } = useWidgetAPI(widget, "upcoming_matches");
-  const { data: recentData, error: recentError } = useWidgetAPI(widget, "recent_matches");
-  const { data: tournamentsData, error: tournamentsError } = useWidgetAPI(widget, "tournaments");
+  const { data: liveData, error: liveError } = useWidgetAPI(widget, "live_matches", undefined, POLL.live);
+  const { data: upcomingData, error: upcomingError } = useWidgetAPI(widget, "upcoming_matches", undefined, POLL.upcoming);
+  const { data: recentData, error: recentError } = useWidgetAPI(widget, "recent_matches", undefined, POLL.recent);
+  const { data: tournamentsData, error: tournamentsError } = useWidgetAPI(
+    widget,
+    "tournaments",
+    undefined,
+    POLL.tournaments,
+  );
 
   // ── Derived state ─────────────────────────────────────────────────────────
   const liveMatches = Array.isArray(liveData) ? liveData : [];
