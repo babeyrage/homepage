@@ -60,6 +60,25 @@
                 key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
                 enableImageProxy: true
 
+    - UPCOMING RELEASES:
+        - Upcoming Releases:
+            icon: notion-calendar.svg
+            widget:
+                type: upcomingreleases
+                view: agenda
+                maxEvents: 10
+                showTime: true
+                timezone: Australia/Perth
+                integrations:
+                    - type: sonarr
+                      service_group: MEDIA
+                      service_name: Sonarr
+                      color: teal
+                    - type: radarr
+                      service_group: MEDIA
+                      service_name: Radarr
+                      color: amber
+
     - CLAUDE:
         - Claude Usage:
             icon: claude-ai.svg
@@ -69,6 +88,28 @@
                 key: "{{HOMEPAGE_VAR_CLAUDE_USAGE_TOKEN}}"
 
 - MEDIA:
+    - Radarr:
+        icon: radarr.svg
+        href: https://radarr.{{HOMEPAGE_VAR_DOMAIN}}
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_RADARR_VMID}}"
+        proxmoxType: lxc
+        widget:
+            type: radarrfusion
+            url: http://{{HOMEPAGE_VAR_RADARR_URL}}:{{HOMEPAGE_VAR_RADARR_PORT}}
+            key: "{{HOMEPAGE_VAR_RADARR_API_KEY}}"
+
+    - Sonarr:
+        icon: sonarr.svg
+        href: https://sonarr.{{HOMEPAGE_VAR_DOMAIN}}
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_1}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_SONARR_VMID}}"
+        proxmoxType: lxc
+        widget:
+            type: sonarrfusion
+            url: http://{{HOMEPAGE_VAR_SONARR_URL}}:{{HOMEPAGE_VAR_SONARR_PORT}}
+            key: "{{HOMEPAGE_VAR_SONARR_API_KEY}}"
+
     - Seerr:
         icon: seerr.svg
         href: https://seerr.{{HOMEPAGE_VAR_DOMAIN}}
@@ -79,6 +120,17 @@
             type: seerrfusion
             url: http://{{HOMEPAGE_VAR_SEERR_URL}}:{{HOMEPAGE_VAR_SEERR_PORT}}
             key: "{{HOMEPAGE_VAR_SEERR_API_KEY}}"
+
+    - Prowlarr:
+        icon: prowlarr.svg
+        href: https://prowlarr.{{HOMEPAGE_VAR_DOMAIN}}
+        proxmoxNode: "{{HOMEPAGE_VAR_PROXMOX_NODE_2}}"
+        proxmoxVMID: "{{HOMEPAGE_VAR_PROWLARR_VMID}}"
+        proxmoxType: lxc
+        widget:
+            type: prowlarrfusion
+            url: http://{{HOMEPAGE_VAR_PROWLARR_URL}}:{{HOMEPAGE_VAR_PROWLARR_PORT}}
+            key: "{{HOMEPAGE_VAR_PROWLARR_API_KEY}}"
 
     - Tracearr:
         icon: tracearr.svg
