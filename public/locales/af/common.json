@@ -21,7 +21,16 @@
         "seconds": "s"
     },
     "auth": {
-        "signout": "Teken uit"
+        "signout": "Teken uit",
+        "loginRequired": "Login Required",
+        "loginDescription": "Login to view your dashboard.",
+        "signIn": "Sign in",
+        "password": "Password",
+        "loginVia": "Login via {{provider}}",
+        "redirecting": "Redirecting to {{provider}}",
+        "invalidPassword": "Invalid password. Please try again.",
+        "authenticationError": "Authentication error",
+        "authenticationErrorDescription": "Auth is disabled or misconfigured."
     },
     "widget": {
         "missing_type": "Ontbrekende legstuk-tipe: {{type}}",
@@ -100,11 +109,11 @@
         "not_found": "Nie Gevind Nie",
         "exited": "Verlaat",
         "partial": "Gedeeltelik",
-        "created": "Created",
-        "paused": "Paused",
-        "restarting": "Restarting",
-        "removing": "Removing",
-        "dead": "Dead"
+        "created": "Geskep",
+        "paused": "Onderbreek",
+        "restarting": "Herlaai",
+        "removing": "Verwydering",
+        "dead": "Dood"
     },
     "ping": {
         "error": "Fout",
@@ -256,6 +265,16 @@
         "leech": "Seier",
         "seed": "Vul"
     },
+    "qui": {
+        "leech": "Leech",
+        "download": "Download",
+        "seed": "Seed",
+        "upload": "Upload",
+        "total": "Total",
+        "errored": "Errored",
+        "ratio": "Ratio",
+        "freeSpace": "Free"
+    },
     "qnap": {
         "cpuUsage": "SVE Gebruik",
         "memUsage": "MEM Gebruik",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "Lopend",
         "stopped": "Gestop",
-        "total": "Totaal"
+        "total": "Totaal",
+        "applications": "Applications",
+        "services": "Services",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "Afgelaai",
@@ -780,7 +802,8 @@
         "queue": "Tou",
         "processing": "Verwerking",
         "processed": "Verwerk",
-        "time": "Tyd"
+        "time": "Tyd",
+        "failed": "Failed"
     },
     "firefly": {
         "networth": "Netto Waarde",
@@ -858,6 +881,14 @@
         "books": "Boeke",
         "reading": "Lees",
         "finished": "Klaar"
+    },
+    "bookorbit": {
+        "books": "Books",
+        "authors": "Authors",
+        "series": "Series",
+        "storage": "Storage",
+        "reading": "Reading",
+        "finished": "Finished"
     },
     "jdownloader": {
         "downloadCount": "Tou",
@@ -968,6 +999,11 @@
         "movieReclaimable": "Film Herwinbaar",
         "showReclaimable": "Skou Herwinbaar",
         "totalCapacity": "Totale Kapasitieit"
+    },
+    "netbird": {
+        "online": "Online Peers",
+        "users": "Users",
+        "login_expired": "Login Expired"
     },
     "netdata": {
         "warnings": "Waarskuwings",
@@ -1107,7 +1143,15 @@
         "cpu": "SVE",
         "memory": "GEH",
         "disk": "Skyf",
-        "network": "NET"
+        "network": "NET",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Uptime",
+        "services": "Services",
+        "updates": "Updates",
+        "battery": "Battery",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "Programme",
@@ -1258,5 +1302,8 @@
         "wanted": "Gesoek",
         "queued": "In ry",
         "leagues": "Ligas"
+    },
+    "feed": {
+        "noItems": "No items"
     }
 }

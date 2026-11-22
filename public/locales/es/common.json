@@ -21,7 +21,16 @@
         "seconds": "s"
     },
     "auth": {
-        "signout": "Cerrar sesión"
+        "signout": "Cerrar sesión",
+        "loginRequired": "Login Required",
+        "loginDescription": "Login to view your dashboard.",
+        "signIn": "Sign in",
+        "password": "Password",
+        "loginVia": "Login via {{provider}}",
+        "redirecting": "Redirecting to {{provider}}",
+        "invalidPassword": "Invalid password. Please try again.",
+        "authenticationError": "Authentication error",
+        "authenticationErrorDescription": "Auth is disabled or misconfigured."
     },
     "widget": {
         "missing_type": "Falta el tipo de widget: {{type}}",
@@ -100,11 +109,11 @@
         "not_found": "No encontrado",
         "exited": "Terminado",
         "partial": "Parcial",
-        "created": "Created",
-        "paused": "Paused",
-        "restarting": "Restarting",
-        "removing": "Removing",
-        "dead": "Dead"
+        "created": "Creado",
+        "paused": "Pausado",
+        "restarting": "Reiniciando",
+        "removing": "Eliminando",
+        "dead": "Muerto"
     },
     "ping": {
         "error": "Error",
@@ -256,6 +265,16 @@
         "leech": "Descargando",
         "seed": "Semillas"
     },
+    "qui": {
+        "leech": "Sanguijuela",
+        "download": "Descargar",
+        "seed": "Semilla",
+        "upload": "Subir",
+        "total": "Total",
+        "errored": "Con error",
+        "ratio": "Ratio",
+        "freeSpace": "Libre"
+    },
     "qnap": {
         "cpuUsage": "Uso de la CPU",
         "memUsage": "Uso de la memoria",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "En ejecución",
         "stopped": "Detenido",
-        "total": "Total"
+        "total": "Total",
+        "applications": "Applications",
+        "services": "Services",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "Descargado",
@@ -780,7 +802,8 @@
         "queue": "Cola",
         "processing": "Procesando",
         "processed": "Procesado",
-        "time": "Tiempo"
+        "time": "Tiempo",
+        "failed": "Fallido"
     },
     "firefly": {
         "networth": "Patrimonio neto",
@@ -856,6 +879,14 @@
     "booklore": {
         "libraries": "Librerías",
         "books": "Libros",
+        "reading": "Lectura",
+        "finished": "Finalizado"
+    },
+    "bookorbit": {
+        "books": "Libros",
+        "authors": "Autores",
+        "series": "Series",
+        "storage": "Almacenamiento",
         "reading": "Lectura",
         "finished": "Finalizado"
     },
@@ -968,6 +999,11 @@
         "movieReclaimable": "Película recuperable",
         "showReclaimable": "Series recuperables",
         "totalCapacity": "Capacidad total"
+    },
+    "netbird": {
+        "online": "Dispositivos conectados",
+        "users": "Usuarios",
+        "login_expired": "La sesión ha caducado"
     },
     "netdata": {
         "warnings": "Advertencias",
@@ -1107,7 +1143,15 @@
         "cpu": "CPU",
         "memory": "MEM",
         "disk": "Disco",
-        "network": "RED"
+        "network": "RED",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Uptime",
+        "services": "Services",
+        "updates": "Updates",
+        "battery": "Battery",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "Apps",
@@ -1258,5 +1302,8 @@
         "wanted": "Buscado",
         "queued": "En cola",
         "leagues": "Ligas"
+    },
+    "feed": {
+        "noItems": "No hay elementos"
     }
 }

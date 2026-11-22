@@ -6,6 +6,22 @@ import { useEffect, useMemo } from "react";
 import Error from "../../../components/services/widget/error";
 import useWidgetAPI from "../../../utils/proxy/use-widget-api";
 
+export function toDateTime(icalDate, timezone, sourceTimezone) {
+  const zone = timezone || "local";
+  if (!icalDate.isDate && icalDate.zone.tzid !== "floating") {
+    return DateTime.fromJSDate(icalDate.toJSDate(), { zone });
+  }
+
+  // Handle missing VTIMEZONE
+  const value = icalDate.toString();
+  const sourceZone = icalDate.isDate ? zone : sourceTimezone || zone;
+  const date = DateTime.fromISO(value, { zone: sourceZone });
+  if (!date.isValid) {
+    return DateTime.fromISO(value, { zone });
+  }
+  return date.setZone(zone);
+}
+
 function simpleHash(str) {
   let hash = 0;
   const prime = 31;
@@ -18,16 +34,16 @@ function simpleHash(str) {
 }
 
 function buildEvent(event, type) {
+  const startProperty =
+    event.getFirstProperty("dtstart") || event.getFirstProperty("due") || event.getFirstProperty("completed");
+
   return {
     id: event.getFirstPropertyValue("uid"),
     type,
     title: event.getFirstPropertyValue("summary"),
     rrule: event.getFirstPropertyValue("rrule"),
-    dtstart:
-      event.getFirstPropertyValue("dtstart") ||
-      event.getFirstPropertyValue("due") ||
-      event.getFirstPropertyValue("completed") ||
-      ICAL.Time.now(), // handles events without a date
+    dtstart: startProperty?.getFirstValue() || ICAL.Time.now(), // handles events without a date
+    sourceTimezone: startProperty?.getParameter("tzid"),
     dtend:
       event.getFirstPropertyValue("dtend") ||
       event.getFirstPropertyValue("due") ||
@@ -59,8 +75,37 @@ export default function Integration({ config, params, setEvents, hideErrors, tim
 
     const jCal = ICAL.parse(icalData.data);
     const vCalendar = new ICAL.Component(jCal);
+
+    // Use RECURRENCE-ID to keep track of exceptions and relate them to their recurring master events
+    const recurringMasters = new Map();
+    const exceptionEvents = [];
+    const plainComponents = [];
+    vCalendar.getAllSubcomponents("vevent").forEach((component) => {
+      // Empty list stops ical.js from relating every RECURRENCE-ID in the calendar, regardless of UID
+      const icalEvent = new ICAL.Event(component, { exceptions: [] });
+      if (icalEvent.isRecurrenceException()) {
+        exceptionEvents.push(icalEvent);
+      } else if (icalEvent.isRecurring()) {
+        recurringMasters.set(icalEvent.uid, icalEvent);
+      } else {
+        plainComponents.push(component);
+      }
+    });
+    exceptionEvents.forEach((exception) => {
+      const master = recurringMasters.get(exception.uid);
+      if (master) {
+        master.relateException(exception);
+      } else {
+        plainComponents.push(exception.component); // e.g. override so show on its own
+      }
+    });
+
     const parsedEvents = [
-      ...vCalendar.getAllSubcomponents("vevent").map((event) => buildEvent(event, "vevent")),
+      ...[...recurringMasters.values()].map((icalEvent) => ({
+        ...buildEvent(icalEvent.component, "vevent"),
+        recurringEvent: icalEvent,
+      })),
+      ...plainComponents.map((component) => buildEvent(component, "vevent")),
       ...vCalendar.getAllSubcomponents("vtodo").map((todo) => buildEvent(todo, "vtodo")),
     ];
 
@@ -85,17 +130,40 @@ export default function Integration({ config, params, setEvents, hideErrors, tim
     const rangeEnd = ICAL.Time.fromJSDate(endDate.toJSDate());
 
     const getOcurrencesFromRange = (event) => {
+      // Get all occurrences of the event within the specified range, including moved instances (exceptions)
+      if (event.recurringEvent) {
+        const master = event.recurringEvent;
+        const iterator = master.iterator();
+        const unvisited = { ...master.exceptions };
+        const occurrences = [];
+        const addOccurrence = (date, item) => {
+          if (date.compare(rangeStart) >= 0 && date.compare(rangeEnd) < 0) {
+            occurrences.push({ date, source: item === master ? event : buildEvent(item.component, "vevent") });
+          }
+        };
+
+        for (let next = iterator.next(); next && next.compare(rangeEnd) < 0; next = iterator.next()) {
+          delete unvisited[next.toString()];
+          const { startDate, item } = master.getOccurrenceDetails(next);
+          addOccurrence(startDate, item);
+        }
+
+        Object.values(unvisited).forEach((exception) => addOccurrence(exception.startDate, exception));
+
+        return occurrences;
+      }
+
       if (!event.rrule) {
         if (event.dtstart.compare(rangeStart) >= 0 && event.dtend.compare(rangeEnd) <= 0) {
           if (event.type === "vevent" && event.dtstart.isDate && event.dtend.isDate) {
             const occurrences = [];
             for (const date = event.dtstart.clone(); date.compare(event.dtend) < 0; date.day += 1) {
-              occurrences.push(date.clone());
+              occurrences.push({ date: date.clone() });
             }
             return occurrences;
           }
 
-          return [event.dtstart];
+          return [{ date: event.dtstart }];
         }
 
         return [];
@@ -109,7 +177,7 @@ export default function Integration({ config, params, setEvents, hideErrors, tim
           continue;
         }
 
-        occurrences.push(next.clone());
+        occurrences.push({ date: next.clone() });
       }
 
       return occurrences;
@@ -119,10 +187,10 @@ export default function Integration({ config, params, setEvents, hideErrors, tim
     events.forEach((event) => {
       const occurrences = getOcurrencesFromRange(event);
 
-      occurrences.forEach((icalDate) => {
-        const date = icalDate.toJSDate();
+      occurrences.forEach(({ date: icalDate, source = event }) => {
+        const eventDate = toDateTime(icalDate, timezone, source.sourceTimezone);
 
-        const occurrenceTimestamp = date.getTime();
+        const occurrenceTimestamp = icalDate.toJSDate().getTime();
         const eventIdentifier =
           event.id ??
           simpleHash(
@@ -130,7 +198,7 @@ export default function Integration({ config, params, setEvents, hideErrors, tim
           );
         const hash = simpleHash(`${eventIdentifier}-${occurrenceTimestamp}`);
 
-        let title = event.title;
+        let title = source.title;
         if (showName) {
           title = `${config.name}: ${title}`;
         }
@@ -140,17 +208,17 @@ export default function Integration({ config, params, setEvents, hideErrors, tim
             return event.status === "COMPLETED";
           }
 
-          return DateTime.fromJSDate(date) < DateTime.now();
+          return eventDate < DateTime.now();
         };
 
         eventsToAdd[hash] = {
           title,
-          date: DateTime.fromJSDate(date),
+          date: eventDate,
           color: config?.color ?? "zinc",
           isCompleted: getIsCompleted(),
-          additional: event.location,
+          additional: source.location,
           type: "ical",
-          url: event.url,
+          url: source.url,
         };
       });
     });

@@ -55,6 +55,7 @@ export default async function credentialedProxyHandler(req, res, map) {
           "authentik",
           "cloudflared",
           "ghostfolio",
+          "gitea",
           "headscale",
           "hoarder",
           "karakeep",
@@ -93,7 +94,7 @@ export default async function credentialedProxyHandler(req, res, map) {
         headers.Authorization = `PBSAPIToken=${widget.username}:${widget.password}`;
       } else if (["autobrr", "jellystat", "pulse"].includes(widget.type)) {
         headers["X-API-Token"] = `${widget.key}`;
-      } else if (widget.type === "tubearchivist") {
+      } else if (["netbird", "tubearchivist"].includes(widget.type)) {
         headers.Authorization = `Token ${widget.key}`;
       } else if (widget.type === "miniflux") {
         headers["X-Auth-Token"] = `${widget.key}`;
@@ -135,6 +136,10 @@ export default async function credentialedProxyHandler(req, res, map) {
         headers.Authorization = widget.key;
       } else if (widget.type === "gitlab") {
         headers["PRIVATE-TOKEN"] = widget.key;
+      } else if (widget.type === "fileflows") {
+        if (widget.key) {
+          headers["X-Webhook-Token"] = `${widget.key}`;
+        }
       } else if (["speedtest", "speedtestfusion"].includes(widget.type)) {
         if (widget.key) {
           // v1 does not require a key
@@ -144,7 +149,7 @@ export default async function credentialedProxyHandler(req, res, map) {
         headers["X-API-Key"] = `${widget.key}`;
       }
 
-      const [status, contentType, data] = await httpProxy(url, {
+      const [status, contentType, data, responseHeaders] = await httpProxy(url, {
         method: req.method,
         withCredentials: true,
         credentials: "include",
@@ -179,7 +184,7 @@ export default async function credentialedProxyHandler(req, res, map) {
             .status(500)
             .json({ error: { message: "Invalid data", url: sanitizeErrorURL(url), data: resultData } });
         }
-        if (map) resultData = map(resultData);
+        if (map) resultData = map(resultData, responseHeaders);
       }
 
       if (contentType) res.setHeader("Content-Type", contentType);

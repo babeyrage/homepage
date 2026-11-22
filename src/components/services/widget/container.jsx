@@ -1,9 +1,9 @@
 import { useContext, useEffect, useMemo } from "react";
+import { SettingsContext } from "utils/contexts/settings";
 
 import Error from "./error";
 import { BlockHighlightContext } from "./highlight-context";
 
-import { SettingsContext } from "utils/contexts/settings";
 import { useGroupStatus } from "utils/contexts/group-status";
 import { buildHighlightConfig } from "utils/highlights";
 

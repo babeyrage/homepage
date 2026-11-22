@@ -12,6 +12,7 @@ import backrestfusion from "./backrestfusion/widget";
 import bazarr from "./bazarr/widget";
 import beszel from "./beszel/widget";
 import booklore from "./booklore/widget";
+import bookorbit from "./bookorbit/widget";
 import caddy from "./caddy/widget";
 import calendar from "./calendar/widget";
 import calendarfusion from "./calendarfusion/widget";
@@ -36,6 +37,7 @@ import duplicati from "./duplicati/widget";
 import emby from "./emby/widget";
 import esphome from "./esphome/widget";
 import evcc from "./evcc/widget";
+import feed from "./feed/widget";
 import filebrowser from "./filebrowser/widget";
 import fileflows from "./fileflows/widget";
 import firefly from "./firefly/widget";
@@ -85,6 +87,7 @@ import mylar from "./mylar/widget";
 import myspeed from "./myspeed/widget";
 import navidrome from "./navidrome/widget";
 import netalertx from "./netalertx/widget";
+import netbird from "./netbird/widget";
 import netdata from "./netdata/widget";
 import nextcloud from "./nextcloud/widget";
 import nextdns from "./nextdns/widget";
@@ -127,6 +130,7 @@ import pyload from "./pyload/widget";
 import qbittorrent from "./qbittorrent/widget";
 import qbittorrentfusion from "./qbittorrentfusion/widget";
 import qnap from "./qnap/widget";
+import qui from "./qui/widget";
 import radarr from "./radarr/widget";
 import radarrfusion from "./radarrfusion/widget";
 import readarr from "./readarr/widget";
@@ -197,6 +201,7 @@ const widgets = {
   backrestfusion,
   bazarr,
   booklore,
+  bookorbit,
   beszel,
   caddy,
   calibreweb,
@@ -220,6 +225,7 @@ const widgets = {
   emby,
   esphome,
   evcc,
+  feed,
   filebrowser,
   fileflows,
   firefly,
@@ -273,6 +279,7 @@ const widgets = {
   myspeed,
   navidrome,
   netalertx,
+  netbird,
   netdata,
   nextcloud,
   nextdns,
@@ -317,6 +324,7 @@ const widgets = {
   qbittorrent,
   qbittorrentfusion,
   qnap,
+  qui,
   radarr,
   radarrfusion,
   readarr,

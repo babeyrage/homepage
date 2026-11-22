@@ -21,7 +21,16 @@
         "seconds": "秒"
     },
     "auth": {
-        "signout": "Sign out"
+        "signout": "Sign out",
+        "loginRequired": "Login Required",
+        "loginDescription": "Login to view your dashboard.",
+        "signIn": "Sign in",
+        "password": "Password",
+        "loginVia": "Login via {{provider}}",
+        "redirecting": "Redirecting to {{provider}}",
+        "invalidPassword": "Invalid password. Please try again.",
+        "authenticationError": "Authentication error",
+        "authenticationErrorDescription": "Auth is disabled or misconfigured."
     },
     "widget": {
         "missing_type": "缺少小部件類型：{{type}}",
@@ -256,6 +265,16 @@
         "leech": "未完成下載",
         "seed": "已完成下載"
     },
+    "qui": {
+        "leech": "Leech",
+        "download": "Download",
+        "seed": "Seed",
+        "upload": "Upload",
+        "total": "Total",
+        "errored": "Errored",
+        "ratio": "Ratio",
+        "freeSpace": "Free"
+    },
     "qnap": {
         "cpuUsage": "CPU 使用率",
         "memUsage": "記憶體使用率",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "執行中",
         "stopped": "暫停",
-        "total": "全部"
+        "total": "全部",
+        "applications": "Applications",
+        "services": "Services",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "Downloaded",
@@ -780,7 +802,8 @@
         "queue": "Queue",
         "processing": "Processing",
         "processed": "Processed",
-        "time": "時間"
+        "time": "時間",
+        "failed": "Failed"
     },
     "firefly": {
         "networth": "淨值",
@@ -856,6 +879,14 @@
     "booklore": {
         "libraries": "Libraries",
         "books": "Books",
+        "reading": "Reading",
+        "finished": "Finished"
+    },
+    "bookorbit": {
+        "books": "Books",
+        "authors": "Authors",
+        "series": "Series",
+        "storage": "Storage",
         "reading": "Reading",
         "finished": "Finished"
     },
@@ -968,6 +999,11 @@
         "movieReclaimable": "Movie Reclaimable",
         "showReclaimable": "Show Reclaimable",
         "totalCapacity": "Total Capacity"
+    },
+    "netbird": {
+        "online": "Online Peers",
+        "users": "Users",
+        "login_expired": "Login Expired"
     },
     "netdata": {
         "warnings": "警告",
@@ -1107,7 +1143,15 @@
         "cpu": "CPU",
         "memory": "MEM",
         "disk": "儲存空間",
-        "network": "網路"
+        "network": "網路",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Uptime",
+        "services": "Services",
+        "updates": "Updates",
+        "battery": "Battery",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "應用程式",
@@ -1258,5 +1302,8 @@
         "wanted": "Wanted",
         "queued": "Queued",
         "leagues": "Leagues"
+    },
+    "feed": {
+        "noItems": "No items"
     }
 }

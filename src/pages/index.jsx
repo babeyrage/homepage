@@ -1,14 +1,4 @@
 import classNames from "classnames";
-import { useTranslation } from "next-i18next/pages";
-import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
-import dynamic from "next/dynamic";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import Script from "next/script";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { BiError } from "react-icons/bi";
-import useSWR, { SWRConfig } from "swr";
-
 import BookmarksGroup from "components/bookmarks/group";
 import ErrorBoundary from "components/errorboundry";
 import QuickLaunch from "components/quicklaunch";
@@ -16,14 +6,23 @@ import ServicesGroup from "components/services/group";
 import Tab, { slugifyAndEncode } from "components/tab";
 import Revalidate from "components/toggles/revalidate";
 import Widget from "components/widgets/widget";
-import { bookmarksResponse, servicesResponse, widgetsResponse } from "utils/config/api-response";
-import { getSettings } from "utils/config/config";
+import { useTranslation } from "next-i18next/pages";
+import dynamic from "next/dynamic";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import Script from "next/script";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { BiError } from "react-icons/bi";
+import useSWR, { SWRConfig } from "swr";
 import { ColorContext } from "utils/contexts/color";
 import { SettingsContext } from "utils/contexts/settings";
 import { TabContext } from "utils/contexts/tab";
 import { ThemeContext } from "utils/contexts/theme";
+
+import { withPageAuth } from "utils/auth";
+import { getDashboardData } from "utils/config/dashboard";
 import useWindowFocus from "utils/hooks/window-focus";
-import createLogger from "utils/logger";
+import normalizeLanguage from "utils/language";
 import themes from "utils/styles/themes";
 
 const ThemeToggle = dynamic(() => import("components/toggles/theme"), {
@@ -44,58 +43,7 @@ const Version = dynamic(() => import("components/version"), {
 
 const rightAlignedWidgets = ["weatherapi", "openweathermap", "weather", "openmeteo", "search", "datetime"];
 
-// Normalize language codes so older config values like zh-CN still point to Crowdin-provided ones
-const LANGUAGE_ALIASES = {
-  "zh-cn": "zh-Hans",
-};
-
-const normalizeLanguage = (language) => {
-  if (!language) return "en";
-  const alias = LANGUAGE_ALIASES[language.toLowerCase()];
-  return alias || language;
-};
-
-export async function getStaticProps() {
-  let logger;
-  try {
-    logger = createLogger("index");
-    const { providers, ...settings } = getSettings();
-
-    const services = await servicesResponse();
-    const bookmarks = await bookmarksResponse();
-    const widgets = await widgetsResponse();
-    const language = normalizeLanguage(settings.language);
-
-    return {
-      props: {
-        initialSettings: settings,
-        fallback: {
-          "/api/services": services,
-          "/api/bookmarks": bookmarks,
-          "/api/widgets": widgets,
-          "/api/hash": false,
-        },
-        ...(await serverSideTranslations(language)),
-      },
-    };
-  } catch (e) {
-    if (logger && e) {
-      logger.error(e);
-    }
-    return {
-      props: {
-        initialSettings: {},
-        fallback: {
-          "/api/services": [],
-          "/api/bookmarks": [],
-          "/api/widgets": [],
-          "/api/hash": false,
-        },
-        ...(await serverSideTranslations("en")),
-      },
-    };
-  }
-}
+export const getServerSideProps = withPageAuth(async () => ({ props: await getDashboardData() }));
 
 function Index({ initialSettings, fallback }) {
   const windowFocused = useWindowFocus();
@@ -251,8 +199,11 @@ function Home({ initialSettings }) {
   const [searching, setSearching] = useState(false);
   const [searchString, setSearchString] = useState("");
   const headerStyle = settings?.headerStyle || "underlined";
+  const quicklaunchDisabled = settings?.quicklaunch?.disabled === true;
 
   useEffect(() => {
+    if (quicklaunchDisabled) return undefined;
+
     function handleKeyDown(e) {
       if (e.target.tagName === "BODY" || e.target.id === "inner_wrapper") {
         if (
@@ -360,6 +311,7 @@ function Home({ initialSettings }) {
                   disableCollapse={settings.disableCollapse}
                   maxGroupColumns={settings.maxBookmarkGroupColumns ?? settings.maxGroupColumns}
                   groupsInitiallyCollapsed={settings.groupsInitiallyCollapsed}
+                  bookmarksStyle={settings.bookmarksStyle}
                 />
               ),
             )}
@@ -454,13 +406,15 @@ function Home({ initialSettings }) {
           "relative m-auto flex flex-col justify-start z-10 h-full min-h-screen",
         )}
       >
-        <QuickLaunch
-          servicesAndBookmarks={servicesAndBookmarks}
-          searchString={searchString}
-          setSearchString={setSearchString}
-          isOpen={searching}
-          setSearching={setSearching}
-        />
+        {!quicklaunchDisabled && (
+          <QuickLaunch
+            servicesAndBookmarks={servicesAndBookmarks}
+            searchString={searchString}
+            setSearchString={setSearchString}
+            isOpen={searching}
+            setSearching={setSearching}
+          />
+        )}
         <div
           id="information-widgets"
           className={classNames(
@@ -552,7 +506,9 @@ export default function Wrapper({ initialSettings, fallback }) {
     const html = document.documentElement;
     const body = document.body;
 
-    html.classList.remove("dark", "scheme-dark", "scheme-light");
+    html.classList.remove("dark", "scheme-dark", "scheme-light", "font-plex", "font-plex-data");
+    if (initialSettings.font === "plex") html.classList.add("font-plex");
+    if (initialSettings.font === "plexData") html.classList.add("font-plex-data");
     html.classList.toggle("dark", theme === "dark");
     html.classList.add(theme === "dark" ? "scheme-dark" : "scheme-light");
 
@@ -571,7 +527,7 @@ export default function Wrapper({ initialSettings, fallback }) {
     body.style.backgroundImage = "";
     body.style.backgroundColor = "";
     body.style.backgroundAttachment = "";
-  }, [backgroundImage, opacity, theme, color, initialSettings.color]);
+  }, [backgroundImage, opacity, theme, color, initialSettings.color, initialSettings.font]);
 
   return (
     <>

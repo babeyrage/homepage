@@ -21,7 +21,16 @@
         "seconds": "s"
     },
     "auth": {
-        "signout": "Sign out"
+        "signout": "Sign out",
+        "loginRequired": "Login Required",
+        "loginDescription": "Login to view your dashboard.",
+        "signIn": "Sign in",
+        "password": "Password",
+        "loginVia": "Login via {{provider}}",
+        "redirecting": "Redirecting to {{provider}}",
+        "invalidPassword": "Invalid password. Please try again.",
+        "authenticationError": "Authentication error",
+        "authenticationErrorDescription": "Auth is disabled or misconfigured."
     },
     "widget": {
         "missing_type": "Ontbrekende Widget Type: {{type}}",
@@ -256,6 +265,16 @@
         "leech": "Leech",
         "seed": "Delen"
     },
+    "qui": {
+        "leech": "Leech",
+        "download": "Download",
+        "seed": "Seed",
+        "upload": "Upload",
+        "total": "Total",
+        "errored": "Errored",
+        "ratio": "Ratio",
+        "freeSpace": "Free"
+    },
     "qnap": {
         "cpuUsage": "CPU Verbruik",
         "memUsage": "MEM Gebruik",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "Actief",
         "stopped": "Gestopt",
-        "total": "Totaal"
+        "total": "Totaal",
+        "applications": "Applications",
+        "services": "Services",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "Gedownload",
@@ -780,7 +802,8 @@
         "queue": "Wachtrij",
         "processing": "Verwerken",
         "processed": "Verwerkt",
-        "time": "Tijd"
+        "time": "Tijd",
+        "failed": "Failed"
     },
     "firefly": {
         "networth": "Totaal eigen vermogen",
@@ -858,6 +881,14 @@
         "books": "Boeken",
         "reading": "Lezen",
         "finished": "Voltooid"
+    },
+    "bookorbit": {
+        "books": "Books",
+        "authors": "Authors",
+        "series": "Series",
+        "storage": "Storage",
+        "reading": "Reading",
+        "finished": "Finished"
     },
     "jdownloader": {
         "downloadCount": "Wachtrij",
@@ -968,6 +999,11 @@
         "movieReclaimable": "Film herroepbaar",
         "showReclaimable": "Serie herroepbaar",
         "totalCapacity": "Totale capaciteit"
+    },
+    "netbird": {
+        "online": "Online Peers",
+        "users": "Users",
+        "login_expired": "Login Expired"
     },
     "netdata": {
         "warnings": "Waarschuwingen",
@@ -1107,7 +1143,15 @@
         "cpu": "CPU",
         "memory": "GEH",
         "disk": "Schijf",
-        "network": "NET"
+        "network": "NET",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Uptime",
+        "services": "Services",
+        "updates": "Updates",
+        "battery": "Battery",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "Apps",
@@ -1258,5 +1302,8 @@
         "wanted": "Gewenst",
         "queued": "In de wachtrij",
         "leagues": "Competities"
+    },
+    "feed": {
+        "noItems": "No items"
     }
 }

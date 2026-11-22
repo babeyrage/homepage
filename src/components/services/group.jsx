@@ -1,12 +1,12 @@
 import { Disclosure, Transition } from "@headlessui/react";
 import classNames from "classnames";
+import ResolvedIcon from "components/resolvedicon";
+import List from "components/services/list";
 import { useEffect, useRef } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
 import { columnMap } from "../../utils/layout/columns";
 
-import ResolvedIcon from "components/resolvedicon";
-import List from "components/services/list";
 import { GroupStatusProvider, useGroupStatus } from "utils/contexts/group-status";
 
 // Fusion's MEDIA zone shows a "N services · M errors" summary next to its

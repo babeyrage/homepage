@@ -21,7 +21,16 @@
         "seconds": "s"
     },
     "auth": {
-        "signout": "Odjavi se"
+        "signout": "Odjavi se",
+        "loginRequired": "Login Required",
+        "loginDescription": "Login to view your dashboard.",
+        "signIn": "Sign in",
+        "password": "Password",
+        "loginVia": "Login via {{provider}}",
+        "redirecting": "Redirecting to {{provider}}",
+        "invalidPassword": "Invalid password. Please try again.",
+        "authenticationError": "Authentication error",
+        "authenticationErrorDescription": "Auth is disabled or misconfigured."
     },
     "widget": {
         "missing_type": "Nedostajuća vrsta widgeta: {{type}}",
@@ -100,10 +109,10 @@
         "not_found": "Nepronađeno",
         "exited": "Zatoreno",
         "partial": "Djelomično",
-        "created": "Created",
-        "paused": "Paused",
-        "restarting": "Restarting",
-        "removing": "Removing",
+        "created": "Stvoreno",
+        "paused": "Pauzirano",
+        "restarting": "Ponovno pokretanje",
+        "removing": "Uklanjanje",
         "dead": "Dead"
     },
     "ping": {
@@ -256,6 +265,16 @@
         "leech": "Korištenje tuđeg sadržaja",
         "seed": "Prenošenje preuzetog sadržaja"
     },
+    "qui": {
+        "leech": "Leech",
+        "download": "Preuzmi",
+        "seed": "Seed",
+        "upload": "Prenesi",
+        "total": "Ukupno",
+        "errored": "S greškom",
+        "ratio": "Omjer",
+        "freeSpace": "Slobodno"
+    },
     "qnap": {
         "cpuUsage": "Korištenje procesora",
         "memUsage": "Korištenje memorije",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "Pokrenuto",
         "stopped": "Prekinuto",
-        "total": "Ukupno"
+        "total": "Ukupno",
+        "applications": "Applications",
+        "services": "Services",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "Preuzeto",
@@ -780,7 +802,8 @@
         "queue": "Red čekanja",
         "processing": "Obrada",
         "processed": "Obrađeno",
-        "time": "Vrijeme"
+        "time": "Vrijeme",
+        "failed": "Neuspjelo"
     },
     "firefly": {
         "networth": "Neto vrijednost",
@@ -856,6 +879,14 @@
     "booklore": {
         "libraries": "Knjižnice",
         "books": "Knjige",
+        "reading": "Čitanje",
+        "finished": "Završeno"
+    },
+    "bookorbit": {
+        "books": "Knjige",
+        "authors": "Autori",
+        "series": "Serije",
+        "storage": "Spremište",
         "reading": "Čitanje",
         "finished": "Završeno"
     },
@@ -968,6 +999,11 @@
         "movieReclaimable": "Movie Reclaimable",
         "showReclaimable": "Show Reclaimable",
         "totalCapacity": "Ukupni kapacitet"
+    },
+    "netbird": {
+        "online": "Online Peers",
+        "users": "Users",
+        "login_expired": "Login Expired"
     },
     "netdata": {
         "warnings": "Upozorenja",
@@ -1107,7 +1143,15 @@
         "cpu": "CPU",
         "memory": "MEM",
         "disk": "Disk",
-        "network": "Mreža"
+        "network": "Mreža",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Uptime",
+        "services": "Services",
+        "updates": "Updates",
+        "battery": "Battery",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "Aplikacije",
@@ -1258,5 +1302,8 @@
         "wanted": "Željeno",
         "queued": "U redu čekanja",
         "leagues": "Lige"
+    },
+    "feed": {
+        "noItems": "Nema stavki"
     }
 }

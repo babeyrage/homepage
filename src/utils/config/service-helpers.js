@@ -356,13 +356,16 @@ export function cleanServiceGroups(groups) {
           expandOneStreamToTwoRows,
           showEpisodeNumber,
 
+          // feed
+          layout,
+
           // frigate
           enableRecentEvents,
 
           // gamedig
           gameToken,
 
-          // authentik, beszel, glances, immich, komga, mealie, netalertx, pihole, pfsense, speedtest
+          // arcane, authentik, beszel, glances, immich, komga, mealie, netalertx, pihole, pfsense, speedtest
           version,
 
           // glances
@@ -370,6 +373,8 @@ export function cleanServiceGroups(groups) {
           metric,
           pointsLimit,
           diskUnits,
+          chartMin,
+          chartMax,
 
           // glances, customapi, iframe, prometheusmetric
           refreshInterval,
@@ -435,6 +440,9 @@ export function cleanServiceGroups(groups) {
 
           // pbsfusion
           datastoreName,
+
+          // qui
+          instance,
 
           // speedtest
           bitratePrecision,
@@ -550,6 +558,9 @@ export function cleanServiceGroups(groups) {
         if (type === "portainer") {
           if (kubernetes) widget.kubernetes = !!JSON.parse(kubernetes);
         }
+        if (type === "qui") {
+          if (instance !== undefined) widget.instance = instance;
+        }
         if (type === "proxmox" || type === "proxmoxfusion") {
           if (node) widget.node = node;
         }
@@ -621,8 +632,10 @@ export function cleanServiceGroups(groups) {
         }
         if (
           [
+            "arcane",
             "authentik",
             "beszel",
+            "fileflows",
             "glances",
             "immich",
             "jellyfin",
@@ -653,6 +666,8 @@ export function cleanServiceGroups(groups) {
           if (refreshInterval) widget.refreshInterval = refreshInterval;
           if (pointsLimit) widget.pointsLimit = pointsLimit;
           if (diskUnits) widget.diskUnits = diskUnits;
+          if (chartMin !== undefined) widget.chartMin = chartMin;
+          if (chartMax !== undefined) widget.chartMax = chartMax;
         }
         if (type === "mjpeg") {
           if (stream) widget.stream = stream;
@@ -689,6 +704,9 @@ export function cleanServiceGroups(groups) {
           if (previousDays) widget.previousDays = previousDays;
           if (showTime) widget.showTime = showTime;
           if (timezone) widget.timezone = timezone;
+        }
+        if (type === "feed") {
+          if (layout) widget.layout = layout;
         }
         if (type === "dockhand") {
           if (environment) widget.environment = environment;

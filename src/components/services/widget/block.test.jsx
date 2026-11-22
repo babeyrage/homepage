@@ -1,6 +1,16 @@
 // @vitest-environment jsdom
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("next-i18next/pages", () => ({
+  useTranslation: () => ({
+    t: (key, options) => {
+      if (key === "plex") return options?.returnObjects ? { streams: "Active Streams" } : "translation error";
+      if (key === "test.translated") return "Translated label";
+      return key;
+    },
+  }),
+}));
 
 import Block from "./block";
 import { BlockHighlightContext } from "./highlight-context";
@@ -8,6 +18,18 @@ import { BlockHighlightContext } from "./highlight-context";
 import { renderWithProviders } from "test-utils/render-with-providers";
 
 describe("components/services/widget/block", () => {
+  it("shows a literal label when its translation key resolves to an object", () => {
+    const { container } = renderWithProviders(<Block label="plex" value="1" />, { settings: {} });
+
+    expect(container.querySelector(".service-block-label")).toHaveTextContent("plex");
+  });
+
+  it("still translates labels that resolve to strings", () => {
+    const { container } = renderWithProviders(<Block label="test.translated" value="1" />, { settings: {} });
+
+    expect(container.querySelector(".service-block-label")).toHaveTextContent("Translated label");
+  });
+
   it("renders a placeholder when value is undefined", () => {
     const { container } = renderWithProviders(<Block label="some.label" />, { settings: {} });
 
@@ -37,6 +59,24 @@ describe("components/services/widget/block", () => {
     expect(el).not.toBeNull();
     expect(el.getAttribute("data-highlight-level")).toBe("danger");
     expect(el.className).toContain("danger-class");
+  });
+
+  it("uses the standard block styles by default", () => {
+    const { container } = renderWithProviders(<Block label="some.label" value="1" />, { settings: {} });
+
+    expect(container.querySelector(".service-block-value").className).toContain("font-thin");
+    expect(container.querySelector(".service-block-label").className).toContain("font-bold");
+  });
+
+  it("applies refined block styles when blockStyle is set", () => {
+    const { container } = renderWithProviders(<Block label="some.label" value="1" />, {
+      settings: { blockStyle: "refined" },
+    });
+
+    const value = container.querySelector(".service-block-value");
+    expect(value.className).toContain("tabular-nums");
+    expect(value.className).not.toContain("font-thin");
+    expect(container.querySelector(".service-block-label").className).toContain("tracking-wider");
   });
 
   it("prefers highlightValue over the rendered value for numeric highlighting", () => {

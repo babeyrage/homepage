@@ -21,7 +21,16 @@
         "seconds": "s"
     },
     "auth": {
-        "signout": "Sign out"
+        "signout": "Sign out",
+        "loginRequired": "Login Required",
+        "loginDescription": "Login to view your dashboard.",
+        "signIn": "Sign in",
+        "password": "Password",
+        "loginVia": "Login via {{provider}}",
+        "redirecting": "Redirecting to {{provider}}",
+        "invalidPassword": "Invalid password. Please try again.",
+        "authenticationError": "Authentication error",
+        "authenticationErrorDescription": "Auth is disabled or misconfigured."
     },
     "widget": {
         "missing_type": "Eksik Araç Türü: {{type}}",
@@ -256,6 +265,16 @@
         "leech": "İndirilen",
         "seed": "Gönderilen"
     },
+    "qui": {
+        "leech": "Leech",
+        "download": "Download",
+        "seed": "Seed",
+        "upload": "Upload",
+        "total": "Total",
+        "errored": "Errored",
+        "ratio": "Ratio",
+        "freeSpace": "Free"
+    },
     "qnap": {
         "cpuUsage": "İşlemci Kullanımı",
         "memUsage": "Bellek Kullanımı",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "Çalışıyor",
         "stopped": "Durdu",
-        "total": "Toplam"
+        "total": "Toplam",
+        "applications": "Applications",
+        "services": "Services",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "İndirilen",
@@ -780,7 +802,8 @@
         "queue": "Kuyruk",
         "processing": "İşleniyor",
         "processed": "İşlendi",
-        "time": "Zaman"
+        "time": "Zaman",
+        "failed": "Failed"
     },
     "firefly": {
         "networth": "Net değer",
@@ -858,6 +881,14 @@
         "books": "Kitaplar",
         "reading": "Okunuyor",
         "finished": "Bitti"
+    },
+    "bookorbit": {
+        "books": "Books",
+        "authors": "Authors",
+        "series": "Series",
+        "storage": "Storage",
+        "reading": "Reading",
+        "finished": "Finished"
     },
     "jdownloader": {
         "downloadCount": "Kuyruk",
@@ -968,6 +999,11 @@
         "movieReclaimable": "Movie Reclaimable",
         "showReclaimable": "Show Reclaimable",
         "totalCapacity": "Total Capacity"
+    },
+    "netbird": {
+        "online": "Online Peers",
+        "users": "Users",
+        "login_expired": "Login Expired"
     },
     "netdata": {
         "warnings": "Uyarılar",
@@ -1107,7 +1143,15 @@
         "cpu": "İşlemci",
         "memory": "Bellek",
         "disk": "Depolama",
-        "network": "NET"
+        "network": "NET",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Uptime",
+        "services": "Services",
+        "updates": "Updates",
+        "battery": "Battery",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "Uygulamalar",
@@ -1258,5 +1302,8 @@
         "wanted": "Wanted",
         "queued": "Queued",
         "leagues": "Leagues"
+    },
+    "feed": {
+        "noItems": "No items"
     }
 }

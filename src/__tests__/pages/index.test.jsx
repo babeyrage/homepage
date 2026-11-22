@@ -3,6 +3,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { invalidateDashboardData } from "utils/config/dashboard";
 import { ColorContext } from "utils/contexts/color";
 import { SettingsContext } from "utils/contexts/settings";
 import { TabContext } from "utils/contexts/tab";
@@ -131,7 +132,11 @@ vi.mock("utils/hooks/window-focus", () => ({
 }));
 
 vi.mock("components/bookmarks/group", () => ({
-  default: ({ bookmarks }) => <div data-testid="bookmarks-group">{bookmarks?.name}</div>,
+  default: ({ bookmarks, bookmarksStyle }) => (
+    <div data-testid="bookmarks-group" data-bookmarks-style={bookmarksStyle ?? ""}>
+      {bookmarks?.name}
+    </div>
+  ),
 }));
 
 vi.mock("components/services/group", () => ({
@@ -170,8 +175,9 @@ vi.mock("components/toggles/revalidate", () => ({
   default: () => null,
 }));
 
-describe("pages/index getStaticProps", () => {
+describe("pages/index getServerSideProps", () => {
   beforeEach(() => {
+    invalidateDashboardData();
     vi.clearAllMocks();
     state.throwIn = null;
     state.validateData = [];
@@ -190,8 +196,8 @@ describe("pages/index getStaticProps", () => {
   it("returns initial settings and api fallbacks for swr", async () => {
     getSettings.mockReturnValueOnce({ providers: { x: 1 }, language: "en", title: "Homepage" });
 
-    const { getStaticProps } = await import("pages/index.jsx");
-    const result = await getStaticProps();
+    const { getServerSideProps } = await import("pages/index.jsx");
+    const result = await getServerSideProps({});
 
     expect(result.props.initialSettings).toEqual({ language: "en", title: "Homepage" });
     expect(result.props.fallback["/api/services"]).toEqual([{ name: "svc" }]);
@@ -204,8 +210,8 @@ describe("pages/index getStaticProps", () => {
   it("normalizes legacy language codes before requesting translations", async () => {
     getSettings.mockReturnValueOnce({ providers: {}, language: "zh-CN" });
 
-    const { getStaticProps } = await import("pages/index.jsx");
-    await getStaticProps();
+    const { getServerSideProps } = await import("pages/index.jsx");
+    await getServerSideProps({});
 
     expect(serverSideTranslations).toHaveBeenCalledWith("zh-Hans");
   });
@@ -214,8 +220,8 @@ describe("pages/index getStaticProps", () => {
     getSettings.mockReturnValueOnce({ providers: {}, language: "de" });
     state.throwIn = "services";
 
-    const { getStaticProps } = await import("pages/index.jsx");
-    const result = await getStaticProps();
+    const { getServerSideProps } = await import("pages/index.jsx");
+    const result = await getServerSideProps({});
 
     expect(result.props.initialSettings).toEqual({});
     expect(result.props.fallback["/api/services"]).toEqual([]);
@@ -444,6 +450,17 @@ describe("pages/index Home behavior", () => {
     expect(screen.getByTestId("quicklaunch")).toHaveTextContent("closed:3");
   });
 
+  it("does not render QuickLaunch or listen for keys when disabled", async () => {
+    await renderIndex({
+      initialSettings: { title: "Homepage", layout: {} },
+      settings: { title: "Homepage", layout: {}, language: "en", quicklaunch: { disabled: true } },
+    });
+
+    expect(await screen.findByTestId("services-group")).toBeInTheDocument();
+    fireEvent.keyDown(document.body, { key: "a" });
+    expect(screen.queryByTestId("quicklaunch")).not.toBeInTheDocument();
+  });
+
   it("opens search on space without seeding the query with whitespace", async () => {
     await renderIndex({
       initialSettings: { title: "Homepage", layout: {} },
@@ -467,6 +484,23 @@ describe("pages/index Home behavior", () => {
 
     expect(await screen.findByTestId("services-group")).toHaveTextContent("Services");
     expect(screen.getByTestId("bookmarks-group")).toHaveTextContent("Bookmarks");
+  });
+
+  it("passes bookmarksStyle to bookmark groups both inside and outside the layout", async () => {
+    state.bookmarksData = [
+      { name: "In Layout", bookmarks: [] },
+      { name: "Bottom Section", bookmarks: [] },
+    ];
+
+    await renderIndex({
+      initialSettings: { title: "Homepage", layout: { "In Layout": {} } },
+      settings: { title: "Homepage", layout: { "In Layout": {} }, bookmarksStyle: "icons", language: "en" },
+    });
+
+    const groups = await screen.findAllByTestId("bookmarks-group");
+    for (const group of groups) {
+      expect(group).toHaveAttribute("data-bookmarks-style", "icons");
+    }
   });
 
   it("renders tab navigation and filters groups by active tab", async () => {

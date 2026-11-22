@@ -21,7 +21,16 @@
         "seconds": "s"
     },
     "auth": {
-        "signout": "Tanca la sessió"
+        "signout": "Tanca la sessió",
+        "loginRequired": "Cal iniciar la sessió",
+        "loginDescription": "Inicieu la sessió per veure el vostre tauler.",
+        "signIn": "Inicia la sessió",
+        "password": "Contrasenya",
+        "loginVia": "Inicia la sessió amb {{provider}}",
+        "redirecting": "S'està redirigint a {{provider}}",
+        "invalidPassword": "La contrasenya no és vàlida. Torneu-ho a provar.",
+        "authenticationError": "Error d'autenticació",
+        "authenticationErrorDescription": "L'autenticació està desactivada o mal configurada."
     },
     "widget": {
         "missing_type": "Falta el tipus de widget: {{type}}",
@@ -256,6 +265,16 @@
         "leech": "Sangonera",
         "seed": "Sembrat"
     },
+    "qui": {
+        "leech": "Sangonera",
+        "download": "Baixada",
+        "seed": "Sembrat",
+        "upload": "Pujada",
+        "total": "Total",
+        "errored": "Errors",
+        "ratio": "Ràtio",
+        "freeSpace": "Lliure"
+    },
     "qnap": {
         "cpuUsage": "Ús de CPU",
         "memUsage": "Ús de Memòria",
@@ -281,28 +300,28 @@
         "seed": "Sembrat"
     },
     "sonarr": {
-        "wanted": "Volgut",
+        "wanted": "Pendents",
         "queued": "En cua",
         "series": "Sèries",
         "queue": "Cua",
         "unknown": "Desconegut"
     },
     "radarr": {
-        "wanted": "Volguts",
+        "wanted": "Pendents",
         "missing": "Falten",
-        "queued": "Encuat",
+        "queued": "En cua",
         "movies": "Pel·lícules",
         "queue": "Cua",
         "unknown": "Desconegut"
     },
     "lidarr": {
-        "wanted": "Volguts",
-        "queued": "Encuat",
+        "wanted": "Pendents",
+        "queued": "En cua",
         "artists": "Artistes"
     },
     "readarr": {
-        "wanted": "Volguts",
-        "queued": "Encuat",
+        "wanted": "Pendents",
+        "queued": "En cua",
         "books": "Llibres"
     },
     "bazarr": {
@@ -320,7 +339,7 @@
         "available": "Disponible",
         "completed": "Completat",
         "processing": "Processant",
-        "issues": "Temes oberts"
+        "issues": "Incidències"
     },
     "netalertx": {
         "total": "Total",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "En execució",
         "stopped": "Aturat",
-        "total": "Total"
+        "total": "Total",
+        "applications": "Aplicacions",
+        "services": "Serveis",
+        "namespaces": "Espais de noms"
     },
     "suwayomi": {
         "download": "Descarregat",
@@ -460,8 +482,8 @@
         "domain_count": "Dominis"
     },
     "medusa": {
-        "wanted": "Volguts",
-        "queued": "Encuat",
+        "wanted": "Pendents",
+        "queued": "En cua",
         "series": "Sèries"
     },
     "minecraft": {
@@ -767,8 +789,8 @@
     },
     "mylar": {
         "series": "Sèries",
-        "issues": "Problemes",
-        "wanted": "Volguts"
+        "issues": "Números",
+        "wanted": "Pendents"
     },
     "photoprism": {
         "albums": "Àlbums",
@@ -780,7 +802,8 @@
         "queue": "Cua",
         "processing": "Processant",
         "processed": "Processat",
-        "time": "Temps"
+        "time": "Temps",
+        "failed": "Error"
     },
     "firefly": {
         "networth": "Valor Net",
@@ -856,6 +879,14 @@
     "booklore": {
         "libraries": "Biblioteques",
         "books": "Llibres",
+        "reading": "Llegint",
+        "finished": "Acabats"
+    },
+    "bookorbit": {
+        "books": "Llibres",
+        "authors": "Autors",
+        "series": "Sèries",
+        "storage": "Emmagatzematge",
         "reading": "Llegint",
         "finished": "Acabats"
     },
@@ -969,6 +1000,11 @@
         "showReclaimable": "Sèrie reclamable",
         "totalCapacity": "Capacitat total"
     },
+    "netbird": {
+        "online": "Parells en línia",
+        "users": "Usuaris",
+        "login_expired": "Sessió caducada"
+    },
     "netdata": {
         "warnings": "Avisos",
         "criticals": "Crítics"
@@ -994,7 +1030,7 @@
     },
     "gitea": {
         "notifications": "Notificacions",
-        "issues": "Problemes",
+        "issues": "Incidències",
         "pulls": "Sol·licitud de Canvis",
         "repositories": "Repositoris"
     },
@@ -1107,7 +1143,15 @@
         "cpu": "CPU",
         "memory": "MEM",
         "disk": "Disc",
-        "network": "XARXA"
+        "network": "XARXA",
+        "temp": "Temp",
+        "load": "Càrrega",
+        "gpu": "GPU",
+        "uptime": "Temps en funcionament",
+        "services": "Serveis",
+        "updates": "Actualitzacions",
+        "battery": "Bateria",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "Apps",
@@ -1124,7 +1168,7 @@
     },
     "gitlab": {
         "groups": "Grups",
-        "issues": "Problemes",
+        "issues": "Incidències",
         "merges": "Merge Requests",
         "projects": "Projectes"
     },
@@ -1161,7 +1205,7 @@
     },
     "checkmk": {
         "serviceErrors": "Errors de servei",
-        "hostErrors": "Problemes de l'hoste"
+        "hostErrors": "Errors de l'hoste"
     },
     "komodo": {
         "total": "Total",
@@ -1255,8 +1299,11 @@
         "storage": "Emmagatzematge"
     },
     "sportarr": {
-        "wanted": "Volgut",
-        "queued": "Encuat",
+        "wanted": "Pendents",
+        "queued": "En cua",
         "leagues": "Lligues"
+    },
+    "feed": {
+        "noItems": "Sense elements"
     }
 }

@@ -21,7 +21,16 @@
         "seconds": "秒"
     },
     "auth": {
-        "signout": "Sign out"
+        "signout": "Sign out",
+        "loginRequired": "Login Required",
+        "loginDescription": "Login to view your dashboard.",
+        "signIn": "Sign in",
+        "password": "Password",
+        "loginVia": "Login via {{provider}}",
+        "redirecting": "Redirecting to {{provider}}",
+        "invalidPassword": "Invalid password. Please try again.",
+        "authenticationError": "Authentication error",
+        "authenticationErrorDescription": "Auth is disabled or misconfigured."
     },
     "widget": {
         "missing_type": "缺失的组件类型: {{type}}",
@@ -245,8 +254,8 @@
         "download": "下载"
     },
     "transmission": {
-        "download": "下载",
-        "upload": "上传",
+        "download": "下载速率",
+        "upload": "上传速率",
         "leech": "下载中",
         "seed": "做种"
     },
@@ -255,6 +264,16 @@
         "upload": "上传速率",
         "leech": "下载中",
         "seed": "做种"
+    },
+    "qui": {
+        "leech": "Leech",
+        "download": "Download",
+        "seed": "Seed",
+        "upload": "Upload",
+        "total": "Total",
+        "errored": "Errored",
+        "ratio": "Ratio",
+        "freeSpace": "Free"
     },
     "qnap": {
         "cpuUsage": "处理器",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "运行中",
         "stopped": "停止",
-        "total": "总计"
+        "total": "总计",
+        "applications": "Applications",
+        "services": "Services",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "已下载",
@@ -754,7 +776,7 @@
     "komga": {
         "libraries": "书库",
         "series": "系列",
-        "books": "Books"
+        "books": "书籍"
     },
     "diskstation": {
         "days": "天",
@@ -780,7 +802,8 @@
         "queue": "队列",
         "processing": "处理中",
         "processed": "已处理",
-        "time": "时间"
+        "time": "时间",
+        "failed": "Failed"
     },
     "firefly": {
         "networth": "净值",
@@ -856,6 +879,14 @@
     "booklore": {
         "libraries": "书库",
         "books": "书籍",
+        "reading": "阅读中",
+        "finished": "已读完"
+    },
+    "bookorbit": {
+        "books": "书籍",
+        "authors": "作者",
+        "series": "Series",
+        "storage": "Storage",
         "reading": "阅读中",
         "finished": "已读完"
     },
@@ -968,6 +999,11 @@
         "movieReclaimable": "Movie Reclaimable",
         "showReclaimable": "Show Reclaimable",
         "totalCapacity": "Total Capacity"
+    },
+    "netbird": {
+        "online": "Online Peers",
+        "users": "Users",
+        "login_expired": "Login Expired"
     },
     "netdata": {
         "warnings": "警告",
@@ -1107,7 +1143,15 @@
         "cpu": "CPU",
         "memory": "内存",
         "disk": "磁盘",
-        "network": "网络"
+        "network": "网络",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Uptime",
+        "services": "Services",
+        "updates": "Updates",
+        "battery": "Battery",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "应用程序",
@@ -1258,5 +1302,8 @@
         "wanted": "Wanted",
         "queued": "Queued",
         "leagues": "Leagues"
+    },
+    "feed": {
+        "noItems": "No items"
     }
 }

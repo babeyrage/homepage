@@ -1,8 +1,9 @@
+import { withAuth } from "utils/auth";
 import { getSettings } from "utils/config/config";
 import { getPrivateWidgetOptions } from "utils/config/widget-helpers";
 import { cachedRequest } from "utils/proxy/http";
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   const { latitude, longitude, provider, cache, lang, index } = req.query;
   const privateWidgetOptions = await getPrivateWidgetOptions("weatherapi", index);
   let { apiKey } = privateWidgetOptions;
@@ -24,7 +25,9 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing API key" });
   }
 
-  const apiUrl = `http://api.weatherapi.com/v1/current.json?q=${latitude},${longitude}&key=${apiKey}&lang=${lang}`;
+  const apiUrl = `https://api.weatherapi.com/v1/current.json?q=${latitude},${longitude}&key=${apiKey}&lang=${lang}`;
 
   return res.send(await cachedRequest(apiUrl, cache));
 }
+
+export default withAuth(handler);

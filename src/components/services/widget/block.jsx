@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { useTranslation } from "next-i18next/pages";
 import { useContext, useMemo } from "react";
+import { SettingsContext } from "utils/contexts/settings";
 
 import { BlockHighlightContext } from "./highlight-context";
 
@@ -9,6 +10,8 @@ import { evaluateHighlight, getHighlightClass } from "utils/highlights";
 export default function Block({ value, highlightValue, label, field }) {
   const { t } = useTranslation();
   const highlightConfig = useContext(BlockHighlightContext);
+  const { settings } = useContext(SettingsContext);
+  const refined = settings?.blockStyle === "refined";
 
   const highlight = useMemo(() => {
     if (!highlightConfig) return null;
@@ -33,6 +36,7 @@ export default function Block({ value, highlightValue, label, field }) {
   }, [highlight, highlightConfig]);
 
   const applyToValueOnly = highlight?.valueOnly === true;
+  const translatedLabel = t(label, { returnObjects: true });
 
   return (
     <div
@@ -45,11 +49,22 @@ export default function Block({ value, highlightValue, label, field }) {
       data-highlight-level={highlight?.level}
       data-highlight-source={highlight?.source}
     >
-      <div className="font-thin text-sm">{value === undefined || value === null ? "-" : value}</div>
       <div
-        className={classNames("font-bold text-xs uppercase", applyToValueOnly && "text-theme-700 dark:text-theme-200")}
+        className={classNames(
+          refined ? "text-[13px] font-medium tabular-nums" : "font-thin text-sm",
+          "service-block-value",
+        )}
       >
-        {t(label)}
+        {value === undefined || value === null ? "-" : value}
+      </div>
+      <div
+        className={classNames(
+          refined ? "text-[10px] font-semibold uppercase tracking-wider opacity-60" : "font-bold text-xs uppercase",
+          applyToValueOnly && "text-theme-700 dark:text-theme-200",
+          "service-block-label",
+        )}
+      >
+        {typeof translatedLabel === "string" ? translatedLabel : label}
       </div>
     </div>
   );

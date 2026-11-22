@@ -21,7 +21,16 @@
         "seconds": "s"
     },
     "auth": {
-        "signout": "Wyloguj się"
+        "signout": "Wyloguj się",
+        "loginRequired": "Wymagany login",
+        "loginDescription": "Zaloguj się, aby wyświetlić panel nawigacyjny.",
+        "signIn": "Zaloguj się",
+        "password": "Hasło",
+        "loginVia": "Zaloguj przez {{provider}}",
+        "redirecting": "Przekierowanie do {{provider}}",
+        "invalidPassword": "Błędne hasło. Spróbuj ponownie.",
+        "authenticationError": "Błąd uwierzytelnienia",
+        "authenticationErrorDescription": "Auth jest wyłączony lub nieprawidłowo skonfigurowany."
     },
     "widget": {
         "missing_type": "Brakujący typ widżetu: {{type}}",
@@ -100,11 +109,11 @@
         "not_found": "Nie znaleziono",
         "exited": "Zakończony",
         "partial": "Częściowy",
-        "created": "Created",
-        "paused": "Paused",
-        "restarting": "Restarting",
-        "removing": "Removing",
-        "dead": "Dead"
+        "created": "Utworzony",
+        "paused": "Wstrzymany",
+        "restarting": "Ponowne uruchamianie",
+        "removing": "Usuwanie",
+        "dead": "Martwy"
     },
     "ping": {
         "error": "Błąd",
@@ -256,6 +265,16 @@
         "leech": "Leech",
         "seed": "Seed"
     },
+    "qui": {
+        "leech": "Leech",
+        "download": "Pobieranie",
+        "seed": "Seed",
+        "upload": "Wysyłanie",
+        "total": "Razem",
+        "errored": "Z błędami",
+        "ratio": "Ratio",
+        "freeSpace": "Wolne"
+    },
     "qnap": {
         "cpuUsage": "Użycie CPU",
         "memUsage": "Użycie pamięci",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "Działa",
         "stopped": "Zatrzymane",
-        "total": "Razem"
+        "total": "Razem",
+        "applications": "Aplikacje",
+        "services": "Usługi",
+        "namespaces": "Przestrzenie nazw"
     },
     "suwayomi": {
         "download": "Pobrano",
@@ -780,7 +802,8 @@
         "queue": "W kolejce",
         "processing": "Przetwarzane",
         "processed": "Przetworzone",
-        "time": "Czas"
+        "time": "Czas",
+        "failed": "Niepowodzenie"
     },
     "firefly": {
         "networth": "Wartość netto",
@@ -856,6 +879,14 @@
     "booklore": {
         "libraries": "Biblioteki",
         "books": "Książki",
+        "reading": "Czytane",
+        "finished": "Skończone"
+    },
+    "bookorbit": {
+        "books": "Książki",
+        "authors": "Autorzy",
+        "series": "Serie",
+        "storage": "Pamięć",
         "reading": "Czytane",
         "finished": "Skończone"
     },
@@ -968,6 +999,11 @@
         "movieReclaimable": "Odzyskiwalne z filmów",
         "showReclaimable": "Odzyskiwalne z seriali",
         "totalCapacity": "Całkowita pojemność"
+    },
+    "netbird": {
+        "online": "Peery online",
+        "users": "Użytkownicy",
+        "login_expired": "Logowanie wygasło"
     },
     "netdata": {
         "warnings": "Ostrzeżenia",
@@ -1107,7 +1143,15 @@
         "cpu": "Procesor",
         "memory": "PAM",
         "disk": "Dysk",
-        "network": "NET"
+        "network": "NET",
+        "temp": "Temperatura",
+        "load": "Obciążenie",
+        "gpu": "GPU",
+        "uptime": "Czas pracy",
+        "services": "Usługi",
+        "updates": "Aktualizacje",
+        "battery": "Bateria",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "Aplikacje",
@@ -1258,5 +1302,8 @@
         "wanted": "Poszukiwane",
         "queued": "W kolejce",
         "leagues": "Ligi"
+    },
+    "feed": {
+        "noItems": "Brak elementów"
     }
 }

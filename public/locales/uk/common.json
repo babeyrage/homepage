@@ -21,7 +21,16 @@
         "seconds": "с"
     },
     "auth": {
-        "signout": "Sign out"
+        "signout": "Вихід",
+        "loginRequired": "Login Required",
+        "loginDescription": "Login to view your dashboard.",
+        "signIn": "Sign in",
+        "password": "Password",
+        "loginVia": "Login via {{provider}}",
+        "redirecting": "Redirecting to {{provider}}",
+        "invalidPassword": "Invalid password. Please try again.",
+        "authenticationError": "Authentication error",
+        "authenticationErrorDescription": "Auth is disabled or misconfigured."
     },
     "widget": {
         "missing_type": "Відсутній тип віджета: {{type}}",
@@ -41,7 +50,7 @@
     "search": {
         "placeholder": "Пошук…",
         "provider": "Search engine: {{name}}",
-        "select_provider": "Select search engine"
+        "select_provider": "Вибрати пошукову систему"
     },
     "resources": {
         "cpu": "ЦП",
@@ -83,7 +92,7 @@
         "nextRun": "Next Run",
         "running": "Running",
         "warnings": "Warnings",
-        "errors": "Errors"
+        "errors": "Помилки"
     },
     "docker": {
         "rx": "RX",
@@ -140,7 +149,7 @@
         "series": "Серіали",
         "episodes": "Серії",
         "songs": "Пiснi",
-        "albums": "Albums"
+        "albums": "Альбоми"
     },
     "esphome": {
         "offline": "Офлайн",
@@ -256,6 +265,16 @@
         "leech": "Ліч",
         "seed": "Сід"
     },
+    "qui": {
+        "leech": "Leech",
+        "download": "Download",
+        "seed": "Seed",
+        "upload": "Upload",
+        "total": "Total",
+        "errored": "Errored",
+        "ratio": "Ratio",
+        "freeSpace": "Free"
+    },
     "qnap": {
         "cpuUsage": "Використання CPU",
         "memUsage": "Використання пам'яті",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "Виконання",
         "stopped": "Зупинено",
-        "total": "Всього"
+        "total": "Всього",
+        "applications": "Applications",
+        "services": "Services",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "Завантажено",
@@ -780,7 +802,8 @@
         "queue": "Черга",
         "processing": "Обробка",
         "processed": "Оброблено",
-        "time": "Час"
+        "time": "Час",
+        "failed": "Failed"
     },
     "firefly": {
         "networth": "Чисті Активи",
@@ -858,6 +881,14 @@
         "books": "Книжки",
         "reading": "Читаю",
         "finished": "Завершено"
+    },
+    "bookorbit": {
+        "books": "Книжки",
+        "authors": "Автори",
+        "series": "Серії",
+        "storage": "Storage",
+        "reading": "Reading",
+        "finished": "Finished"
     },
     "jdownloader": {
         "downloadCount": "Черга",
@@ -968,6 +999,11 @@
         "movieReclaimable": "Movie Reclaimable",
         "showReclaimable": "Show Reclaimable",
         "totalCapacity": "Total Capacity"
+    },
+    "netbird": {
+        "online": "Online Peers",
+        "users": "Users",
+        "login_expired": "Login Expired"
     },
     "netdata": {
         "warnings": "Попередження",
@@ -1107,7 +1143,15 @@
         "cpu": "Процесор",
         "memory": "Пам'ять",
         "disk": "Диск",
-        "network": "МЕРЕЖА"
+        "network": "МЕРЕЖА",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Uptime",
+        "services": "Services",
+        "updates": "Updates",
+        "battery": "Battery",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "Додатки",
@@ -1257,6 +1301,9 @@
     "sportarr": {
         "wanted": "Wanted",
         "queued": "Queued",
-        "leagues": "Leagues"
+        "leagues": "Ліги"
+    },
+    "feed": {
+        "noItems": "Немає елементів"
     }
 }

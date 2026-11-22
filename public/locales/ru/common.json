@@ -21,7 +21,16 @@
         "seconds": "сек"
     },
     "auth": {
-        "signout": "Выход"
+        "signout": "Выход",
+        "loginRequired": "Login Required",
+        "loginDescription": "Login to view your dashboard.",
+        "signIn": "Sign in",
+        "password": "Password",
+        "loginVia": "Login via {{provider}}",
+        "redirecting": "Redirecting to {{provider}}",
+        "invalidPassword": "Invalid password. Please try again.",
+        "authenticationError": "Authentication error",
+        "authenticationErrorDescription": "Auth is disabled or misconfigured."
     },
     "widget": {
         "missing_type": "Отсутствует тип виджета: {{type}}",
@@ -72,7 +81,7 @@
         "empty_data": "Статус подсистемы неизвестен"
     },
     "unifi_drive": {
-        "healthy": "Здоров",
+        "healthy": "Исправен",
         "degraded": "Деградация",
         "no_data": "Нет доступных данных о хранилище"
     },
@@ -256,6 +265,16 @@
         "leech": "Лич",
         "seed": "Сид"
     },
+    "qui": {
+        "leech": "Лич",
+        "download": "Скачивание",
+        "seed": "Сид",
+        "upload": "Загрузка",
+        "total": "Всего",
+        "errored": "Ошибок",
+        "ratio": "Соотношение",
+        "freeSpace": "Свободно"
+    },
     "qnap": {
         "cpuUsage": "Использование ЦП",
         "memUsage": "Использование ОЗУ",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "Запущено",
         "stopped": "Остановлено",
-        "total": "Всего"
+        "total": "Всего",
+        "applications": "Applications",
+        "services": "Services",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "Загружено",
@@ -780,7 +802,8 @@
         "queue": "Очередь",
         "processing": "Обрабатывается",
         "processed": "Обработано",
-        "time": "Время"
+        "time": "Время",
+        "failed": "Неудачно"
     },
     "firefly": {
         "networth": "Общая средства",
@@ -857,6 +880,14 @@
         "libraries": "Библиотеки",
         "books": "Книги",
         "reading": "Читаю",
+        "finished": "Завершено"
+    },
+    "bookorbit": {
+        "books": "Книги",
+        "authors": "Авторы",
+        "series": "Серии",
+        "storage": "Память",
+        "reading": "Чтение",
         "finished": "Завершено"
     },
     "jdownloader": {
@@ -968,6 +999,11 @@
         "movieReclaimable": "Восстановленный фильм",
         "showReclaimable": "Восстановленное шоу",
         "totalCapacity": "Общая ёмкость"
+    },
+    "netbird": {
+        "online": "Online Peers",
+        "users": "Users",
+        "login_expired": "Login Expired"
     },
     "netdata": {
         "warnings": "Предупреждения",
@@ -1107,7 +1143,15 @@
         "cpu": "ЦП",
         "memory": "Память",
         "disk": "Диск",
-        "network": "Сеть"
+        "network": "Сеть",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Uptime",
+        "services": "Services",
+        "updates": "Updates",
+        "battery": "Battery",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "Приложения",
@@ -1258,5 +1302,8 @@
         "wanted": "Требуется",
         "queued": "В очереди",
         "leagues": "Лиги"
+    },
+    "feed": {
+        "noItems": "Ничего нет"
     }
 }

@@ -21,7 +21,16 @@
         "seconds": "s"
     },
     "auth": {
-        "signout": "Se déconnecter"
+        "signout": "Se déconnecter",
+        "loginRequired": "Login Required",
+        "loginDescription": "Login to view your dashboard.",
+        "signIn": "Sign in",
+        "password": "Password",
+        "loginVia": "Login via {{provider}}",
+        "redirecting": "Redirecting to {{provider}}",
+        "invalidPassword": "Invalid password. Please try again.",
+        "authenticationError": "Authentication error",
+        "authenticationErrorDescription": "Auth is disabled or misconfigured."
     },
     "widget": {
         "missing_type": "Type de widget manquant : {{type}}",
@@ -256,6 +265,16 @@
         "leech": "En téléchargement",
         "seed": "En partage"
     },
+    "qui": {
+        "leech": "Leech",
+        "download": "Download",
+        "seed": "Seed",
+        "upload": "Upload",
+        "total": "Total",
+        "errored": "Errored",
+        "ratio": "Ratio",
+        "freeSpace": "Free"
+    },
     "qnap": {
         "cpuUsage": "Utilisation CPU",
         "memUsage": "RAM utilisée",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "En cours d'exécution",
         "stopped": "Arrêté",
-        "total": "Total"
+        "total": "Total",
+        "applications": "Applications",
+        "services": "Services",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "Téléchargé",
@@ -741,7 +763,7 @@
     "uptimekuma": {
         "up": "Sites actifs",
         "down": "Sites inactifs",
-        "uptime": "Démarré depuis",
+        "uptime": "Disponibilité",
         "incident": "Incident",
         "m": "m"
     },
@@ -780,7 +802,8 @@
         "queue": "File d'attente",
         "processing": "En traitement",
         "processed": "Traité",
-        "time": "Temps"
+        "time": "Temps",
+        "failed": "Failed"
     },
     "firefly": {
         "networth": "Valeur Nette",
@@ -858,6 +881,14 @@
         "books": "Livres",
         "reading": "En cours de lecture",
         "finished": "Terminés"
+    },
+    "bookorbit": {
+        "books": "Books",
+        "authors": "Authors",
+        "series": "Series",
+        "storage": "Storage",
+        "reading": "Reading",
+        "finished": "Finished"
     },
     "jdownloader": {
         "downloadCount": "File d'attente",
@@ -968,6 +999,11 @@
         "movieReclaimable": "Film Reclaimable",
         "showReclaimable": "Voir réclamable",
         "totalCapacity": "Capacité totale"
+    },
+    "netbird": {
+        "online": "Online Peers",
+        "users": "Users",
+        "login_expired": "Login Expired"
     },
     "netdata": {
         "warnings": "Avertissements",
@@ -1107,7 +1143,15 @@
         "cpu": "CPU",
         "memory": "RAM",
         "disk": "Disque",
-        "network": "Réseau"
+        "network": "Réseau",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Uptime",
+        "services": "Services",
+        "updates": "Updates",
+        "battery": "Battery",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "Applications",
@@ -1258,5 +1302,8 @@
         "wanted": "Recherché",
         "queued": "En file d'attente",
         "leagues": "Ligues"
+    },
+    "feed": {
+        "noItems": "No items"
     }
 }

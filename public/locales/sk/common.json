@@ -21,7 +21,16 @@
         "seconds": "s"
     },
     "auth": {
-        "signout": "Odhlásiť sa"
+        "signout": "Odhlásiť sa",
+        "loginRequired": "Login Required",
+        "loginDescription": "Login to view your dashboard.",
+        "signIn": "Sign in",
+        "password": "Password",
+        "loginVia": "Login via {{provider}}",
+        "redirecting": "Redirecting to {{provider}}",
+        "invalidPassword": "Invalid password. Please try again.",
+        "authenticationError": "Authentication error",
+        "authenticationErrorDescription": "Auth is disabled or misconfigured."
     },
     "widget": {
         "missing_type": "Chýba typ widgetu: {{type}}",
@@ -72,7 +81,7 @@
         "empty_data": "Stav podsystému neznámy"
     },
     "unifi_drive": {
-        "healthy": "Healthy",
+        "healthy": "Zdravý",
         "degraded": "Degraded",
         "no_data": "No storage data available"
     },
@@ -100,11 +109,11 @@
         "not_found": "Nenájdené",
         "exited": "Ukončené",
         "partial": "Čiastočný",
-        "created": "Created",
-        "paused": "Paused",
-        "restarting": "Restarting",
-        "removing": "Removing",
-        "dead": "Dead"
+        "created": "Vytvorené",
+        "paused": "Pozastavené",
+        "restarting": "Reštartuje sa",
+        "removing": "Odstraňuje sa",
+        "dead": "Mŕtve"
     },
     "ping": {
         "error": "Chyba",
@@ -256,6 +265,16 @@
         "leech": "Leech",
         "seed": "Seed"
     },
+    "qui": {
+        "leech": "Leech",
+        "download": "Download",
+        "seed": "Seed",
+        "upload": "Upload",
+        "total": "Celkom",
+        "errored": "Errored",
+        "ratio": "Ratio",
+        "freeSpace": "Free"
+    },
     "qnap": {
         "cpuUsage": "Využitie CPU",
         "memUsage": "Využitie pamäte",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "Beží",
         "stopped": "Zastavené",
-        "total": "Celkom"
+        "total": "Celkom",
+        "applications": "Aplikácie",
+        "services": "Služby",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "Downloaded",
@@ -780,7 +802,8 @@
         "queue": "Poradie",
         "processing": "Processing",
         "processed": "Spracované",
-        "time": "Čas"
+        "time": "Čas",
+        "failed": "Zlyhalo"
     },
     "firefly": {
         "networth": "Net Worth",
@@ -856,6 +879,14 @@
     "booklore": {
         "libraries": "Libraries",
         "books": "Books",
+        "reading": "Reading",
+        "finished": "Finished"
+    },
+    "bookorbit": {
+        "books": "Books",
+        "authors": "Authors",
+        "series": "Series",
+        "storage": "Úložisko",
         "reading": "Reading",
         "finished": "Finished"
     },
@@ -968,6 +999,11 @@
         "movieReclaimable": "Movie Reclaimable",
         "showReclaimable": "Show Reclaimable",
         "totalCapacity": "Celková kapacita"
+    },
+    "netbird": {
+        "online": "Online Peers",
+        "users": "Používateľov",
+        "login_expired": "Prihlásenie vypršalo"
     },
     "netdata": {
         "warnings": "Upozornenia",
@@ -1107,7 +1143,15 @@
         "cpu": "CPU",
         "memory": "RAM",
         "disk": "Disk",
-        "network": "NET"
+        "network": "NET",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Dostupnosť",
+        "services": "Služby",
+        "updates": "Aktualizácie",
+        "battery": "Batéria",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "Apps",
@@ -1258,5 +1302,8 @@
         "wanted": "Wanted",
         "queued": "V poradí",
         "leagues": "Leagues"
+    },
+    "feed": {
+        "noItems": "Žiadne položky"
     }
 }

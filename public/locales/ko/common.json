@@ -21,7 +21,16 @@
         "seconds": "초"
     },
     "auth": {
-        "signout": "로그아웃"
+        "signout": "로그아웃",
+        "loginRequired": "로그인이 필요합니다",
+        "loginDescription": "대시보드를 보려면 로그인하십시오.",
+        "signIn": "로그인",
+        "password": "비밀번호",
+        "loginVia": "{{provider}}(으)로 로그인",
+        "redirecting": "{{provider}}(으)로 리다이렉트 중",
+        "invalidPassword": "잘못된 비밀번호. 다시 시도하십시오.",
+        "authenticationError": "인증 오류",
+        "authenticationErrorDescription": "인증이 비활성화 또는 잘못 설정되었습니다."
     },
     "widget": {
         "missing_type": "없는 위젯 유형: {{type}}",
@@ -256,6 +265,16 @@
         "leech": "리치",
         "seed": "시드"
     },
+    "qui": {
+        "leech": "Leech",
+        "download": "Download",
+        "seed": "Seed",
+        "upload": "Upload",
+        "total": "Total",
+        "errored": "Errored",
+        "ratio": "Ratio",
+        "freeSpace": "Free"
+    },
     "qnap": {
         "cpuUsage": "CPU 사용량",
         "memUsage": "메모리 사용량",
@@ -348,7 +367,10 @@
     "portainer": {
         "running": "실행 중",
         "stopped": "중지됨",
-        "total": "전체"
+        "total": "전체",
+        "applications": "Applications",
+        "services": "Services",
+        "namespaces": "Namespaces"
     },
     "suwayomi": {
         "download": "다운로드됨",
@@ -780,7 +802,8 @@
         "queue": "대기열",
         "processing": "처리 중",
         "processed": "처리됨",
-        "time": "시간"
+        "time": "시간",
+        "failed": "Failed"
     },
     "firefly": {
         "networth": "순자산",
@@ -856,6 +879,14 @@
     "booklore": {
         "libraries": "라이브러리",
         "books": "책",
+        "reading": "읽는 중",
+        "finished": "완료"
+    },
+    "bookorbit": {
+        "books": "책",
+        "authors": "저자",
+        "series": "시리즈",
+        "storage": "저장 공간",
         "reading": "읽는 중",
         "finished": "완료"
     },
@@ -968,6 +999,11 @@
         "movieReclaimable": "Movie Reclaimable",
         "showReclaimable": "Show Reclaimable",
         "totalCapacity": "Total Capacity"
+    },
+    "netbird": {
+        "online": "Online Peers",
+        "users": "Users",
+        "login_expired": "Login Expired"
     },
     "netdata": {
         "warnings": "경고",
@@ -1107,7 +1143,15 @@
         "cpu": "CPU",
         "memory": "메모리",
         "disk": "디스크",
-        "network": "네트워크"
+        "network": "네트워크",
+        "temp": "Temp",
+        "load": "Load",
+        "gpu": "GPU",
+        "uptime": "Uptime",
+        "services": "Services",
+        "updates": "Updates",
+        "battery": "Battery",
+        "agent": "Agent"
     },
     "argocd": {
         "apps": "앱",
@@ -1258,5 +1302,8 @@
         "wanted": "Wanted",
         "queued": "Queued",
         "leagues": "Leagues"
+    },
+    "feed": {
+        "noItems": "항목 없음"
     }
 }
