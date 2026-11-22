@@ -1,7 +1,6 @@
 import dynamic from "next/dynamic";
 
 const components = {
-  claudeusage: dynamic(() => import("./claudeusage/component")),
   adguard: dynamic(() => import("./adguard/component")),
   apcups: dynamic(() => import("./apcups/component")),
   arcane: dynamic(() => import("./arcane/component")),
@@ -39,6 +38,7 @@ const components = {
   downloadstation: dynamic(() => import("./downloadstation/component")),
   docker: dynamic(() => import("./docker/component")),
   dockhand: dynamic(() => import("./dockhand/component")),
+  claudeusage: dynamic(() => import("./claudeusage/component")),
   dota2: dynamic(() => import("./dota2/component")),
   kubernetes: dynamic(() => import("./kubernetes/component")),
   emby: dynamic(() => import("./emby/component")),
@@ -151,6 +151,7 @@ const components = {
   sabnzbd: dynamic(() => import("./sabnzbd/component")),
   sabnzbdfusion: dynamic(() => import("./sabnzbdfusion/component")),
   scrutiny: dynamic(() => import("./scrutiny/component")),
+  scryer: dynamic(() => import("./scryer/component")),
   seerr: dynamic(() => import("./seerr/component")),
   seerrfusion: dynamic(() => import("./seerrfusion/component")),
   slskd: dynamic(() => import("./slskd/component")),

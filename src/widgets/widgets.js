@@ -30,8 +30,8 @@ import deluge from "./deluge/widget";
 import develancacheui from "./develancacheui/widget";
 import diskstation from "./diskstation/widget";
 import dispatcharr from "./dispatcharr/widget";
-import claudeusage from "./claudeusage/widget";
 import dockhand from "./dockhand/widget";
+import claudeusage from "./claudeusage/widget";
 import dota2 from "./dota2/widget";
 import downloadstation from "./downloadstation/widget";
 import duplicati from "./duplicati/widget";
@@ -141,6 +141,7 @@ import rutorrent from "./rutorrent/widget";
 import sabnzbd from "./sabnzbd/widget";
 import sabnzbdfusion from "./sabnzbdfusion/widget";
 import scrutiny from "./scrutiny/widget";
+import scryer from "./scryer/widget";
 import seerr from "./seerr/widget";
 import seerrfusion from "./seerrfusion/widget";
 import slskd from "./slskd/widget";
@@ -189,7 +190,6 @@ import yourspotify from "./yourspotify/widget";
 import zabbix from "./zabbix/widget";
 
 const widgets = {
-  claudeusage,
   adguard,
   apcups,
   arcane,
@@ -222,6 +222,7 @@ const widgets = {
   duplicati,
   dispatcharr,
   dockhand,
+  claudeusage,
   dota2,
   downloadstation,
   emby,
@@ -336,6 +337,7 @@ const widgets = {
   sabnzbd,
   sabnzbdfusion,
   scrutiny,
+  scryer,
   seerr,
   seerrfusion,
   slskd,
