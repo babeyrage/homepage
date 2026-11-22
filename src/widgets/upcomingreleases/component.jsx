@@ -7,7 +7,7 @@ import Agenda from "./agenda";
 import Monthly from "./monthly";
 
 import Container from "components/services/widget/container";
-import ZoneLogo from "components/widgets/fusion/zone-logo";
+import { ZoneBody, ZoneHeader } from "components/widgets/fusion/zone";
 import { SettingsContext } from "utils/contexts/settings";
 
 const colorVariants = {
@@ -116,21 +116,8 @@ export default function Component({ service }) {
 
   return (
     <Container service={service}>
-      <div className="flex flex-col w-full">
-        <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-2">
-            <ZoneLogo icon={service.icon} />
-            <span
-              className="widget-zone-label text-[10px] font-semibold uppercase tracking-widest"
-              style={{ color: "rgb(var(--accent))" }}
-            >
-              Upcoming Releases
-            </span>
-          </div>
-          <span className="widget-zone-label text-[9px] text-theme-500 dark:text-theme-400">
-            next {widget?.maxEvents ?? 10}
-          </span>
-        </div>
+      <ZoneBody>
+        <ZoneHeader icon={service.icon} title="Upcoming Releases" right={`next ${widget?.maxEvents ?? 10}`} />
         <div className="sticky top-0">
           {integrations.map((integration) => {
             const Integration = integration.service;
@@ -172,7 +159,7 @@ export default function Component({ service }) {
             className="flex"
           />
         )}
-      </div>
+      </ZoneBody>
     </Container>
   );
 }

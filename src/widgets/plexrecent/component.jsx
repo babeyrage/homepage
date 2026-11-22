@@ -11,24 +11,14 @@ import {
 } from './ratingIcons';
 
 import Container from 'components/services/widget/container';
-import ZoneLogo from 'components/widgets/fusion/zone-logo';
+import { ZoneBody, ZoneHeader } from 'components/widgets/fusion/zone';
 import Block from 'components/services/widget/block';
 import useWidgetAPI from 'utils/proxy/use-widget-api';
 
 // Zone-style card label ("PLEX") shown at the top of the widget, matching
 // the accent-coloured header every other card in the SIGNAL rail uses.
 function ZoneLabel({ children, icon }) {
-  return (
-    <div className="flex items-center gap-2 mb-2.5">
-      <ZoneLogo icon={icon} />
-      <span
-        className="widget-zone-label text-[10px] font-semibold uppercase tracking-widest"
-        style={{ color: 'rgb(var(--accent))' }}
-      >
-        {children}
-      </span>
-    </div>
-  );
+  return <ZoneHeader icon={icon} title={children} />;
 }
 
 // How many leading posters in each horizontally-scrolling row load eagerly.
@@ -58,19 +48,19 @@ export default function Component({ service }) {
   if (error) return <Container service={service} error={error} />;
   if (!plexData) return (
     <Container service={service}>
-      <div className="flex flex-col w-full px-4 pt-3">
+      <ZoneBody>
         <ZoneLabel icon={service.icon}>{t('plex.title', 'Plex')}</ZoneLabel>
         <div className="flex flex-row w-full">
           <Block label="plex.movies" />
           <Block label="plex.tv" />
         </div>
-      </div>
+      </ZoneBody>
     </Container>
   );
 
   return (
     <Container service={service}>
-      <div className="flex flex-col w-full px-4 pt-3">
+      <ZoneBody>
         <ZoneLabel icon={service.icon}>{t('plex.title', 'Plex')}</ZoneLabel>
         <div className="flex flex-row w-full">
           <Block label="plex.movies" value={t('common.number', { value: plexData.totalMovies })} />
@@ -86,7 +76,7 @@ export default function Component({ service }) {
             <RecentTVRow title={t('plex.recentTV', 'Recently Added — TV')} items={plexData.recentTV} />
           </div>
         </div>
-      </div>
+      </ZoneBody>
     </Container>
   );
 }

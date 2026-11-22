@@ -13,6 +13,7 @@ import { UpcomingMatchesModal } from "./modals/UpcomingMatchesModal";
 
 import useWidgetAPI from "utils/proxy/use-widget-api";
 import Container from "components/services/widget/container";
+import { ZoneBody } from "components/widgets/fusion/zone";
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -105,7 +106,7 @@ export default function Component({ service }) {
 
   return (
     <Container service={service}>
-      <div className="flex flex-col w-full">
+      <ZoneBody>
         <ZoneLabel icon={service.icon}>{t("dota2.title", "Dota 2")}</ZoneLabel>
         <div className="flex flex-col sm:flex-row w-full gap-3">
 
@@ -265,7 +266,7 @@ export default function Component({ service }) {
             )}
           </div>
         </div>
-      </div>
+      </ZoneBody>
 
       {/* ── Completed tournaments modal ───────────────────────────────────── */}
       {showCompletedModal && (

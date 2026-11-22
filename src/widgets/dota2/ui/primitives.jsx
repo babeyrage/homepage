@@ -1,21 +1,11 @@
-import ZoneLogo from "components/widgets/fusion/zone-logo";
+import { ZoneHeader } from "components/widgets/fusion/zone";
 
 // ── Shared UI primitives ──────────────────────────────────────────────────────
 
 // Zone-style card label ("DOTA 2") shown at the top of the widget, matching
 // the accent-coloured header every other card in the SIGNAL rail uses.
 export function ZoneLabel({ children, icon }) {
-  return (
-    <div className="flex items-center gap-2 mb-2.5">
-      <ZoneLogo icon={icon} />
-      <span
-        className="widget-zone-label text-[10px] font-semibold uppercase tracking-widest"
-        style={{ color: "rgb(var(--accent))" }}
-      >
-        {children}
-      </span>
-    </div>
-  );
+  return <ZoneHeader icon={icon} title={children} />;
 }
 
 export function SectionLabel({ children }) {

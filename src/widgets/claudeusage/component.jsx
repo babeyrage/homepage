@@ -1,5 +1,5 @@
 import Container from "components/services/widget/container";
-import ZoneLogo from "components/widgets/fusion/zone-logo";
+import { ZoneBody, ZoneHeader } from "components/widgets/fusion/zone";
 
 import { Chip, FUSION_COLORS, Led, MonoLabel } from "../../components/widgets/fusion/primitives";
 
@@ -326,22 +326,15 @@ export default function Component({ service }) {
 
   return (
     <Container service={service}>
-      <div className="flex flex-col gap-3 w-full p-3">
-        <div className="flex items-center justify-between gap-2">
-          <span className="flex items-center gap-2">
-            <ZoneLogo icon={service.icon} />
-            <MonoLabel
-              color="rgb(var(--accent))"
-              title="Cost is API-equivalent at list prices, not the amount billed to a subscription"
-            >
-              Claude usage
-            </MonoLabel>
-            <Led color={stale ? FUSION_COLORS.warn : FUSION_COLORS.ok} glow={!stale} />
-          </span>
-          <span className="text-[10px] opacity-60">
-            {stale ? `agent offline · last data ${fmtAge(age)}` : age != null ? `updated ${fmtAge(age)}` : ""}
-          </span>
-        </div>
+      <ZoneBody>
+        <ZoneHeader
+          icon={service.icon}
+          title="Claude usage"
+          titleAttr="Cost is API-equivalent at list prices, not the amount billed to a subscription"
+          right={stale ? `agent offline · last data ${fmtAge(age)}` : age != null ? `updated ${fmtAge(age)}` : ""}
+        >
+          <Led color={stale ? FUSION_COLORS.warn : FUSION_COLORS.ok} glow={!stale} />
+        </ZoneHeader>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-5 gap-y-4">
           {/* Left: headline + plan limits */}
@@ -400,7 +393,7 @@ export default function Component({ service }) {
             <ShareList title="Projects · 7d" rows={data.projects} nameKey="project" />
           </div>
         </div>
-      </div>
+      </ZoneBody>
     </Container>
   );
 }
