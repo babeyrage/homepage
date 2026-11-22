@@ -11,18 +11,16 @@ import {
 } from './ratingIcons';
 
 import Container from 'components/services/widget/container';
+import ZoneLogo from 'components/widgets/fusion/zone-logo';
 import Block from 'components/services/widget/block';
 import useWidgetAPI from 'utils/proxy/use-widget-api';
 
 // Zone-style card label ("PLEX") shown at the top of the widget, matching
 // the accent-coloured header every other card in the SIGNAL rail uses.
-function ZoneLabel({ children }) {
+function ZoneLabel({ children, icon }) {
   return (
     <div className="flex items-center gap-2 mb-2.5">
-      <span
-        className="w-1.5 h-1.5 rounded-full shrink-0"
-        style={{ backgroundColor: 'rgb(var(--accent))', boxShadow: '0 0 6px rgb(var(--accent) / 70%)' }}
-      />
+      <ZoneLogo icon={icon} />
       <span
         className="widget-zone-label text-[10px] font-semibold uppercase tracking-widest"
         style={{ color: 'rgb(var(--accent))' }}
@@ -61,7 +59,7 @@ export default function Component({ service }) {
   if (!plexData) return (
     <Container service={service}>
       <div className="flex flex-col w-full px-4 pt-3">
-        <ZoneLabel>{t('plex.title', 'Plex')}</ZoneLabel>
+        <ZoneLabel icon={service.icon}>{t('plex.title', 'Plex')}</ZoneLabel>
         <div className="flex flex-row w-full">
           <Block label="plex.movies" />
           <Block label="plex.tv" />
@@ -73,7 +71,7 @@ export default function Component({ service }) {
   return (
     <Container service={service}>
       <div className="flex flex-col w-full px-4 pt-3">
-        <ZoneLabel>{t('plex.title', 'Plex')}</ZoneLabel>
+        <ZoneLabel icon={service.icon}>{t('plex.title', 'Plex')}</ZoneLabel>
         <div className="flex flex-row w-full">
           <Block label="plex.movies" value={t('common.number', { value: plexData.totalMovies })} />
           <Block label="plex.tv" value={t('common.number', { value: plexData.totalShows })} />

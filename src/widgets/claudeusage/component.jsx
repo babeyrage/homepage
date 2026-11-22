@@ -1,6 +1,8 @@
+import Container from "components/services/widget/container";
+import ZoneLogo from "components/widgets/fusion/zone-logo";
+
 import { Chip, FUSION_COLORS, Led, MonoLabel } from "../../components/widgets/fusion/primitives";
 
-import Container from "components/services/widget/container";
 import useCurrentTime from "utils/hooks/use-current-time";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 
@@ -40,6 +42,17 @@ function fmtDuration(ms) {
   if (d > 0) return `${d}d ${h}h`;
   if (h > 0) return `${h}h ${m}m`;
   return `${m}m`;
+}
+
+// "3:30 PM" if it resets today, otherwise "Thu 9:00 AM", in the viewer's timezone.
+function fmtResetLocal(resetsAt, now) {
+  const at = new Date(resetsAt);
+  const sameDay = new Date(now).toDateString() === at.toDateString();
+  return at.toLocaleString(undefined, {
+    ...(sameDay ? {} : { weekday: "short" }),
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 function fmtAge(ms) {
@@ -92,13 +105,26 @@ function LimitRow({ limit, now }) {
       : null;
   const ahead = pace != null && limit.pct > pace + 5;
 
+  // The agent reports an absolute instant (`resetsAt`), so the browser renders it in the viewer's own timezone.
+  const resetLocal = limit.resetsAt && now ? fmtResetLocal(limit.resetsAt, now) : null;
+  const resetTitle = limit.resetsAt
+    ? `${limit.label} — resets ${new Date(limit.resetsAt).toLocaleString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        timeZoneName: "short",
+      })}`
+    : limit.label;
+
   let hint = null;
   if (pace != null) {
     hint = ahead ? `${Math.round(limit.pct - pace)} pts ahead of even pace` : "on or under even pace";
   }
 
   return (
-    <div className="flex flex-col gap-1" title={limit.resets ? `${limit.label} — resets ${limit.resets}` : limit.label}>
+    <div className="flex flex-col gap-1" title={resetTitle}>
       <div className="flex items-baseline justify-between gap-2">
         <span className="text-[11px] capitalize truncate">{limit.label}</span>
         <span className="text-sm font-semibold tabular-nums" style={{ color }}>
@@ -119,7 +145,13 @@ function LimitRow({ limit, now }) {
         ) : null}
       </div>
       <div className="flex justify-between gap-2 text-[10px] opacity-70">
-        <span>{remaining != null ? `resets in ${fmtDuration(remaining)}` : (limit.resets ?? "")}</span>
+        <span>
+          {remaining != null
+            ? `resets in ${fmtDuration(remaining)} · ${resetLocal}`
+            : resetLocal
+              ? `resets ${resetLocal}`
+              : (limit.resets ?? "")}
+        </span>
         {hint ? <span style={ahead ? { color: FUSION_COLORS.warn } : undefined}>{hint}</span> : null}
       </div>
     </div>
@@ -296,11 +328,15 @@ export default function Component({ service }) {
     <Container service={service}>
       <div className="flex flex-col gap-3 w-full p-3">
         <div className="flex items-center justify-between gap-2">
-          <span className="flex items-center gap-1.5">
-            <Led color={stale ? FUSION_COLORS.warn : FUSION_COLORS.ok} glow={!stale} />
-            <MonoLabel title="Cost is API-equivalent at list prices, not the amount billed to a subscription">
+          <span className="flex items-center gap-2">
+            <ZoneLogo icon={service.icon} />
+            <MonoLabel
+              color="rgb(var(--accent))"
+              title="Cost is API-equivalent at list prices, not the amount billed to a subscription"
+            >
               Claude usage
             </MonoLabel>
+            <Led color={stale ? FUSION_COLORS.warn : FUSION_COLORS.ok} glow={!stale} />
           </span>
           <span className="text-[10px] opacity-60">
             {stale ? `agent offline · last data ${fmtAge(age)}` : age != null ? `updated ${fmtAge(age)}` : ""}

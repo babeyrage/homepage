@@ -7,6 +7,7 @@ import Agenda from "./agenda";
 import Monthly from "./monthly";
 
 import Container from "components/services/widget/container";
+import ZoneLogo from "components/widgets/fusion/zone-logo";
 import { SettingsContext } from "utils/contexts/settings";
 
 const colorVariants = {
@@ -118,10 +119,7 @@ export default function Component({ service }) {
       <div className="flex flex-col w-full">
         <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-2">
-            <span
-              className="w-1.5 h-1.5 rounded-full shrink-0"
-              style={{ backgroundColor: "rgb(var(--accent))", boxShadow: "0 0 6px rgb(var(--accent) / 70%)" }}
-            />
+            <ZoneLogo icon={service.icon} />
             <span
               className="widget-zone-label text-[10px] font-semibold uppercase tracking-widest"
               style={{ color: "rgb(var(--accent))" }}

@@ -106,7 +106,7 @@ export default function Component({ service }) {
   return (
     <Container service={service}>
       <div className="flex flex-col w-full">
-        <ZoneLabel>{t("dota2.title", "Dota 2")}</ZoneLabel>
+        <ZoneLabel icon={service.icon}>{t("dota2.title", "Dota 2")}</ZoneLabel>
         <div className="flex flex-col sm:flex-row w-full gap-3">
 
           {/* ── Left panel: Matches ─────────────────────────────────────────── */}

@@ -949,7 +949,9 @@ li[data-name="Plex"] .service-title-text,
 li[data-name="Dota 2"] .service-icon,
 li[data-name="Dota 2"] .service-title-text,
 li[data-name="Upcoming Releases"] .service-icon,
-li[data-name="Upcoming Releases"] .service-title-text {
+li[data-name="Upcoming Releases"] .service-title-text,
+li[data-name="Claude Usage"] .service-icon,
+li[data-name="Claude Usage"] .service-title-text {
   display: none !important;
 }
 
