@@ -66,10 +66,10 @@
           description: Forums & communities
 
 - Torrents/Indexers:
-    - DrukenSlug:
+    - DrunkenSlug:
         - icon: /icons/ds-icon.png
           href: https://drunkenslug.com/
-          description: Private torrent tracker
+          description: Usenet indexer
 
     - NZB Geek:
         - icon: /icons/nzbgeek-icon.png
@@ -79,6 +79,11 @@
     - IPTorrents:
         - abbr: IPT
           href: https://ipt.lol/
+          description: Private torrent tracker
+
+    - TorrentLeech:
+        - icon: /icons/torrentleech-icon.png
+          href: https://www.torrentleech.org/
           description: Private torrent tracker
 
 - ESN:
