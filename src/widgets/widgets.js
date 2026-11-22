@@ -30,6 +30,7 @@ import deluge from "./deluge/widget";
 import develancacheui from "./develancacheui/widget";
 import diskstation from "./diskstation/widget";
 import dispatcharr from "./dispatcharr/widget";
+import claudeusage from "./claudeusage/widget";
 import dockhand from "./dockhand/widget";
 import dota2 from "./dota2/widget";
 import downloadstation from "./downloadstation/widget";
@@ -188,6 +189,7 @@ import yourspotify from "./yourspotify/widget";
 import zabbix from "./zabbix/widget";
 
 const widgets = {
+  claudeusage,
   adguard,
   apcups,
   arcane,

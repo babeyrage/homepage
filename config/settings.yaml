@@ -32,6 +32,11 @@ layout:
       style: row
       columns: 1
 
+    CLAUDE:
+        header: false
+        style: row
+        columns: 1
+
   MEDIA:
     tab: HOMELAB
     style: row
