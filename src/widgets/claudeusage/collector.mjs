@@ -96,33 +96,65 @@ function prettyProject(dir) {
   return parts[parts.length - 1] ?? dir;
 }
 
+const DAY_MS = 86400000;
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+function topWithOther(map, n, nameKey) {
+  const all = [...map.values()].sort((a, b) => b.cost - a.cost);
+  const total = all.reduce((s, r) => s + r.cost, 0);
+  const top = all.slice(0, n);
+  const rest = all.slice(n);
+  if (rest.length) {
+    top.push({
+      [nameKey]: `other (${rest.length})`,
+      requests: rest.reduce((s, r) => s + r.requests, 0),
+      cost: rest.reduce((s, r) => s + r.cost, 0),
+      other: true,
+    });
+  }
+  return top.map((r) => ({ ...r, share: total > 0 ? r.cost / total : 0 }));
+}
+
+// tzOffsetMin = minutes EAST of UTC (e.g. Perth = 480). Local time = ts + offset.
 export function summarize(rows, pricing, now = Date.now(), tzOffsetMin = 0) {
   const seen = new Set();
-  const dayMs = 86400000;
-  const startOfToday = Math.floor((now - tzOffsetMin * 60000) / dayMs) * dayMs + tzOffsetMin * 60000;
-  const windows = { today: startOfToday, d7: now - 7 * dayMs, d30: now - 30 * dayMs };
+  const off = tzOffsetMin * 60000;
+  const startOfToday = Math.floor((now + off) / DAY_MS) * DAY_MS - off;
+  const local = new Date(now + off);
+  const monthStart = Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), 1) - off;
+  const daysInMonth = new Date(Date.UTC(local.getUTCFullYear(), local.getUTCMonth() + 1, 0)).getUTCDate();
+  const windows = {
+    today: startOfToday,
+    d7: now - 7 * DAY_MS,
+    d30: now - 30 * DAY_MS,
+    month: monthStart,
+  };
 
-  const zero = () => ({ requests: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0 });
-  const totals = { today: zero(), d7: zero(), d30: zero() };
+  const zero = () => ({ requests: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0, saved: 0 });
+  const totals = { today: zero(), yesterday: zero(), d7: zero(), d30: zero(), month: zero() };
   const models = new Map();
   const projects = new Map();
   const daily = new Map();
+  const hourly = Array.from({ length: 24 }, () => 0);
 
   for (const r of rows) {
     if (seen.has(r.key) && r.key !== ":") continue;
     seen.add(r.key);
-    const cost = costOf(r, priceFor(r.model, pricing));
-    for (const [name, since] of Object.entries(windows)) {
-      if (r.ts >= since) {
-        const t = totals[name];
-        t.requests += 1;
-        t.input += r.input;
-        t.output += r.output;
-        t.cacheRead += r.cacheRead;
-        t.cacheWrite += r.cacheWrite;
-        t.cost += cost;
-      }
-    }
+    const price = priceFor(r.model, pricing);
+    const cost = costOf(r, price);
+    const saved = price ? (r.cacheRead * Math.max(0, price.input - price.cacheRead)) / 1e6 : 0;
+    const add = (t) => {
+      t.requests += 1;
+      t.input += r.input;
+      t.output += r.output;
+      t.cacheRead += r.cacheRead;
+      t.cacheWrite += r.cacheWrite;
+      t.cost += cost;
+      t.saved += saved;
+    };
+    for (const [name, since] of Object.entries(windows)) if (r.ts >= since) add(totals[name]);
+    if (r.ts >= startOfToday - DAY_MS && r.ts < startOfToday) add(totals.yesterday);
+
     if (r.ts >= windows.d7) {
       const mk = models.get(r.model) ?? { model: r.model, requests: 0, tokens: 0, cost: 0 };
       mk.requests += 1;
@@ -134,33 +166,96 @@ export function summarize(rows, pricing, now = Date.now(), tzOffsetMin = 0) {
       pk.requests += 1;
       pk.cost += cost;
       projects.set(r.project, pk);
+
+      hourly[new Date(r.ts + off).getUTCHours()] += cost;
     }
-    const day = new Date(r.ts - tzOffsetMin * 60000).toISOString().slice(0, 10);
-    const dk = daily.get(day) ?? { day, cost: 0, tokens: 0 };
+    const day = new Date(r.ts + off).toISOString().slice(0, 10);
+    const dk = daily.get(day) ?? { day, cost: 0, tokens: 0, requests: 0 };
     dk.cost += cost;
     dk.tokens += r.input + r.output;
+    dk.requests += 1;
     daily.set(day, dk);
   }
 
-  const cacheDenominator = (t) => t.input + t.cacheRead + t.cacheWrite;
-  const cacheHitRate = (t) => (cacheDenominator(t) > 0 ? t.cacheRead / cacheDenominator(t) : 0);
-  // Money saved by cache reads vs. paying full input price for the same tokens (Sonnet-equivalent fallback not used).
+  // Continuous 14-day series (missing days are zero) so the chart has no gaps.
+  const series = [];
+  for (let i = 13; i >= 0; i -= 1) {
+    const key = new Date(startOfToday - i * DAY_MS + off).toISOString().slice(0, 10);
+    series.push(daily.get(key) ?? { day: key, cost: 0, tokens: 0, requests: 0 });
+  }
+
+  const denom = (t) => t.input + t.cacheRead + t.cacheWrite;
+  const hitRate = (t) => (denom(t) > 0 ? t.cacheRead / denom(t) : 0);
+  const elapsedDays = Math.max((now - monthStart) / DAY_MS, 1 / 24);
+  const peak = Math.max(...hourly);
+
   return {
     totals,
-    cacheHitRate: { today: cacheHitRate(totals.today), d7: cacheHitRate(totals.d7), d30: cacheHitRate(totals.d30) },
-    models: [...models.values()].sort((a, b) => b.cost - a.cost).slice(0, 5),
-    projects: [...projects.values()].sort((a, b) => b.cost - a.cost).slice(0, 5),
-    daily: [...daily.values()].sort((a, b) => a.day.localeCompare(b.day)).slice(-14),
+    cacheHitRate: { today: hitRate(totals.today), d7: hitRate(totals.d7), d30: hitRate(totals.d30) },
+    models: topWithOther(models, 3, "model"),
+    projects: topWithOther(projects, 3, "project"),
+    daily: series,
+    hourly,
+    peakHour: peak > 0 ? hourly.indexOf(peak) : null,
+    month: {
+      cost: totals.month.cost,
+      projected: (totals.month.cost / elapsedDays) * daysInMonth,
+      daysInMonth,
+      elapsedDays,
+    },
   };
 }
 
+// Parses reset strings like "Nov 22, 10:30am (UTC)", "Nov 26, 9am (UTC)" or "10:30am (UTC)" to epoch ms.
+// "(UTC)"/"(GMT)" is honoured; any other zone label is treated as the server's local time.
+export function parseResetTime(str, now = Date.now()) {
+  if (!str) return null;
+  const utc = /\((?:UTC|GMT)\)/i.test(str);
+  const t = str.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i);
+  if (!t) return null;
+  let hour = Number(t[1]) % 12;
+  if (t[3].toLowerCase() === "pm") hour += 12;
+  const minute = Number(t[2] ?? 0);
+  const make = (y, m, d) => (utc ? Date.UTC(y, m, d, hour, minute) : new Date(y, m, d, hour, minute).getTime());
+
+  const d = str.match(/([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2})/);
+  const month = d ? MONTHS.indexOf(d[1].toLowerCase()) : -1;
+  const ref = new Date(now);
+  if (month >= 0) {
+    const year = utc ? ref.getUTCFullYear() : ref.getFullYear();
+    let ts = make(year, month, Number(d[2]));
+    if (ts < now - DAY_MS) ts = make(year + 1, month, Number(d[2]));
+    return ts;
+  }
+  const y = utc ? ref.getUTCFullYear() : ref.getFullYear();
+  const m = utc ? ref.getUTCMonth() : ref.getMonth();
+  const day = utc ? ref.getUTCDate() : ref.getDate();
+  let ts = make(y, m, day);
+  if (ts < now) ts += DAY_MS;
+  return ts;
+}
+
+const LIMIT_WINDOWS = [
+  [/session/i, 5 * 3600000],
+  [/week/i, 7 * DAY_MS],
+];
+
 // Parses lines like "Current session: 2% used · resets Nov 22, 10:30am (UTC)"
 // and "Current week (Opus): 9% used · resets ...".
-export function parseUsageText(text) {
+export function parseUsageText(text, now = Date.now()) {
   const limits = [];
   for (const line of String(text ?? "").split("\n")) {
     const m = line.match(/^\s*Current ([^:]+):\s*(\d+(?:\.\d+)?)%\s*used(?:\s*·\s*resets\s*(.+?))?\s*$/i);
-    if (m) limits.push({ label: m[1].trim(), pct: Number(m[2]), resets: m[3]?.trim() ?? null });
+    if (!m) continue;
+    const label = m[1].trim();
+    const windowMs = LIMIT_WINDOWS.find(([re]) => re.test(label))?.[1] ?? null;
+    limits.push({
+      label,
+      pct: Number(m[2]),
+      resets: m[3]?.trim() ?? null,
+      resetsAt: parseResetTime(m[3], now),
+      windowMs,
+    });
   }
   return limits;
 }

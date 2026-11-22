@@ -79,13 +79,13 @@
                       service_name: Radarr
                       color: amber
 
-    - CLAUDE:
-        - Claude Usage:
-            icon: claude-ai.svg
-            widget:
-                type: claudeusage
-                url: http://{{HOMEPAGE_VAR_UBUNTU_URL}}:{{HOMEPAGE_VAR_CLAUDE_USAGE_PORT}}
-                key: "{{HOMEPAGE_VAR_CLAUDE_USAGE_TOKEN}}"
+- CLAUDE:
+    - Claude Usage:
+        icon: claude-ai.svg
+        widget:
+            type: claudeusage
+            url: http://{{HOMEPAGE_VAR_UBUNTU_URL}}:{{HOMEPAGE_VAR_CLAUDE_USAGE_PORT}}
+            key: "{{HOMEPAGE_VAR_CLAUDE_USAGE_TOKEN}}"
 
 - MEDIA:
     - Radarr:
